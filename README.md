@@ -1,2 +1,2 @@
-Astroids
+Asteroids
 ========
