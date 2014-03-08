@@ -39,7 +39,6 @@ angular.module('asteroids').controller('gameController', function($scope) {
 			var currentTime = Date.now();
 			MYGAME.elapsedTime = currentTime - MYGAME.lastTimeStamp;
 			MYGAME.lastTimeStamp = currentTime;
-
 			
 			myKeyboard.update(MYGAME.elapsedTime);
 			if(localPlayer.update()){
@@ -47,8 +46,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
 				{
 					x  : localPlayer.getX(),
 					y  : localPlayer.getY(),
-					rot: localPlayer.getRot(),
-					id : socket.id
+					rot: localPlayer.getRot()
 				});
 			}
 			myMouse.update(MYGAME.elapsedTime);
@@ -56,11 +54,11 @@ angular.module('asteroids').controller('gameController', function($scope) {
 			myTouch.update(MYGAME.elapsedTime);
 
 			graphics.clear();
+
 			localPlayer.draw();
 			for (i = 0; i < remotePlayers.length; ++i) {
 				remotePlayers[i].draw();
 			}
-			
 			if (!cancelNextRequest) {
 				requestAnimationFrame(gameLoop);
 			}
@@ -77,8 +75,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
 			{
 				x   : localPlayer.getX(),
 				y   : localPlayer.getY(),
-				rot : localPlayer.getRot(),
-				id : socket.id
+				rot : localPlayer.getRot()
 			});
 		}
 
@@ -112,6 +109,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
 			movePlayer.setX(data.x);
 			movePlayer.setY(data.y);
 			movePlayer.setRot(data.rot);
+			movePlayer.draw();
 		}
 
 		function onRemovePlayer(data) {
