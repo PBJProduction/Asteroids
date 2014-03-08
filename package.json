@@ -11,6 +11,7 @@
     "mysql": "~2.0.0-rc1",
     "bcrypt-nodejs": "0.0.3",
     "request": "~2.33.0",
-    "form-data": "~0.1.2"
+    "form-data": "~0.1.2",
+    "socket.io": "latest"
   }
 }
