@@ -12,6 +12,11 @@ var app = express();
 //https://github.com/robhawkes/mozilla-festival/blob/master/game.js
 function init(){
 	io = io.listen(server);
+	io.configure(function() {
+		io.set("transports", ["websocket"]);
+
+		io.set("log level", 2);
+	});
 	setEventHandlers();
 }
 
@@ -63,7 +68,7 @@ function onNewPlayer(data) {
 		});
 	}
 	players.push(newPlayer);
-	
+
 }
 
 function onMovePlayer(data) {
