@@ -8,6 +8,8 @@ var express = require('express'),
 
 var app = express();
 
+//Used this as a basis for sending/recieving data
+//https://github.com/robhawkes/mozilla-festival/blob/master/game.js
 function init(){
 	io = io.listen(server);
 	setEventHandlers();
