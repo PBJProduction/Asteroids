@@ -113,13 +113,7 @@ MYGAME.graphics = function() {
 			else if(spec.center.y-spec.width/2 >= canvas.height)
 				spec.center.y = -spec.width/2;
 
-			if(spec.rotation !== rotate){
-				spec.rotation = rotate;
-				return true;
-			}
-			if(dx <= 0.01 && dx >= -0.01){
-				return false;
-			}
+			spec.rotation = rotate;
 			return true;
 		};
 		
