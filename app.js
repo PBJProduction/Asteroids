@@ -13,8 +13,7 @@ var app = express();
 function init(){
 	io = io.listen(server);
 	io.configure(function() {
-		  io.set("transports", ["xhr-polling"]); 
-		  io.set("polling duration", 10); 
+		io.set("transports", ["xhr-polling"]); 
 		io.set("log level", 2);
 	});
 	setEventHandlers();
