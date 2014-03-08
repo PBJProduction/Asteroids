@@ -5,7 +5,7 @@
 //
 // ------------------------------------------------------------------
 
-MYGAME.graphics = (function() {
+MYGAME.graphics = function() {
 	'use strict';
 	
 	var canvas = document.getElementById('canvas-main'),
@@ -27,6 +27,8 @@ MYGAME.graphics = (function() {
 	
 	function Texture(spec) {
 		var that = {};
+
+		that.id = null;
 		
 		that.rotateRight = function(elapsedTime) {
 			spec.rotation += spec.rotateRate * (elapsedTime / 1000);
@@ -55,6 +57,30 @@ MYGAME.graphics = (function() {
 		that.moveTo = function(center) {
 			spec.center = center;
 		};
+
+		that.getX = function(){
+			return spec.center.x;
+		};
+
+		that.getY = function(){
+			return spec.center.y;
+		};
+
+		that.setX = function(x){
+			spec.center.x = x;
+		};
+
+		that.setY = function(y){
+			spec.center.y = y;
+		};
+
+		that.getRot = function(){
+			return spec.rotation;
+		};
+
+		that.setRot = function(rot){
+			spec.rotation = rot;
+		};
 		
 		that.draw = function() {
 			context.save();
@@ -78,4 +104,4 @@ MYGAME.graphics = (function() {
 		clear : clear,
 		Texture : Texture
 	};
-}());
+};

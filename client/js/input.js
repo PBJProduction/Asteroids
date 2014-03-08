@@ -5,8 +5,7 @@
 //
 //
 // ------------------------------------------------------------------
-MYGAME.input = (function() {
-	'use strict';
+MYGAME.input = function() {
 	
 	function Mouse() {
 		var that = {
@@ -106,8 +105,6 @@ MYGAME.input = (function() {
 		that.registerSingleCommand = function(key,handler){
 			that.handlers.push({ key : key, handler : handler, single : true});
 		};
-
-		that.register
 		
 		// ------------------------------------------------------------------
 		//ee
@@ -115,13 +112,16 @@ MYGAME.input = (function() {
 		//
 		// ------------------------------------------------------------------
 		that.update = function(elapsedTime) {
+			var pressed = false;
 			for (key = 0; key < that.handlers.length; key++) {
 				if (typeof that.keys[that.handlers[key].key] !== 'undefined') {
 					that.handlers[key].handler(elapsedTime);
+					pressed = true;
 					if(that.handlers[key].single)
 						delete that.keys[that.handlers[key].key];
 				}
 			}
+			return pressed;
 		};
 		
 		//
@@ -189,7 +189,7 @@ MYGAME.input = (function() {
 		Auto : Auto,
 		Touch : Touch
 	};
-}());
+};
 
 //------------------------------------------------------------------
 //
@@ -315,9 +315,3 @@ if (typeof KeyEvent === 'undefined') {
 		DOM_VK_META: 224
 	};
 }
-
-window.addEventListener('resize', function(){
-	var c=document.getElementById("canvas-main");
-	c.width = window.innerWidth-5;
-	c.height = window.innerHeight-5;
-}, false);
