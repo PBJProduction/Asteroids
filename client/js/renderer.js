@@ -97,14 +97,22 @@ MYGAME.graphics = function() {
 			dy *= friction;
 			spec.center.x -= dx;
 			spec.center.y -= dy;
-			if(spec.center.x <= 0)
-				spec.center.x = canvas.width;
-			else if(spec.center.x >= canvas.width)
-				spec.center.x = 0;
-			else if(spec.center.y <= 0)
-				spec.center.y = canvas.height;
-			else if(spec.center.y >= canvas.height)
-				spec.center.y = 0;
+			//if its less than 0 x
+			if(spec.center.x+spec.height/2 <= 0)
+				spec.center.x = canvas.width+spec.height/2;
+
+			//if its greater than max x
+			else if(spec.center.x-spec.height/2 >= canvas.width)
+				spec.center.x = -spec.height/2;
+
+			//if its less than 0 y
+			else if(spec.center.y+spec.width/2 <= 0)
+				spec.center.y = canvas.height+spec.width/2;
+
+			//if its greater than max y
+			else if(spec.center.y-spec.width/2 >= canvas.height)
+				spec.center.y = -spec.width/2;
+
 			if(spec.rotation !== rotate){
 				spec.rotation = rotate;
 				return true;
