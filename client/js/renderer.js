@@ -29,7 +29,7 @@ MYGAME.graphics = function() {
 		var that = {};
 		var dx = 0,
 			dy = 0,
-			thrust = 0.1,
+			thrust = 10,
 			friction = 0.98,
 			rotate = 0,
 			y = spec.center.y,
@@ -62,8 +62,8 @@ MYGAME.graphics = function() {
 		};
 
 		that.forwardThruster = function(elapsedTime){
-			dx += (Math.cos(spec.rotation + Math.PI/2) * thrust);// * (elapsedTime / 1000);
-			dy += (Math.sin(spec.rotation + Math.PI/2) * thrust);// * (elapsedTime / 1000);
+			dx += (Math.cos(spec.rotation + Math.PI/2) * thrust) * (elapsedTime / 1000);
+			dy += (Math.sin(spec.rotation + Math.PI/2) * thrust) * (elapsedTime / 1000);
 		};
 		
 		that.moveTo = function(center) {
