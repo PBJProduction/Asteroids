@@ -27,15 +27,20 @@ MYGAME.graphics = function() {
 	
 	function Texture(spec) {
 		var that = {};
+		var dx = 0,
+			dy = 0,
+			thrust = 10,
+			friction = 0.98,
+			rotate = 0;
 
 		that.id = null;
 		
 		that.rotateRight = function(elapsedTime) {
-			spec.rotation += spec.rotateRate * (elapsedTime / 1000);
+			rotate += spec.rotateRate * (elapsedTime / 1000);
 		};
 		
 		that.rotateLeft = function(elapsedTime) {
-			spec.rotation -= spec.rotateRate * (elapsedTime / 1000);
+			rotate -= spec.rotateRate * (elapsedTime / 1000);
 		};
 		
 		that.moveLeft = function(elapsedTime) {
@@ -52,6 +57,11 @@ MYGAME.graphics = function() {
 		
 		that.moveDown = function(elapsedTime) {
 			spec.center.y += spec.moveRate * (elapsedTime / 1000);
+		};
+
+		that.forwardThruster = function(elapsedTime){
+			dx += (Math.cos(spec.rotation + Math.PI/2) * thrust) * (elapsedTime / 1000);
+			dy += (Math.sin(spec.rotation + Math.PI/2) * thrust) * (elapsedTime / 1000);
 		};
 		
 		that.moveTo = function(center) {
@@ -80,6 +90,21 @@ MYGAME.graphics = function() {
 
 		that.setRot = function(rot){
 			spec.rotation = rot;
+		};
+
+		that.update = function(){
+			dx *= friction;
+			dy *= friction;
+			spec.center.x -= dx;
+			spec.center.y -= dy;
+			if(spec.rotation !== rotate){
+				spec.rotation = rotate;
+				return true;
+			}
+			if(dx <= 0.01 && dx >= -0.01){
+				return false;
+			}
+			return true;
 		};
 		
 		that.draw = function() {

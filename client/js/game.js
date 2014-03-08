@@ -25,12 +25,9 @@ angular.module('asteroids').controller('gameController', function($scope) {
 				moveRate : 200,			// pixels per second
 				rotateRate : 3.14159	// Radians per second
 			});
-			myKeyboard.registerCommand(KeyEvent.DOM_VK_A, localPlayer.moveLeft);
-			myKeyboard.registerCommand(KeyEvent.DOM_VK_D, localPlayer.moveRight);
-			myKeyboard.registerCommand(KeyEvent.DOM_VK_W, localPlayer.moveUp);
-			myKeyboard.registerCommand(KeyEvent.DOM_VK_S, localPlayer.moveDown);
-			myKeyboard.registerCommand(KeyEvent.DOM_VK_Q, localPlayer.rotateLeft);
-			myKeyboard.registerCommand(KeyEvent.DOM_VK_E, localPlayer.rotateRight);
+			myKeyboard.registerCommand(KeyEvent.DOM_VK_W, localPlayer.forwardThruster);
+			myKeyboard.registerCommand(KeyEvent.DOM_VK_A, localPlayer.rotateLeft);
+			myKeyboard.registerCommand(KeyEvent.DOM_VK_D, localPlayer.rotateRight);
 			socket.on("connect", onSocketConnected);
 			socket.on("disconnect", onSocketDisconnect);
 			socket.on("new player", onNewPlayer);
@@ -45,6 +42,8 @@ angular.module('asteroids').controller('gameController', function($scope) {
 
 			
 			if(myKeyboard.update(MYGAME.elapsedTime)){
+			}
+			if(localPlayer.update()){
 				socket.emit("move player",
 				{
 					x  : localPlayer.getX(),
