@@ -13,7 +13,7 @@ var app = express();
 function init(){
 	io = io.listen(server);
 	io.configure(function() {
-		io.set("transports", ["xhr-polling"]); 
+		io.set("transports", ["websocket"]);
 		io.set("log level", 2);
 	});
 	setEventHandlers();
