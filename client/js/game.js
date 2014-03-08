@@ -41,8 +41,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
 			MYGAME.lastTimeStamp = currentTime;
 
 			
-			if(myKeyboard.update(MYGAME.elapsedTime)){
-			}
+			myKeyboard.update(MYGAME.elapsedTime);
 			if(localPlayer.update()){
 				socket.emit("move player",
 				{
