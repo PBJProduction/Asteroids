@@ -63,6 +63,7 @@ function onNewPlayer(data) {
 		});
 	}
 	players.push(newPlayer);
+	
 }
 
 function onMovePlayer(data) {
