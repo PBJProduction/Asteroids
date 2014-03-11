@@ -44,6 +44,7 @@ function onClientDisconnect() {
 	this.broadcast.emit("remove player", {id: this.id});
 }
 
+//rework for server
 function onNewPlayer(data) {
 	var newPlayer = Player.Player(data.x, data.y, data.rot);
 	newPlayer.id = this.id;

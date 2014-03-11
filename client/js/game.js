@@ -109,7 +109,6 @@ angular.module('asteroids').controller('gameController', function($scope) {
 			movePlayer.setX(data.x);
 			movePlayer.setY(data.y);
 			movePlayer.setRot(data.rot);
-			movePlayer.draw();
 		}
 
 		function onRemovePlayer(data) {
