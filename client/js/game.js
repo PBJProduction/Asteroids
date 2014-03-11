@@ -25,12 +25,9 @@ angular.module('asteroids').controller('gameController', function($scope) {
 				moveRate : 200,			// pixels per second
 				rotateRate : 3.14159	// Radians per second
 			});
-			myKeyboard.registerCommand(KeyEvent.DOM_VK_A, localPlayer.moveLeft);
-			myKeyboard.registerCommand(KeyEvent.DOM_VK_D, localPlayer.moveRight);
-			myKeyboard.registerCommand(KeyEvent.DOM_VK_W, localPlayer.moveUp);
-			myKeyboard.registerCommand(KeyEvent.DOM_VK_S, localPlayer.moveDown);
-			myKeyboard.registerCommand(KeyEvent.DOM_VK_Q, localPlayer.rotateLeft);
-			myKeyboard.registerCommand(KeyEvent.DOM_VK_E, localPlayer.rotateRight);
+			myKeyboard.registerCommand(KeyEvent.DOM_VK_W, localPlayer.forwardThruster);
+			myKeyboard.registerCommand(KeyEvent.DOM_VK_A, localPlayer.rotateLeft);
+			myKeyboard.registerCommand(KeyEvent.DOM_VK_D, localPlayer.rotateRight);
 			socket.on("connect", onSocketConnected);
 			socket.on("disconnect", onSocketDisconnect);
 			socket.on("new player", onNewPlayer);
@@ -42,15 +39,14 @@ angular.module('asteroids').controller('gameController', function($scope) {
 			var currentTime = Date.now();
 			MYGAME.elapsedTime = currentTime - MYGAME.lastTimeStamp;
 			MYGAME.lastTimeStamp = currentTime;
-
 			
-			if(myKeyboard.update(MYGAME.elapsedTime)){
+			myKeyboard.update(MYGAME.elapsedTime);
+			if(localPlayer.update()){
 				socket.emit("move player",
 				{
 					x  : localPlayer.getX(),
 					y  : localPlayer.getY(),
-					rot: localPlayer.getRot(),
-					id : socket.id
+					rot: localPlayer.getRot()
 				});
 			}
 			myMouse.update(MYGAME.elapsedTime);
@@ -58,11 +54,11 @@ angular.module('asteroids').controller('gameController', function($scope) {
 			myTouch.update(MYGAME.elapsedTime);
 
 			graphics.clear();
+
 			localPlayer.draw();
 			for (i = 0; i < remotePlayers.length; ++i) {
 				remotePlayers[i].draw();
 			}
-			
 			if (!cancelNextRequest) {
 				requestAnimationFrame(gameLoop);
 			}
@@ -79,8 +75,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
 			{
 				x   : localPlayer.getX(),
 				y   : localPlayer.getY(),
-				rot : localPlayer.getRot(),
-				id : socket.id
+				rot : localPlayer.getRot()
 			});
 		}
 

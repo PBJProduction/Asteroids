@@ -112,16 +112,13 @@ MYGAME.input = function() {
 		//
 		// ------------------------------------------------------------------
 		that.update = function(elapsedTime) {
-			var pressed = false;
 			for (key = 0; key < that.handlers.length; key++) {
 				if (typeof that.keys[that.handlers[key].key] !== 'undefined') {
 					that.handlers[key].handler(elapsedTime);
-					pressed = true;
 					if(that.handlers[key].single)
 						delete that.keys[that.handlers[key].key];
 				}
 			}
-			return pressed;
 		};
 		
 		//
