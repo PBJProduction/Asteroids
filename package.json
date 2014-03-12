@@ -12,6 +12,6 @@
     "bcrypt-nodejs": "0.0.3",
     "request": "~2.33.0",
     "form-data": "~0.1.2",
-    "socket.io": "latest"
+    "socket.io": "0.10.26"
   }
 }
