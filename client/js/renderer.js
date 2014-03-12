@@ -126,6 +126,21 @@ MYGAME.graphics = function() {
 		};
 		
 		that.draw = function() {
+			if(spec.center.x+spec.height/2 <= 0)
+				spec.center.x = canvas.width+spec.height/2;
+
+			//if its greater than max x
+			else if(spec.center.x-spec.height/2 >= canvas.width)
+				spec.center.x = -spec.height/2;
+
+			//if its less than 0 y
+			else if(spec.center.y+spec.width/2 <= 0)
+				spec.center.y = canvas.height+spec.width/2;
+
+			//if its greater than max y
+			else if(spec.center.y-spec.width/2 >= canvas.height)
+				spec.center.y = -spec.width/2;
+			
 			context.save();
 			
 			context.translate(spec.center.x, spec.center.y);

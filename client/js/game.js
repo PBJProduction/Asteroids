@@ -11,7 +11,9 @@ angular.module('asteroids').controller('gameController', function($scope) {
 			cancelNextRequest = false,
 			localPlayer = null,
 			remotePlayers = [],
-			pressed = false;
+			forwardpressed = false,
+			leftpressed = false,
+			rightpressed = false,
 			socket = io.connect();
 		
 		function initialize() {
@@ -35,8 +37,24 @@ angular.module('asteroids').controller('gameController', function($scope) {
 		}
 		
 		$(window).keyup(function(e){
-			if(e.keyCode === KeyEvent.DOM_VK_W || e.keyCode === KeyEvent.DOM_VK_A || e.keyCode === KeyEvent.DOM_VK_D){
-				pressed = false;
+			if(e.keyCode === KeyEvent.DOM_VK_W){
+				forwardpressed = false;
+				var obj = {
+					id : localPlayer.id,
+					key : e.keyCode
+				};
+				socket.emit("key release", obj);
+			}
+			else if(e.keyCode === KeyEvent.DOM_VK_A){
+				leftpressed = false;
+				var obj = {
+					id : localPlayer.id,
+					key : e.keyCode
+				};
+				socket.emit("key release", obj);
+			}
+			else if(e.keyCode === KeyEvent.DOM_VK_D){
+				rightpressed = false;
 				var obj = {
 					id : localPlayer.id,
 					key : e.keyCode
@@ -46,8 +64,24 @@ angular.module('asteroids').controller('gameController', function($scope) {
 		});
 
 		$(window).keydown(function(e){
-			if((e.keyCode === KeyEvent.DOM_VK_W || e.keyCode === KeyEvent.DOM_VK_A || e.keyCode === KeyEvent.DOM_VK_D) && !pressed){
-				pressed = true;
+			if(e.keyCode === KeyEvent.DOM_VK_W && !forwardpressed){
+				forwardpressed = true;
+				var obj = {
+					id : localPlayer.id,
+					key : e.keyCode
+				};
+				socket.emit("key press", obj);
+			}
+			else if(e.keyCode === KeyEvent.DOM_VK_A && !leftpressed){
+				leftpressed = true;
+				var obj = {
+					id : localPlayer.id,
+					key : e.keyCode
+				};
+				socket.emit("key press", obj);
+			}
+			else if(e.keyCode === KeyEvent.DOM_VK_D && !rightpressed){
+				rightpressed = true;
 				var obj = {
 					id : localPlayer.id,
 					key : e.keyCode

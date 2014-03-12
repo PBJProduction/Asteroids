@@ -16,11 +16,11 @@ var graphics = function() {
 		that.myKeyboard = input.Keyboard();
 		
 		that.rotateRight = function(elapsedTime) {
-			rotate += spec.rotateRate * (elapsedTime / 1000);
+			spec.rotation += spec.rotateRate * (elapsedTime / 1000);
 		};
 		
 		that.rotateLeft = function(elapsedTime) {
-			rotate -= spec.rotateRate * (elapsedTime / 1000);
+			spec.rotation -= spec.rotateRate * (elapsedTime / 1000);
 		};
 		
 		that.moveLeft = function(elapsedTime) {
@@ -78,15 +78,6 @@ var graphics = function() {
 			dy *= friction;
 			spec.center.x -= dx;
 			spec.center.y -= dy;
-
-			if(spec.rotation !== rotate){
-				spec.rotation = rotate;
-				return true;
-			}
-			if(dx <= 0.01 && dx >= -0.01){
-				return false;
-			}
-			return true;
 		};
 		
 		return that;
