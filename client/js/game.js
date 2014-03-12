@@ -94,7 +94,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
 			MYGAME.lastTimeStamp = currentTime;
 			myKeyboard.update(MYGAME.elapsedTime);
 			graphics.clear();
-			for (i = 0; i < remotePlayers.length; ++i) {
+			for (i = remotePlayers.length-1; i >= 0; --i) {
 				remotePlayers[i].draw();
 			}
 
