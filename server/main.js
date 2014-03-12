@@ -27,7 +27,7 @@ var main = function(server) {
 
 	function run() {
 		MYGAME.lastTimeStamp = Date.now();
-		interval = setInterval(gameLoop, 1000/30);
+		interval = setInterval(gameLoop, 1000/60);
 	}
 
 	function gameLoop(time) {
@@ -46,7 +46,7 @@ var main = function(server) {
 		client.on("new player", onNewPlayer);
 		client.on("key press", onKeyPress);
 		client.on("key release", onKeyRelease);
-		setInterval(MovePlayers, 1000/60);
+		setInterval(MovePlayers, 1000/30);
 	}
 
 	function onClientDisconnect() {
