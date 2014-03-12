@@ -38,8 +38,6 @@ var main = function(server) {
 		for(var i = 0; i < remotePlayers.length; ++i){
 			remotePlayers[i].update(MYGAME.elapsedTime);
 		}
-
-		MovePlayers();
 	}
 
 	function onSocketConnection(client) {
@@ -48,6 +46,7 @@ var main = function(server) {
 		client.on("new player", onNewPlayer);
 		client.on("key press", onKeyPress);
 		client.on("key release", onKeyRelease);
+		setInterval(MovePlayers, 1000/60);
 	}
 
 	function onClientDisconnect() {
