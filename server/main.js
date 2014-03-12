@@ -69,7 +69,7 @@ var main = function(server) {
 				center : { x : 100, y : 100 },
 				width : 100, height : 100,
 				rotation : 0,
-				moveRate : 200,			// pixels per second
+				moveRate : 100,			// pixels per second
 				rotateRate : 3.14159	// Radians per second
 			});
 
@@ -82,9 +82,9 @@ var main = function(server) {
 		this.broadcast.emit("new player",
 		{
 			id: newPlayer.id,
-			x: newPlayer.x,
-			y: newPlayer.y,
-			rot: newPlayer.rot
+			x: newPlayer.getX(),
+			y: newPlayer.getY(),
+			rot: newPlayer.getRot()
 		});
 		
 		var i, existingPlayer;
@@ -127,9 +127,9 @@ var main = function(server) {
 		for(var i = 0; i < remotePlayers.length; ++i){
 			data.array.push({
 				id  : remotePlayers[i].id,
-				x   : remotePlayers[i].x,
-				y   : remotePlayers[i].y,
-				rot : remotePlayers[i].rot
+				x   : remotePlayers[i].getX(),
+				y   : remotePlayers[i].getY(),
+				rot : remotePlayers[i].getRot()
 			});
 		}
 		io.sockets.emit("move player", data);

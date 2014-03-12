@@ -24,9 +24,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
 				image : img,
 				center : { x : 100, y : 100 },
 				width : 100, height : 100,
-				rotation : 0,
-				moveRate : 200,			// pixels per second
-				rotateRate : 3.14159	// Radians per second
+				rotation : 0
 			});
 			socket.on("connect", onSocketConnected);
 			socket.on("disconnect", onSocketDisconnect);
@@ -138,9 +136,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
 				image : img,
 				center : { x : data.x, y : data.y },
 				width : 100, height : 100,
-				rotation : data.rot,
-				moveRate : 200,			// pixels per second
-				rotateRate : 3.14159	// Radians per second
+				rotation : data.rot
 			});
 			newPlayer.id = data.id;
 			remotePlayers.push(newPlayer);

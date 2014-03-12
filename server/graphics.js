@@ -6,12 +6,8 @@ var graphics = function() {
 		var dx = 0,
 			dy = 0,
 			thrust = 10,
-			friction = 0.98,
-			rotate = 0;
+			friction = 0.98;
 
-		that.y = spec.center.y;
-		that.x = spec.center.x;
-		that.rot = spec.rotation;
 		that.id = null;
 
 		that.myKeyboard = input.Keyboard();
