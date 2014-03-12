@@ -27,7 +27,7 @@ var main = function(server) {
 
 	function run() {
 		MYGAME.lastTimeStamp = Date.now();
-		interval = setInterval(gameLoop, 1000/30);
+		interval = setInterval(gameLoop, 1000/20);
 	}
 
 	function gameLoop(time) {
