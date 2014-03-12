@@ -6,12 +6,13 @@
     "start": "node app.js"
   },
   "dependencies": {
+    "node" : "0.10.26",
     "express": "3.3.7",
     "jade": "*",
     "mysql": "~2.0.0-rc1",
     "bcrypt-nodejs": "0.0.3",
     "request": "~2.33.0",
     "form-data": "~0.1.2",
-    "socket.io": "0.10.26"
+    "socket.io": "0.9.16"
   }
 }
