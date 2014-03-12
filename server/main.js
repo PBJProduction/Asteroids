@@ -27,7 +27,7 @@ var main = function(server) {
 
 	function run() {
 		MYGAME.lastTimeStamp = Date.now();
-		interval = setInterval(gameLoop, 1000/45);
+		interval = setInterval(gameLoop, 1000/60);
 	}
 
 	function gameLoop(time) {
@@ -82,9 +82,9 @@ var main = function(server) {
 		this.broadcast.emit("new player",
 		{
 			id: newPlayer.id,
-			x: newPlayer.getX(),
-			y: newPlayer.getY(),
-			rot: newPlayer.getRot()
+			x: newPlayer.x,
+			y: newPlayer.y,
+			rot: newPlayer.rot
 		});
 		
 		var i, existingPlayer;
@@ -127,9 +127,9 @@ var main = function(server) {
 		for(var i = 0; i < remotePlayers.length; ++i){
 			data.array.push({
 				id  : remotePlayers[i].id,
-				x   : remotePlayers[i].getX(),
-				y   : remotePlayers[i].getY(),
-				rot : remotePlayers[i].getRot()
+				x   : remotePlayers[i].x,
+				y   : remotePlayers[i].y,
+				rot : remotePlayers[i].rot
 			});
 		}
 		io.sockets.emit("move player", data);
