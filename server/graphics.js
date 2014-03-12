@@ -72,12 +72,30 @@ var graphics = function() {
 			spec.rotation = rot;
 		};
 
+		that.checkBounds = function(){
+			if(spec.center.x+spec.height/2 <= 0)
+				spec.center.x = 500+spec.height/2;
+
+			//if its greater than max x
+			else if(spec.center.x-spec.height/2 >= 500)
+				spec.center.x = -spec.height/2;
+
+			//if its less than 0 y
+			else if(spec.center.y+spec.width/2 <= 0)
+				spec.center.y = 500+spec.width/2;
+
+			//if its greater than max y
+			else if(spec.center.y-spec.width/2 >= 500)
+				spec.center.y = -spec.width/2;
+		};
+
 		that.update = function(time){
 			that.myKeyboard.update(time);
 			dx *= friction;
 			dy *= friction;
 			spec.center.x -= dx;
 			spec.center.y -= dy;
+			that.checkBounds();
 		};
 		
 		return that;
