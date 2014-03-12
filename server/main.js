@@ -27,7 +27,7 @@ var main = function(server) {
 
 	function run() {
 		MYGAME.lastTimeStamp = Date.now();
-		interval = setInterval(gameLoop, 1000/30);
+		interval = setInterval(gameLoop, 1000/60);
 	}
 
 	function gameLoop(time) {
@@ -38,8 +38,6 @@ var main = function(server) {
 		for(var i = 0; i < remotePlayers.length; ++i){
 			remotePlayers[i].update(MYGAME.elapsedTime);
 		}
-
-		MovePlayers();
 	}
 
 	function onSocketConnection(client) {
@@ -48,6 +46,7 @@ var main = function(server) {
 		client.on("new player", onNewPlayer);
 		client.on("key press", onKeyPress);
 		client.on("key release", onKeyRelease);
+		setInterval(MovePlayers, 1000/30);
 	}
 
 	function onClientDisconnect() {
@@ -69,7 +68,7 @@ var main = function(server) {
 				center : { x : 100, y : 100 },
 				width : 100, height : 100,
 				rotation : 0,
-				moveRate : 200,			// pixels per second
+				moveRate : 100,			// pixels per second
 				rotateRate : 3.14159	// Radians per second
 			});
 

@@ -6,10 +6,7 @@ var graphics = function() {
 		var dx = 0,
 			dy = 0,
 			thrust = 10,
-			friction = 0.98,
-			rotate = 0,
-			y = spec.center.y,
-			x = spec.center.x;
+			friction = 0.98;
 
 		that.id = null;
 
