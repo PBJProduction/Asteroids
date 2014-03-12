@@ -11,6 +11,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
 			cancelNextRequest = false,
 			localPlayer = null,
 			remotePlayers = [],
+			pressed = false;
 			socket = io.connect();
 		
 		function initialize() {
@@ -25,40 +26,46 @@ angular.module('asteroids').controller('gameController', function($scope) {
 				moveRate : 200,			// pixels per second
 				rotateRate : 3.14159	// Radians per second
 			});
-			myKeyboard.registerCommand(KeyEvent.DOM_VK_W, localPlayer.forwardThruster);
-			myKeyboard.registerCommand(KeyEvent.DOM_VK_A, localPlayer.rotateLeft);
-			myKeyboard.registerCommand(KeyEvent.DOM_VK_D, localPlayer.rotateRight);
 			socket.on("connect", onSocketConnected);
 			socket.on("disconnect", onSocketDisconnect);
 			socket.on("new player", onNewPlayer);
 			socket.on("move player", onMovePlayer);
 			socket.on("remove player", onRemovePlayer);
+			socket.on("new response", onSocketId);
 		}
 		
+		$(window).keyup(function(e){
+			if(e.keyCode === KeyEvent.DOM_VK_W || e.keyCode === KeyEvent.DOM_VK_A || e.keyCode === KeyEvent.DOM_VK_D){
+				pressed = false;
+				var obj = {
+					id : localPlayer.id,
+					key : e.keyCode
+				};
+				socket.emit("key release", obj);
+			}
+		});
+
+		$(window).keydown(function(e){
+			if((e.keyCode === KeyEvent.DOM_VK_W || e.keyCode === KeyEvent.DOM_VK_A || e.keyCode === KeyEvent.DOM_VK_D) && !pressed){
+				pressed = true;
+				var obj = {
+					id : localPlayer.id,
+					key : e.keyCode
+				};
+				socket.emit("key press", obj);
+			}
+		});
+
 		function gameLoop(time) {
 			var currentTime = Date.now();
 			MYGAME.elapsedTime = currentTime - MYGAME.lastTimeStamp;
 			MYGAME.lastTimeStamp = currentTime;
-			
 			myKeyboard.update(MYGAME.elapsedTime);
-			if(localPlayer.update()){
-				socket.emit("move player",
-				{
-					x  : localPlayer.getX(),
-					y  : localPlayer.getY(),
-					rot: localPlayer.getRot()
-				});
-			}
-			myMouse.update(MYGAME.elapsedTime);
-			myAutomatic.update(MYGAME.elapsedTime);
-			myTouch.update(MYGAME.elapsedTime);
-
 			graphics.clear();
-
-			localPlayer.draw();
 			for (i = 0; i < remotePlayers.length; ++i) {
 				remotePlayers[i].draw();
 			}
+
 			if (!cancelNextRequest) {
 				requestAnimationFrame(gameLoop);
 			}
@@ -77,6 +84,12 @@ angular.module('asteroids').controller('gameController', function($scope) {
 				y   : localPlayer.getY(),
 				rot : localPlayer.getRot()
 			});
+		}
+
+		function onSocketId(data){
+			localPlayer.id = data.id;
+			remotePlayers.push(localPlayer);
+			console.log("id: " + data.id);
 		}
 
 		function onSocketDisconnect() {
@@ -100,15 +113,16 @@ angular.module('asteroids').controller('gameController', function($scope) {
 		}
 
 		function onMovePlayer(data) {
-			var movePlayer = playerById(data.id);
-
-			if (!movePlayer) {
-				console.log("Player not found: "+data.id);
-				return;
+			for(var i = 0; i < remotePlayers.length; ++i){
+				var player = playerById(data.array[i].id);
+				if (!player) {
+					console.log("Player not found: "+data.id);
+					continue;
+				}
+				player.setX(data.array[i].x);
+				player.setY(data.array[i].y);
+				player.setRot(data.array[i].rot);
 			}
-			movePlayer.setX(data.x);
-			movePlayer.setY(data.y);
-			movePlayer.setRot(data.rot);
 		}
 
 		function onRemovePlayer(data) {
