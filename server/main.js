@@ -14,8 +14,8 @@ var main = function(server) {
 
 	function init(){
 		io.configure(function() {
-			io.set("transports", ["websocket"]);
-			io.set("log level", 2);
+			io.enable('browser client minification');
+			io.set("log level", 3);
 		});
 		setEventHandlers();
 		run();
