@@ -14,8 +14,8 @@ var main = function(server) {
 
 	function init(){
 		io.configure(function() {
-			io.set("transports", ["websocket"]);
-			io.set("log level", 2);
+			io.enable('browser client minification');
+			io.set("log level", 3);
 		});
 		setEventHandlers();
 		run();
@@ -27,7 +27,7 @@ var main = function(server) {
 
 	function run() {
 		MYGAME.lastTimeStamp = Date.now();
-		interval = setInterval(gameLoop, 1000/60);
+		interval = setInterval(gameLoop, 1000/30);
 	}
 
 	function gameLoop(time) {
@@ -38,6 +38,7 @@ var main = function(server) {
 		for(var i = 0; i < remotePlayers.length; ++i){
 			remotePlayers[i].update(MYGAME.elapsedTime);
 		}
+		MovePlayers();
 	}
 
 	function onSocketConnection(client) {
@@ -46,7 +47,6 @@ var main = function(server) {
 		client.on("new player", onNewPlayer);
 		client.on("key press", onKeyPress);
 		client.on("key release", onKeyRelease);
-		setInterval(MovePlayers, 1000/30);
 	}
 
 	function onClientDisconnect() {

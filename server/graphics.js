@@ -6,7 +6,7 @@ var graphics = function() {
 		var dx = 0,
 			dy = 0,
 			thrust = 10,
-			friction = 0.98;
+			friction = 1;
 
 		that.id = null;
 
