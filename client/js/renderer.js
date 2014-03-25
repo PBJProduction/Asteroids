@@ -36,39 +36,6 @@ MYGAME.graphics = function() {
 			x = spec.center.x;
 
 		that.id = null;
-		
-		that.rotateRight = function(elapsedTime) {
-			rotate += spec.rotateRate * (elapsedTime / 1000);
-		};
-		
-		that.rotateLeft = function(elapsedTime) {
-			rotate -= spec.rotateRate * (elapsedTime / 1000);
-		};
-		
-		that.moveLeft = function(elapsedTime) {
-			spec.center.x -= spec.moveRate * (elapsedTime / 1000);
-		};
-		
-		that.moveRight = function(elapsedTime) {
-			spec.center.x += spec.moveRate * (elapsedTime / 1000);
-		};
-		
-		that.moveUp = function(elapsedTime) {
-			spec.center.y -= spec.moveRate * (elapsedTime / 1000);
-		};
-		
-		that.moveDown = function(elapsedTime) {
-			spec.center.y += spec.moveRate * (elapsedTime / 1000);
-		};
-
-		that.forwardThruster = function(elapsedTime){
-			dx += (Math.cos(spec.rotation + Math.PI/2) * thrust) * (elapsedTime / 1000);
-			dy += (Math.sin(spec.rotation + Math.PI/2) * thrust) * (elapsedTime / 1000);
-		};
-		
-		that.moveTo = function(center) {
-			spec.center = center;
-		};
 
 		that.getX = function(){
 			return spec.center.x;
@@ -92,37 +59,6 @@ MYGAME.graphics = function() {
 
 		that.setRot = function(rot){
 			spec.rotation = rot;
-		};
-
-		that.update = function(){
-			dx *= friction;
-			dy *= friction;
-			spec.center.x -= dx;
-			spec.center.y -= dy;
-			//if its less than 0 x
-			if(spec.center.x+spec.height/2 <= 0)
-				spec.center.x = canvas.width+spec.height/2;
-
-			//if its greater than max x
-			else if(spec.center.x-spec.height/2 >= canvas.width)
-				spec.center.x = -spec.height/2;
-
-			//if its less than 0 y
-			else if(spec.center.y+spec.width/2 <= 0)
-				spec.center.y = canvas.height+spec.width/2;
-
-			//if its greater than max y
-			else if(spec.center.y-spec.width/2 >= canvas.height)
-				spec.center.y = -spec.width/2;
-
-			if(spec.rotation !== rotate){
-				spec.rotation = rotate;
-				return true;
-			}
-			if(dx <= 0.01 && dx >= -0.01){
-				return false;
-			}
-			return true;
 		};
 		
 		that.draw = function() {
