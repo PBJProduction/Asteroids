@@ -1,5 +1,5 @@
 #canvas-main{
-	width: 100%;
+	width: 100vw;
 }
 body{
 	background-color: transparent;
@@ -10,5 +10,5 @@ html{
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size: cover;
-	
+
 }
