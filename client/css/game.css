@@ -1,5 +1,5 @@
 #canvas-main{
-	width: 100vw;
+	width: 100%;
 	background: url('../images/background.jpg') no-repeat center center fixed;
     -webkit-background-size: cover;
     -moz-background-size: cover;
