@@ -1,3 +1,6 @@
 #canvas-main{
 	width: 100%;
 }
+body{
+	background-color: transparent;
+}
