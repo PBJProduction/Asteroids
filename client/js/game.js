@@ -22,7 +22,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
 			img.src = "../images/ship.png";
 			localPlayer = graphics.Texture( {
 				image : img,
-				center : { x : 100, y : 100 },
+				center : { x : 250, y : 250 },
 				width : 100, height : 100,
 				rotation : 0
 			});
