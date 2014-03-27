@@ -22,8 +22,8 @@ angular.module('asteroids').controller('gameController', function($scope) {
 			img.src = "../images/ship.png";
 			localPlayer = graphics.Texture( {
 				image : img,
-				center : { x : 250, y : 250 },
-				width : 100, height : 100,
+				center : { x : $('#canvas-main').width, y : $('#canvas-main').height },
+				width : 50, height : 50,
 				rotation : 0
 			});
 			socket.on("connect", onSocketConnected);
