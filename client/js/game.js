@@ -19,7 +19,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
 		function initialize() {
 			console.log('game initializing...');
 			var img = new Image();
-			img.src = "../images/USU.png";
+			img.src = "../images/ship.png";
 			localPlayer = graphics.Texture( {
 				image : img,
 				center : { x : 100, y : 100 },
