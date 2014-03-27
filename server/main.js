@@ -15,7 +15,7 @@ var main = function(server) {
 	function init(){
 		io.configure(function() {
 			io.enable('browser client minification');
-			io.set("log level", 3);
+			//io.set("log level", 3);
 		});
 		setEventHandlers();
 		run();
