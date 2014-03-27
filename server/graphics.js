@@ -71,10 +71,10 @@ var graphics = function() {
 
 		that.checkBounds = function(){
 			if(spec.center.x+spec.height/2 <= 0)
-				spec.center.x = 1000+spec.height/2;
+				spec.center.x = 500+spec.height/2;
 
 			//if its greater than max x
-			else if(spec.center.x-spec.height/2 >= 1000)
+			else if(spec.center.x-spec.height/2 >= 500)
 				spec.center.x = -spec.height/2;
 
 			//if its less than 0 y

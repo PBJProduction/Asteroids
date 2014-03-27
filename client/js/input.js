@@ -6,7 +6,6 @@
 //
 // ------------------------------------------------------------------
 MYGAME.input = function() {
-	
 	function Mouse() {
 		var that = {
 				mouseDown : [],
@@ -312,3 +311,6 @@ if (typeof KeyEvent === 'undefined') {
 		DOM_VK_META: 224
 	};
 }
+$(window).bind('resize', function () {
+	$('#canvas-main').css('height',window.innerHeight);
+}).trigger('resize');

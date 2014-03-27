@@ -1,14 +1,13 @@
 #canvas-main{
-	width: 100vw;
+	display:inline;
 }
 body{
 	background-color: transparent;
 }
-html{
-	background: url('../images/background.jpg') no-repeat center center fixed;
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;
-
+#canv-cont{
+	text-align:center;
+	border-style:solid;
+	border-width: 10px 0px 0px;
+	border-image: url(../images/gameboy.png) 0 0 0 fill stretch;
+	border-image-outset: 4em;
 }
