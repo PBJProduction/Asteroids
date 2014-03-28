@@ -30,7 +30,9 @@ var graphics = function() {
 					moveRate : 100,			// pixels per second
 					rotateRate : 3.14159,	// Radians per second
 					asteroid : true,
-					alive : 0
+					alive : 0,
+					dx : dx,
+					dy : dy
 				});
 				that.bullets.push(newBullet);
 			}
@@ -112,6 +114,14 @@ var graphics = function() {
 
 		that.update = function(time){
 			that.myKeyboard.update(time);
+			if(dy > maxspeed)
+				dy = maxspeed;
+			if(dy < -maxspeed)
+				dy = -maxspeed;
+			if(dx > maxspeed)
+				dx = maxspeed;
+			if(dx < -maxspeed)
+				dx = -maxspeed;
 			for(var i = 0; i < that.bullets.length; ++i){
 				if(that.bullets[i].kill){
 					that.bullets.splice(i, 1);
@@ -123,22 +133,12 @@ var graphics = function() {
 			}
 			if(spec.asteroid){
 				spec.alive += time;
-				dx = (Math.cos(spec.rotation + Math.PI/2) * thrust);
-				dy = (Math.sin(spec.rotation + Math.PI/2) * thrust);
+				dx = (Math.cos(spec.rotation + Math.PI/2) * thrust) + spec.dx;
+				dy = (Math.sin(spec.rotation + Math.PI/2) * thrust) + spec.dy;
 				if(spec.alive >= 1000){
 					that.kill = true;
 				}
 			}
-			dx *= friction;
-			dy *= friction;
-			if(dy > maxspeed)
-				dy = maxspeed;
-			if(dy < -maxspeed)
-				dy = -maxspeed;
-			if(dx > maxspeed)
-				dx = maxspeed;
-			if(dx < -maxspeed)
-				dx = -maxspeed;
 			spec.center.x -= dx;
 			spec.center.y -= dy;
 			that.checkBounds();
