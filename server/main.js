@@ -151,10 +151,7 @@ var main = function(server) {
 		for (var firstLoc in data1) {
 			for (var secondLoc in data2) {
 				if(data1[firstLoc] !== data2[secondLoc]) {
-					var xVal = data1[firstLoc].getX() - data2[secondLoc].getX();
-					var yVal = data1[firstLoc].getY() - data2[secondLoc].getY();
-					var distance = Math.sqrt(xVal * xVal + yVal * yVal);
-					if(distance < (data1[firstLoc].getRadius() + data2[secondLoc].getRadius())) {
+					if(testCollision(data1[firstLoc], data2[secondLoc])) {
 						collision.push({
 							first: data1[firstLoc],
 							second: data2[secondLoc]
@@ -164,6 +161,13 @@ var main = function(server) {
 			}
 		}
 		return collision;
+	}
+
+	function testCollision(object1, object2) {
+		var xVal = object1.getX() - object2.getX();
+		var yVal = object1.getY() - object2.getY();
+		var distance = Math.sqrt(xVal * xVal + yVal * yVal);
+		return (distance < (object1.getRadius() + object2.getRadius()));
 	}
 
 	return {
