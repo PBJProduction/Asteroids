@@ -6,7 +6,6 @@
 //
 // ------------------------------------------------------------------
 MYGAME.input = function() {
-	
 	function Mouse() {
 		var that = {
 				mouseDown : [],

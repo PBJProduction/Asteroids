@@ -11,20 +11,28 @@ angular.module('asteroids').controller('gameController', function($scope) {
 			cancelNextRequest = false,
 			localPlayer = null,
 			remotePlayers = [],
+			asteroids = [],
 			forwardpressed = false,
 			leftpressed = false,
 			rightpressed = false,
+			bulletPic = new Image(),
+			shipPic = new Image(),
+			asteroidPic = new Image(),
 			socket = io.connect();
+
+			shipPic.src = "../images/ship.png";
+			bulletPic.src = "../images/bullet.png";
+			asteroidPic.src = "../images/asteroid.png";
+
 		
 		function initialize() {
 			console.log('game initializing...');
-			var img = new Image();
-			img.src = "../images/USU.png";
 			localPlayer = graphics.Texture( {
-				image : img,
-				center : { x : 100, y : 100 },
+				image : shipPic,
+				center : { x : 250, y : 250 },
 				width : 100, height : 100,
-				rotation : 0
+				rotation : 0,
+				bullets : []
 			});
 			socket.on("connect", onSocketConnected);
 			socket.on("disconnect", onSocketDisconnect);
@@ -32,10 +40,11 @@ angular.module('asteroids').controller('gameController', function($scope) {
 			socket.on("move player", onMovePlayer);
 			socket.on("remove player", onRemovePlayer);
 			socket.on("new response", onSocketId);
+			socket.on("move asteroids", onMoveAsteroids);
 		}
 		
 		$(window).keyup(function(e){
-			if (e.keyCode === KeyEvent.DOM_VK_W || e.keyCode === KeyEvent.DOM_VK_A || e.keyCode === KeyEvent.DOM_VK_D) {
+			if (e.keyCode === KeyEvent.DOM_VK_W || e.keyCode === KeyEvent.DOM_VK_A || e.keyCode === KeyEvent.DOM_VK_D || e.keyCode === KeyEvent.DOM_VK_SPACE) {
 				if(e.keyCode === KeyEvent.DOM_VK_W){
 					forwardpressed = false;
 				}
@@ -45,7 +54,9 @@ angular.module('asteroids').controller('gameController', function($scope) {
 				else if(e.keyCode === KeyEvent.DOM_VK_D){
 					rightpressed = false;
 				}
-
+				else if(e.keyCode === KeyEvent.DOM_VK_SPACE){
+					shootpressed = false;
+				}
 				release(e.keyCode);
 			}
 		});
@@ -67,7 +78,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
 		}
 
 		$(window).keydown(function(e){
-			if (e.keyCode === KeyEvent.DOM_VK_W || e.keyCode === KeyEvent.DOM_VK_A || e.keyCode === KeyEvent.DOM_VK_D) {
+			if (e.keyCode === KeyEvent.DOM_VK_W || e.keyCode === KeyEvent.DOM_VK_A || e.keyCode === KeyEvent.DOM_VK_D || e.keyCode === KeyEvent.DOM_VK_SPACE) {
 				if(e.keyCode === KeyEvent.DOM_VK_W && !forwardpressed){
 					forwardpressed = true;					
 				}
@@ -76,6 +87,9 @@ angular.module('asteroids').controller('gameController', function($scope) {
 				}
 				else if(e.keyCode === KeyEvent.DOM_VK_D && !rightpressed){
 					rightpressed = true;					
+				}
+				else if(e.keyCode === KeyEvent.DOM_VK_SPACE){
+					shootpressed = false;
 				}
 
 				press(e.keyCode);
@@ -88,8 +102,15 @@ angular.module('asteroids').controller('gameController', function($scope) {
 			MYGAME.lastTimeStamp = currentTime;
 			myKeyboard.update(MYGAME.elapsedTime);
 			graphics.clear();
-			for (i = remotePlayers.length-1; i >= 0; --i) {
+			for (var i = remotePlayers.length-1; i >= 0; --i) {
+				var bullets = remotePlayers[i].getBullets();
+				for(var j = 0; j < bullets.length; ++j){
+					bullets[j].draw();
+				}
 				remotePlayers[i].draw();
+			}
+			for (var index in asteroids) {
+				asteroids[index].draw();
 			}
 
 			if (!cancelNextRequest) {
@@ -124,13 +145,12 @@ angular.module('asteroids').controller('gameController', function($scope) {
 
 		function onNewPlayer(data) {
 			console.log("New player connected: "+data.id);
-			var img = new Image();
-			img.src = "../images/USU.png";
 			var newPlayer = graphics.Texture( {
-				image : img,
+				image : shipPic,
 				center : { x : data.x, y : data.y },
 				width : 100, height : 100,
-				rotation : data.rot
+				rotation : data.rot,
+				bullets : []
 			});
 			newPlayer.id = data.id;
 			remotePlayers.push(newPlayer);
@@ -146,6 +166,17 @@ angular.module('asteroids').controller('gameController', function($scope) {
 				player.setX(data.array[i].x);
 				player.setY(data.array[i].y);
 				player.setRot(data.array[i].rot);
+				var bullets = [];
+				for(var j = 0; j < data.array[i].bullets.length; ++j){
+					var bullet = graphics.Texture( {
+						image : bulletPic,
+						center : { x : data.array[i].bullets[j].x, y : data.array[i].bullets[j].y },
+						width : 20, height : 20,
+						rotation : data.array[i].bullets[j].rot
+					});
+					bullets.push(bullet);
+				}
+				player.setBullets(bullets);
 			}
 		}
 
@@ -167,6 +198,25 @@ angular.module('asteroids').controller('gameController', function($scope) {
 			}
 
 			return false;
+		}
+
+		function onMoveAsteroids(data) {
+			if(data.array !== undefined) {
+				asteroids = [];
+				for(var index in data.array) {
+					asteroids.push(
+						graphics.Texture({
+							image : asteroidPic,
+							center : { x : data.array[index].x, y : data.array[index].y },
+							width : 100, height : 100,
+							rotation : data.array[index].rot
+						})
+					);
+				}
+			} else {
+				asteroids = [];
+				console.log("No Asteroids");
+			}
 		}
 		
 		return {

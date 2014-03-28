@@ -6,11 +6,37 @@ var graphics = function() {
 		var dx = 0,
 			dy = 0,
 			thrust = 10,
-			friction = 1;
+			friction = 1,
+			currentShootSpeed = 0,
+			maxShootSpeed = 200,
+			maxspeed = 20;
 
 		that.id = null;
 
+		that.kill = false;
+
+		that.bullets = [];
+
 		that.myKeyboard = input.Keyboard();
+
+		that.shoot = function(elapsedTime){
+			currentShootSpeed+= elapsedTime;
+			if(currentShootSpeed >= maxShootSpeed){
+				currentShootSpeed = 0;
+				var newBullet = Texture( {
+					center : { x : spec.center.x, y : spec.center.y },
+					width : 20, height : 20,
+					rotation : spec.rotation,
+					moveRate : 100,			// pixels per second
+					rotateRate : 3.14159,	// Radians per second
+					asteroid : true,
+					alive : 0,
+					dx : dx,
+					dy : dy
+				});
+				that.bullets.push(newBullet);
+			}
+		};
 		
 		that.rotateRight = function(elapsedTime) {
 			spec.rotation += spec.rotateRate * (elapsedTime / 1000);
@@ -53,12 +79,28 @@ var graphics = function() {
 			return spec.center.y;
 		};
 
+		that.getRadius = function() {
+			if(spec.radius === undefined) {
+				return spec.width;
+			} else {
+				return spec.radius;
+			}
+		};
+
 		that.setX = function(x){
 			spec.center.x = x;
 		};
 
 		that.setY = function(y){
 			spec.center.y = y;
+		};
+
+		that.setRadius = function(radius) {
+			if(radius === undefined) {
+				spec.radius = spec.width;
+			} else {
+				spec.radius = radius;
+			}
 		};
 
 		that.getRot = function(){
@@ -88,8 +130,31 @@ var graphics = function() {
 
 		that.update = function(time){
 			that.myKeyboard.update(time);
-			dx *= friction;
-			dy *= friction;
+			if(dy > maxspeed)
+				dy = maxspeed;
+			if(dy < -maxspeed)
+				dy = -maxspeed;
+			if(dx > maxspeed)
+				dx = maxspeed;
+			if(dx < -maxspeed)
+				dx = -maxspeed;
+			for(var i = 0; i < that.bullets.length; ++i){
+				if(that.bullets[i].kill){
+					that.bullets.splice(i, 1);
+					i--;
+				}
+				else{
+					that.bullets[i].update(time);
+				}
+			}
+			if(spec.asteroid){
+				spec.alive += time;
+				dx = (Math.cos(spec.rotation + Math.PI/2) * thrust) + spec.dx;
+				dy = (Math.sin(spec.rotation + Math.PI/2) * thrust) + spec.dy;
+				if(spec.alive >= 1000){
+					that.kill = true;
+				}
+			}
 			spec.center.x -= dx;
 			spec.center.y -= dy;
 			that.checkBounds();
