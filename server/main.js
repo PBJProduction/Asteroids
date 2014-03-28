@@ -9,7 +9,8 @@ var main = function(server) {
     var remotePlayers = [],
         MYGAME = {},
         shootSpeed = 1000,
-        interval = null;
+        interval = null,
+        asteroids = [];
 
     io = io.listen(server);
 
@@ -156,6 +157,30 @@ var main = function(server) {
 
         return false;
     }
+
+    function getCollisions(data1, data2) {
+		var collision = [];
+		for (var firstLoc in data1) {
+			for (var secondLoc in data2) {
+				if(data1[firstLoc] !== data2[secondLoc]) {
+					if(testCollision(data1[firstLoc], data2[secondLoc])) {
+						collision.push({
+							first: data1[firstLoc],
+							second: data2[secondLoc]
+						});
+					}
+				}
+			}
+		}
+		return collision;
+	}
+
+	function testCollision(object1, object2) {
+		var xVal = object1.getX() - object2.getX();
+		var yVal = object1.getY() - object2.getY();
+		var distance = Math.sqrt(xVal * xVal + yVal * yVal);
+		return (distance < (object1.getRadius() + object2.getRadius()));
+	}
     
     return {
         init : init
