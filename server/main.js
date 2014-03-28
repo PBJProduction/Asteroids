@@ -2,7 +2,8 @@ var io = require('socket.io'),
     util = require('util'),
     input = require('./input.js'),
     graphics = require('./graphics.js'),
-    Player = require('./player.js');
+    Player = require('./player.js'),
+    Random = require('./random.js'),
     graphics = graphics();
 
 var main = function(server) {
@@ -28,6 +29,7 @@ var main = function(server) {
     }
 
     function run() {
+    	generateAsteroids({number: 3, type: 1});
         MYGAME.lastTimeStamp = Date.now();
         interval = setInterval(gameLoop, 1000/30);
     }
@@ -40,7 +42,11 @@ var main = function(server) {
         for(var i = 0; i < remotePlayers.length; ++i){
             remotePlayers[i].update(MYGAME.elapsedTime);
         }
-        MovePlayers();
+        for(var index in asteroids) {
+        	asteroids[index].update(MYGAME.elapsedTime);
+        }
+        MovePlayer();
+        MoveAsteroids();
     }
 
     function onSocketConnection(client) {
@@ -121,7 +127,7 @@ var main = function(server) {
         movePlayer.myKeyboard.keyRelease(data.key);
     }
 
-    function MovePlayers() {
+    function MovePlayer() {
         var data = {
             array : []
         };
@@ -145,7 +151,24 @@ var main = function(server) {
             obj.bullets = bullets;
             data.array.push(obj);
         }
+        
         io.sockets.emit("move player", data);
+    }
+
+    function MoveAsteroids() {
+    	var data =  {
+    		array : []
+    	};
+
+    	for(var index in asteroids) {
+        	var asteroid = {
+        		x : asteroids[index].getX(),
+        		y : asteroids[index].getY(),
+        		rot : asteroids[index].getRot()
+        	}
+        	data.array.push(asteroid);
+        }
+        io.sockets.emit("move asteroids", data);
     }
 
     function playerById(id) {
@@ -180,6 +203,24 @@ var main = function(server) {
 		var yVal = object1.getY() - object2.getY();
 		var distance = Math.sqrt(xVal * xVal + yVal * yVal);
 		return (distance < (object1.getRadius() + object2.getRadius()));
+	}
+
+	function generateAsteroids(spec) {
+		for(var i = 0; i < spec.number; ++i) {
+			asteroids.push(
+				graphics.Texture( {
+	                center : { x : 100, y : 100 },
+	                width : 100, height : 100,
+	                rotation : 0,
+	                moveRate : 100,         // pixels per second
+	                rotateRate : 3.14159,   // Radians per second
+	                asteroid : true,
+	                alive : 0,
+	                dx : Random.nextRange(-5, 5),
+	                dy : Random.nextRange(-5, 5)
+	            })
+			);
+		}
 	}
     
     return {

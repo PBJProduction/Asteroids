@@ -11,14 +11,19 @@ angular.module('asteroids').controller('gameController', function($scope) {
 			cancelNextRequest = false,
 			localPlayer = null,
 			remotePlayers = [],
+			asteroids = [],
 			forwardpressed = false,
 			leftpressed = false,
 			rightpressed = false,
-			bulletPic = new Image();
+			bulletPic = new Image(),
 			shipPic = new Image(),
+			asteroidPic = new Image(),
 			socket = io.connect();
+
 			shipPic.src = "../images/ship.png";
 			bulletPic.src = "../images/bullet.png";
+			asteroidPic.src = "../images/asteroid.png";
+
 		
 		function initialize() {
 			console.log('game initializing...');
@@ -35,6 +40,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
 			socket.on("move player", onMovePlayer);
 			socket.on("remove player", onRemovePlayer);
 			socket.on("new response", onSocketId);
+			socket.on("move asteroids", onMoveAsteroids);
 		}
 		
 		$(window).keyup(function(e){
@@ -96,12 +102,15 @@ angular.module('asteroids').controller('gameController', function($scope) {
 			MYGAME.lastTimeStamp = currentTime;
 			myKeyboard.update(MYGAME.elapsedTime);
 			graphics.clear();
-			for (i = remotePlayers.length-1; i >= 0; --i) {
+			for (var i = remotePlayers.length-1; i >= 0; --i) {
 				var bullets = remotePlayers[i].getBullets();
 				for(var j = 0; j < bullets.length; ++j){
 					bullets[j].draw();
 				}
 				remotePlayers[i].draw();
+			}
+			for (var index in asteroids) {
+				asteroids[index].draw();
 			}
 
 			if (!cancelNextRequest) {
@@ -189,6 +198,25 @@ angular.module('asteroids').controller('gameController', function($scope) {
 			}
 
 			return false;
+		}
+
+		function onMoveAsteroids(data) {
+			if(data.array !== undefined) {
+				asteroids = [];
+				for(var index in data.array) {
+					asteroids.push(
+						graphics.Texture({
+							image : asteroidPic,
+							center : { x : data.array[index].x, y : data.array[index].y },
+							width : 100, height : 100,
+							rotation : data.array[index].rot
+						})
+					);
+				}
+			} else {
+				asteroids = [];
+				console.log("No Asteroids");
+			}
 		}
 		
 		return {

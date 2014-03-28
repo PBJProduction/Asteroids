@@ -85,7 +85,7 @@ var graphics = function() {
 			} else {
 				return spec.radius;
 			}
-		}
+		};
 
 		that.setX = function(x){
 			spec.center.x = x;
@@ -101,7 +101,7 @@ var graphics = function() {
 			} else {
 				spec.radius = radius;
 			}
-		}
+		};
 
 		that.getRot = function(){
 			return spec.rotation;
