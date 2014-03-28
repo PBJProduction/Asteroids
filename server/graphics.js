@@ -54,6 +54,14 @@ var graphics = function() {
 			return spec.center.y;
 		};
 
+		that.getRadius = function() {
+			if(spec.radius === undefined) {
+				return spec.width;
+			} else {
+				return spec.radius;
+			}
+		}
+
 		that.setX = function(x){
 			spec.center.x = x;
 		};
@@ -61,6 +69,14 @@ var graphics = function() {
 		that.setY = function(y){
 			spec.center.y = y;
 		};
+
+		that.setRadius = function(radius) {
+			if(radius === undefined) {
+				spec.radius = spec.width;
+			} else {
+				spec.radius = radius;
+			}
+		}
 
 		that.getRot = function(){
 			return spec.rotation;

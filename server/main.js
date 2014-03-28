@@ -7,6 +7,7 @@ var io = require('socket.io'),
 
 var main = function(server) {
 	var remotePlayers = [],
+		asteroids = [],
 		MYGAME = {},
 		interval = null;
 
@@ -15,7 +16,7 @@ var main = function(server) {
 	function init(){
 		io.configure(function() {
 			io.enable('browser client minification');
-			//io.set("log level", 3);
+			io.set("log level", 1);
 		});
 		setEventHandlers();
 		run();
@@ -38,6 +39,7 @@ var main = function(server) {
 		for(var i = 0; i < remotePlayers.length; ++i){
 			remotePlayers[i].update(MYGAME.elapsedTime);
 		}
+		var collided = getCollisions(remotePlayers, remotePlayers);
 		MovePlayers();
 	}
 
@@ -143,7 +145,27 @@ var main = function(server) {
 
 		return false;
 	}
-	
+
+	function getCollisions(data1, data2) {
+		var collision = [];
+		for (var firstLoc in data1) {
+			for (var secondLoc in data2) {
+				if(data1[firstLoc] !== data2[secondLoc]) {
+					var xVal = data1[firstLoc].getX() - data2[secondLoc].getX();
+					var yVal = data1[firstLoc].getY() - data2[secondLoc].getY();
+					var distance = Math.sqrt(xVal * xVal + yVal * yVal);
+					if(distance < (data1[firstLoc].getRadius() + data2[secondLoc].getRadius())) {
+						collision.push({
+							first: data1[firstLoc],
+							second: data2[secondLoc]
+						});
+					}
+				}
+			}
+		}
+		return collision;
+	}
+
 	return {
 		init : init
 	};
