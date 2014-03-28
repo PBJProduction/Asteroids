@@ -35,56 +35,50 @@ angular.module('asteroids').controller('gameController', function($scope) {
 		}
 		
 		$(window).keyup(function(e){
-			if(e.keyCode === KeyEvent.DOM_VK_W){
-				forwardpressed = false;
-				var obj = {
-					id : localPlayer.id,
-					key : e.keyCode
-				};
-				socket.emit("key release", obj);
-			}
-			else if(e.keyCode === KeyEvent.DOM_VK_A){
-				leftpressed = false;
-				var obj = {
-					id : localPlayer.id,
-					key : e.keyCode
-				};
-				socket.emit("key release", obj);
-			}
-			else if(e.keyCode === KeyEvent.DOM_VK_D){
-				rightpressed = false;
-				var obj = {
-					id : localPlayer.id,
-					key : e.keyCode
-				};
-				socket.emit("key release", obj);
+			if (e.keyCode === KeyEvent.DOM_VK_W || e.keyCode === KeyEvent.DOM_VK_A || e.keyCode === KeyEvent.DOM_VK_D) {
+				if(e.keyCode === KeyEvent.DOM_VK_W){
+					forwardpressed = false;
+				}
+				else if(e.keyCode === KeyEvent.DOM_VK_A){
+					leftpressed = false;
+				}
+				else if(e.keyCode === KeyEvent.DOM_VK_D){
+					rightpressed = false;
+				}
+
+				release(e.keyCode);
 			}
 		});
 
+		function release(code) {
+			var obj = {
+				id : localPlayer.id,
+				key : code
+			};
+			socket.emit("key release", obj);
+		}
+
+		function press(code) {
+			var obj = {
+				id : localPlayer.id,
+				key : code
+			};
+			socket.emit("key press", obj)
+		}
+
 		$(window).keydown(function(e){
-			if(e.keyCode === KeyEvent.DOM_VK_W && !forwardpressed){
-				forwardpressed = true;
-				var obj = {
-					id : localPlayer.id,
-					key : e.keyCode
-				};
-				socket.emit("key press", obj);
-			}
-			else if(e.keyCode === KeyEvent.DOM_VK_A && !leftpressed){
-				leftpressed = true;
-				var obj = {
-					id : localPlayer.id,
-					key : e.keyCode
-				};
-				socket.emit("key press", obj);
-			}
-			else if(e.keyCode === KeyEvent.DOM_VK_D && !rightpressed){
-				rightpressed = true;
-				var obj = {
-					id : localPlayer.id,
-					key : e.keyCode
-				};
-				socket.emit("key press", obj);
+			if (e.keyCode === KeyEvent.DOM_VK_W || e.keyCode === KeyEvent.DOM_VK_A || e.keyCode === KeyEvent.DOM_VK_D) {
+				if(e.keyCode === KeyEvent.DOM_VK_W && !forwardpressed){
+					forwardpressed = true;					
+				}
+				else if(e.keyCode === KeyEvent.DOM_VK_A && !leftpressed){
+					leftpressed = true;					
+				}
+				else if(e.keyCode === KeyEvent.DOM_VK_D && !rightpressed){
+					rightpressed = true;					
+				}
+
+				press(e.keyCode);
 			}
 		});
 
