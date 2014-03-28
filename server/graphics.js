@@ -6,7 +6,8 @@ var graphics = function() {
 		var dx = 0,
 			dy = 0,
 			thrust = 10,
-			friction = 1;
+			friction = 1,
+			maxspeed = 20;
 
 		that.id = null;
 
@@ -90,6 +91,14 @@ var graphics = function() {
 			that.myKeyboard.update(time);
 			dx *= friction;
 			dy *= friction;
+			if(dy > maxspeed)
+				dy = maxspeed;
+			if(dy < -maxspeed)
+				dy = -maxspeed;
+			if(dx > maxspeed)
+				dx = maxspeed;
+			if(dx < -maxspeed)
+				dx = -maxspeed;
 			spec.center.x -= dx;
 			spec.center.y -= dy;
 			that.checkBounds();

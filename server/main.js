@@ -15,7 +15,7 @@ var main = function(server) {
 	function init(){
 		io.configure(function() {
 			io.enable('browser client minification');
-			io.set("log level", 3);
+			//io.set("log level", 3);
 		});
 		setEventHandlers();
 		run();
@@ -65,9 +65,9 @@ var main = function(server) {
 
 	function onNewPlayer(data) {
 		var newPlayer = graphics.Texture( {
-				center : { x : 100, y : 100 },
+				center : { x : data.x, y : data.y },
 				width : 100, height : 100,
-				rotation : 0,
+				rotation : data.rot,
 				moveRate : 100,			// pixels per second
 				rotateRate : 3.14159	// Radians per second
 			});

@@ -19,10 +19,10 @@ angular.module('asteroids').controller('gameController', function($scope) {
 		function initialize() {
 			console.log('game initializing...');
 			var img = new Image();
-			img.src = "../images/USU.png";
+			img.src = "../images/ship.png";
 			localPlayer = graphics.Texture( {
 				image : img,
-				center : { x : 100, y : 100 },
+				center : { x : 250, y : 250 },
 				width : 100, height : 100,
 				rotation : 0
 			});
@@ -131,7 +131,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
 		function onNewPlayer(data) {
 			console.log("New player connected: "+data.id);
 			var img = new Image();
-			img.src = "../images/USU.png";
+			img.src = "../images/ship.png";
 			var newPlayer = graphics.Texture( {
 				image : img,
 				center : { x : data.x, y : data.y },
