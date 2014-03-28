@@ -37,6 +37,14 @@ MYGAME.graphics = function() {
 
 		that.id = null;
 
+		that.getBullets = function(){
+			return spec.bullets;
+		};
+
+		that.setBullets = function(bulletsIn){
+			spec.bullets = bulletsIn;
+		};
+
 		that.getX = function(){
 			return spec.center.x;
 		};
