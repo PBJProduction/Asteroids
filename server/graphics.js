@@ -20,7 +20,7 @@ var graphics = function() {
 		that.myKeyboard = input.Keyboard();
 
 		that.shoot = function(elapsedTime){
-			currentShootSpeed+= elapsedTime;
+			currentShootSpeed+= elapsedTime;			
 			if(currentShootSpeed >= maxShootSpeed){
 				currentShootSpeed = 0;
 				var newBullet = Texture( {

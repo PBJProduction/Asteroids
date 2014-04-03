@@ -18,7 +18,8 @@ angular.module('asteroids').controller('gameController', function($scope) {
 			bulletPic = new Image(),
 			shipPic = new Image(),
 			asteroidPic = new Image(),
-			socket = io.connect();
+			socket = io.connect(),
+			pewpew = new Audio("../audio/pewpew.wav");
 
 			shipPic.src = "../images/ship.png";
 			bulletPic.src = "../images/bullet.png";
@@ -40,6 +41,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
 			socket.on("remove player", onRemovePlayer);
 			socket.on("new response", onSocketId);
 			socket.on("move asteroids", onMoveAsteroids);
+			socket.on("play pew", playPew);
 		}
 		
 		$(window).keyup(function(e){
@@ -54,11 +56,15 @@ angular.module('asteroids').controller('gameController', function($scope) {
 					rightpressed = false;
 				}
 				else if(e.keyCode === KeyEvent.DOM_VK_SPACE){
-					shootpressed = false;
+					shootpressed = false;					
 				}
 				release(e.keyCode);
 			}
 		});
+
+		function playPew() {
+			pewpew.play();
+		}
 
 		function release(code) {
 			var obj = {
@@ -72,7 +78,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
 			var obj = {
 				id : localPlayer.id,
 				key : code
-			};
+			};			
 			socket.emit("key press", obj)
 		}
 
@@ -88,7 +94,8 @@ angular.module('asteroids').controller('gameController', function($scope) {
 					rightpressed = true;					
 				}
 				else if(e.keyCode === KeyEvent.DOM_VK_SPACE){
-					shootpressed = false;
+					shootpressed = true;
+					playPew();
 				}
 
 				press(e.keyCode);
