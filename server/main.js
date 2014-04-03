@@ -239,8 +239,9 @@ var main = function(server) {
     }
 
     function handleShipAsteroidCollision(ship, asteroid) {
-        breakAsteroid(asteroid);
+        // breakAsteroid(asteroid);
     }
+
 
     function breakAsteroid(asteroid) {
         asteroid.setSize(asteroid.getSize()-1)

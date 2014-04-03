@@ -19,7 +19,8 @@ angular.module('asteroids').controller('gameController', function($scope) {
 			shipPic = new Image(),
 			asteroidPic = new Image(),
 			socket = io.connect(),
-			pewpew = new Audio("../audio/pewpew.wav");
+			pewpew = new Audio("../audio/pewpew.wav"),
+			backgroundSound = new Audio("../audio/background.mp3");
 
 			shipPic.src = "../images/ship.png";
 			bulletPic.src = "../images/bullet.png";
@@ -33,14 +34,23 @@ angular.module('asteroids').controller('gameController', function($scope) {
 				width : 100, height : 100,
 				rotation : 0,
 				bullets : []
-			});
+			});			
+
+			backgroundSound.addEventListener('ended', function() {
+				this.currentTime = 0;
+				this.play();
+			});			
+
+			backgroundSound.play();
+
 			socket.on("connect", onSocketConnected);
 			socket.on("disconnect", onSocketDisconnect);
 			socket.on("new player", onNewPlayer);
 			socket.on("move player", onMovePlayer);
 			socket.on("remove player", onRemovePlayer);
 			socket.on("new response", onSocketId);
-			socket.on("move asteroids", onMoveAsteroids);			
+			socket.on("move asteroids", onMoveAsteroids);
+			socket.on("play pew", playPew);
 		}
 		
 		$(window).keyup(function(e){
@@ -61,7 +71,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
 			}
 		});
 
-		function sendSound() {
+		function playPew() {
 			pewpew.play();
 		}
 
@@ -123,7 +133,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
 		}
 
 		function run() {
-			MYGAME.lastTimeStamp = Date.now();
+			MYGAME.lastTimeStamp = Date.now();			
 			requestAnimationFrame(gameLoop);
 		}
 
