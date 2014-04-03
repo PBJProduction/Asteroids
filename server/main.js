@@ -240,7 +240,7 @@ var main = function(server) {
 
     function handleShipAsteroidCollision(ship, asteroid) {
         breakAsteroid(asteroid);
-            }
+    }
 
     function breakAsteroid(asteroid) {
         asteroid.setSize(asteroid.getSize()-1)
@@ -268,9 +268,14 @@ var main = function(server) {
         }
     }
     
+    function sendSound() {
+        this.broadcast.emit("play pew");
+    }
+
     return {
         init : init,
-        asteroids : asteroids
+        asteroids : asteroids,
+        sendSound : sendSound
     };
 };
 
