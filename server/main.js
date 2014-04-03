@@ -232,7 +232,8 @@ var main = function(server) {
     }
     
     return {
-        init : init
+        init : init,
+        asteroids : asteroids
     };
 };
 
