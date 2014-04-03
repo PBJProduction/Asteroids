@@ -29,15 +29,19 @@ var main = function(server) {
     }
 
     function run() {
-        generateAsteroids({number: 3, type: 1});
         MYGAME.lastTimeStamp = Date.now();
         interval = setInterval(gameLoop, 1000/30);
     }
 
     function gameLoop(time) {
+        if(remotePlayers.length === 0)
+            return;
+        if(asteroids.length === 0)
+            generateAsteroids({number: Random.nextGaussian(3,2), type: 1});
         var currentTime = Date.now();
         MYGAME.elapsedTime = currentTime - MYGAME.lastTimeStamp;
         MYGAME.lastTimeStamp = currentTime;
+        
         
         for(var i = 0; i < remotePlayers.length; ++i){
             remotePlayers[i].update(MYGAME.elapsedTime);
@@ -206,10 +210,13 @@ var main = function(server) {
 
     function generateAsteroids(spec) {
         for(var i = 0; i < spec.number; ++i) {
-            console.log(i);
+            var tempX = Random.nextRange(-2,2);
+            var tempY = Random.nextRange(-2,2);
+            if(tempY === 0 && tempX === 0)
+                tempY = 1;
             asteroids.push(
                 graphics.Texture( {
-                    center : { x : 100, y : 100 },
+                    center : { x : Random.nextRange(0,1280), y : Random.nextRange(0,700) },
                     width : 100, height : 100,
                     rotation : 0,
                     moveRate : 200,         // pixels per second
@@ -217,8 +224,8 @@ var main = function(server) {
                     asteroid : true,
                     alive : 0,
                     thrust : 2,
-                    dx : 1,
-                    dy : 1
+                    dx : tempX,
+                    dy : tempY
                 })
             );
         }
