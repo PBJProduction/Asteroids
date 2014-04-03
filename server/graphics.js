@@ -9,7 +9,7 @@ var graphics = function() {
 			friction = 1,
 			currentShootSpeed = 0,
 			maxShootSpeed = 200,
-			maxspeed = 20;
+			maxspeed = 10;
 
 		that.id = null;
 
@@ -20,8 +20,9 @@ var graphics = function() {
 		that.myKeyboard = input.Keyboard();
 
 		that.shoot = function(elapsedTime){
-			currentShootSpeed+= elapsedTime;
-			if(currentShootSpeed >= maxShootSpeed){
+			if(currentShootSpeed >= maxShootSpeed)
+				currentShootSpeed = 0;
+			if(currentShootSpeed === 0){
 				currentShootSpeed = 0;
 				var newBullet = Texture( {
 					center : { x : spec.center.x, y : spec.center.y },
@@ -36,6 +37,7 @@ var graphics = function() {
 				});
 				that.bullets.push(newBullet);
 			}
+			currentShootSpeed+= elapsedTime;
 		};
 		
 		that.rotateRight = function(elapsedTime) {
@@ -79,6 +81,14 @@ var graphics = function() {
 			return spec.center.y;
 		};
 
+		that.getRadius = function() {
+			if(spec.radius === undefined) {
+				return spec.width;
+			} else {
+				return spec.radius;
+			}
+		}
+
 		that.setX = function(x){
 			spec.center.x = x;
 		};
@@ -86,6 +96,14 @@ var graphics = function() {
 		that.setY = function(y){
 			spec.center.y = y;
 		};
+
+		that.setRadius = function(radius) {
+			if(radius === undefined) {
+				spec.radius = spec.width;
+			} else {
+				spec.radius = radius;
+			}
+		}
 
 		that.getRot = function(){
 			return spec.rotation;
@@ -97,18 +115,18 @@ var graphics = function() {
 
 		that.checkBounds = function(){
 			if(spec.center.x+spec.height/2 <= 0)
-				spec.center.x = 500+spec.height/2;
+				spec.center.x = 1280+spec.height/2;
 
 			//if its greater than max x
-			else if(spec.center.x-spec.height/2 >= 500)
+			else if(spec.center.x-spec.height/2 >= 1280)
 				spec.center.x = -spec.height/2;
 
 			//if its less than 0 y
 			else if(spec.center.y+spec.width/2 <= 0)
-				spec.center.y = 500+spec.width/2;
+				spec.center.y = 700+spec.width/2;
 
 			//if its greater than max y
-			else if(spec.center.y-spec.width/2 >= 500)
+			else if(spec.center.y-spec.width/2 >= 700)
 				spec.center.y = -spec.width/2;
 		};
 

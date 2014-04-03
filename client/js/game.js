@@ -24,7 +24,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
 			console.log('game initializing...');
 			localPlayer = graphics.Texture( {
 				image : shipPic,
-				center : { x : 250, y : 250 },
+				center : { x : 640, y : 350 },
 				width : 100, height : 100,
 				rotation : 0,
 				bullets : []
