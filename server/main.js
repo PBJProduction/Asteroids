@@ -33,9 +33,16 @@ var main = function(server) {
         interval = setInterval(gameLoop, 1000/30);
     }
 
+
+/*
+*
+*
+*
+*
+*/
     function gameLoop(time) {
         if(remotePlayers.length === 0)
-            return;
+            // return; // Prevents it from running even if there is someone watching
         if(asteroids.length === 0)
             generateAsteroids({number: Random.nextGaussian(3,2), type: 1});
         var currentTime = Date.now();
@@ -43,7 +50,6 @@ var main = function(server) {
         MYGAME.lastTimeStamp = currentTime;
         
         var sound = {s : function(){sendSound();}};
-        // console.log(sound);
         
         for(var i = 0; i < remotePlayers.length; ++i){
             remotePlayers[i].update(MYGAME.elapsedTime, sound);
@@ -57,9 +63,24 @@ var main = function(server) {
             handleShipAsteroidCollision(collidedShipAsteroids[index].first, collidedShipAsteroids[index].second);
         }
 
+        for(var index in remotePlayers) {
+            var collidedBullets = getCollisions(remotePlayers[index].bullets, asteroids);
+            for(var bindex in collidedBullets) {
+                handleBulletAsteroidCollision(remotePlayers[index], collidedBullets[bindex].first, collidedBullets[bindex].second);
+            }
+        }
+
         MovePlayers();
         MoveAsteroids();
     }
+/*
+*
+*
+*
+*
+*/
+
+
 
     function onSocketConnection(client) {
         util.log("New player has connected: "+client.id);
@@ -93,6 +114,8 @@ var main = function(server) {
             });
 
         newPlayer.id = this.id;
+        newPlayer.setLives(3);
+        console.log(newPlayer.getLives());
         this.emit("new response", {id : this.id});
         //register the handler
         newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_W, newPlayer.forwardThruster);
@@ -149,7 +172,8 @@ var main = function(server) {
                 id  : remotePlayers[i].id,
                 x   : remotePlayers[i].getX(),
                 y   : remotePlayers[i].getY(),
-                rot : remotePlayers[i].getRot()
+                rot : remotePlayers[i].getRot(),
+                thrusting: remotePlayers[i].isThrusting()
             };
             var bullets = [];
             for(var j = 0; j < remotePlayers[i].bullets.length; ++j){
@@ -188,7 +212,6 @@ var main = function(server) {
             if (remotePlayers[i].id == id)
                 return remotePlayers[i];
         }
-
         return false;
     }
 
@@ -202,6 +225,7 @@ var main = function(server) {
                             first: data1[firstLoc],
                             second: data2[secondLoc]
                         });
+                        // break;
                     }
                 }
             }
@@ -241,21 +265,48 @@ var main = function(server) {
     }
 
     function handleShipAsteroidCollision(ship, asteroid) {
-        // breakAsteroid(asteroid);
+        breakAsteroid(asteroid);
+        lowerLives(ship);
     }
 
+    function handleBulletAsteroidCollision(ship, bullet, asteroid) {
+        //Base scoring off of asteroids?
+        ship.setScore(ship.getScore() + 1);
+        bullet.kill = true;
+        breakAsteroid(asteroid);
+    }
 
     function breakAsteroid(asteroid) {
         asteroid.setSize(asteroid.getSize()-1)
-        if(asteroid.getSize() == 0) {
-            for(var index in asteroids) {
-                if(asteroids[index] === asteroid) {
+        if (asteroid.getSize() <= 0) {
+            for (var index in asteroids) {
+                if (asteroids[index] === asteroid) {
                     asteroids.splice(index, 1);
                 }
             }
         } else {
+            if (asteroid.getSize() === 3) {
+                makeNewAsteroids(3, asteroid);
+            } else if (asteroid.getSize() === 2) {
+                makeNewAsteroids(4, asteroid);
+            }
+        }
+        sendParticles({
+            x: asteroid.getX(),
+            y: asteroid.getY(),
+            type: "ATR",
+            rotation: asteroid.getRot()
+        })
+    }
+
+    function makeNewAsteroids(number, asteroid) {
+        for (var i = 0; i < number; ++i) {
+            var tempX = Random.nextGaussian(-2,2);
+            var tempY = Random.nextGaussian(-2,2);
+            if(tempY === 0 && tempX === 0)
+                tempY = 1;
             var toAdd = graphics.Texture( {
-                    center : { x : Random.nextRange(0,1280), y : Random.nextRange(0,700) },
+                    center : { x : asteroid.getX(), y : asteroid.getY() },
                     width : 100, height : 100,
                     rotation : 0,
                     moveRate : 200,         // pixels per second
@@ -266,17 +317,56 @@ var main = function(server) {
                     dx : tempX,
                     dy : tempY
                 });
-            toAdd.setSize = asteroid.getSize();
+
+            tempX = Random.nextGaussian(-2,2);
+            tempY = Random.nextGaussian(-2,2);
+            if(tempY === 0 && tempX === 0)
+                tempY = 1;
+            asteroid.setDX(tempX);
+            asteroid.setDY(tempY);
+
+            toAdd.setSize(asteroid.getSize());
             asteroids.push(toAdd);
         }
     }
 
-    // function callSound() {
-    //     sendSound();
-    // }
+    function lowerLives(ship) {
+        if(ship.getLives() <= 0) {
+            ship_id = ship.id;
+            remotePlayers.splice(remotePlayers.indexOf(ship), 1);
+            io.sockets.emit("remove player", {id: ship_id});
+        } else {
+            if(ship.getLives() !== undefined) {
+                ship.setLives(ship.getLives() - 1);
+            }
+            replaceShip(ship);
+        }
+        sendParticles({
+            x: ship.getX(),
+            y: ship.getY(),
+            type: "SHP",
+            rotation: ship.rotation
+        })
+    }
+
+    function replaceShip(ship) {
+        ship.moveTo({ x : 640, y : 350 });
+        ship.setRot(0);
+        ship.setDX(0);
+        ship.setDY(0);
+    }
     
     function sendSound() {
         io.sockets.emit("play pew");
+    }
+
+    function sendParticles(spec) {
+        io.sockets.emit("place particles", {
+            x: spec.x,
+            y: spec.y,
+            type: spec.type,
+            rotation: spec.rotation
+        })
     }
 
     return {

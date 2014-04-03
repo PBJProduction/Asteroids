@@ -11,6 +11,7 @@ var graphics = function() {
 			currentShootSpeed = 0,
 			maxShootSpeed = 200,
 			maxspeed = 10;
+		var thrusting = false;
 
 		that.id = null;
 
@@ -21,7 +22,7 @@ var graphics = function() {
 		that.myKeyboard = input.Keyboard();
 
 		that.shoot = function(elapsedTime, s){
-			console.log(s);
+			// console.log(s);
 			currentShootSpeed+= elapsedTime;
 			if(currentShootSpeed >= maxShootSpeed){
 				currentShootSpeed = 0;
@@ -69,6 +70,7 @@ var graphics = function() {
 		that.forwardThruster = function(elapsedTime){
 			dx += (Math.cos(spec.rotation + Math.PI/2) * thrust) * (elapsedTime / 1000);
 			dy += (Math.sin(spec.rotation + Math.PI/2) * thrust) * (elapsedTime / 1000);
+			thrusting = true;
 		};
 		
 		that.moveTo = function(center) {
@@ -85,7 +87,7 @@ var graphics = function() {
 
 		that.getRadius = function() {
 			if(spec.radius === undefined) {
-				return spec.width;
+				return spec.width / 2;
 			} else {
 				return spec.radius;
 			}
@@ -101,7 +103,7 @@ var graphics = function() {
 
 		that.setRadius = function(radius) {
 			if(radius === undefined) {
-				spec.radius = spec.width;
+				spec.radius = spec.width / 2;
 			} else {
 				spec.radius = radius;
 			}
@@ -113,11 +115,11 @@ var graphics = function() {
 			} else {
 				return spec.size;
 			}
-		}
+		};
 
 		that.setSize = function(size) {
 			spec.size = size;
-		}
+		};
 
 		that.getRot = function(){
 			return spec.rotation;
@@ -126,6 +128,44 @@ var graphics = function() {
 		that.setRot = function(rot){
 			spec.rotation = rot;
 		};
+
+		that.setDX = function(ndx){
+			dx = ndx;
+		};
+
+		that.setDY = function(ndy){
+			dy = ndy;
+		};
+
+		that.setLives = function(nlives) {
+			spec.lives = nlives;
+		};
+
+		that.getLives = function() {
+			if (spec.lives === undefined) {
+				return 0;
+			} else {
+				return spec.lives;
+			}
+		};
+
+		that.setScore = function(score){
+			spec.score = score;
+		};
+
+		that.getScore = function() {
+			if (spec.score === undefined) {
+				return 0;
+			} else {
+				return spec.score;
+			}
+		}
+
+		that.isThrusting = function() {
+			var toReturn = thrusting;
+			thrusting = false;
+			return toReturn;
+		}
 
 		that.checkBounds = function(){
 			if(spec.center.x+spec.height/2 <= 0)
