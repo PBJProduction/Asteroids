@@ -20,8 +20,9 @@ var graphics = function() {
 
 		that.myKeyboard = input.Keyboard();
 
-		that.shoot = function(elapsedTime){
-			currentShootSpeed+= elapsedTime;			
+		that.shoot = function(elapsedTime, s){
+			console.log(s);
+			currentShootSpeed+= elapsedTime;
 			if(currentShootSpeed >= maxShootSpeed){
 				currentShootSpeed = 0;
 				var newBullet = Texture( {
@@ -37,7 +38,7 @@ var graphics = function() {
 					dy : dy
 				});
 				that.bullets.push(newBullet);
-				main.sendSound();
+				s.sendSound;
 			}
 		};
 		
@@ -143,8 +144,8 @@ var graphics = function() {
 				spec.center.y = -spec.width/2;
 		};
 
-		that.update = function(time){
-			that.myKeyboard.update(time);
+		that.update = function(time, blah){
+			that.myKeyboard.update(time, blah);
 			if(dy > maxspeed)
 				dy = maxspeed;
 			if(dy < -maxspeed)
