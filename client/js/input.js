@@ -311,9 +311,9 @@ if (typeof KeyEvent === 'undefined') {
 		DOM_VK_META: 224
 	};
 }
+var hoverPic = new Audio("../audio/hover.wav");
 
 function playHover(){
-	console.log("brah brah");
-	var sound = new Audio("../audio/hover.wav");
+	var sound = hoverPic;
 	sound.play();
 }

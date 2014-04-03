@@ -34,7 +34,7 @@ var graphics = function() {
 					rotateRate : 3.14159,	// Radians per second
 					asteroid : true,
 					alive : 0,
-					thrust : 10,
+					thrust : 20,
 					dx : dx,
 					dy : dy
 				});
@@ -211,6 +211,8 @@ var graphics = function() {
 					that.kill = true;
 				}
 			}
+			that.dx = dx;
+			that.dy = dy;
 			spec.center.x -= dx;
 			spec.center.y -= dy;
 			that.checkBounds();
