@@ -72,6 +72,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
 		});
 
 		function playPew() {
+			console.log("we here");
 			pewpew.play();
 		}
 
