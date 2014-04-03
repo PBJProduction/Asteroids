@@ -38,7 +38,7 @@ var graphics = function() {
 					dy : dy
 				});
 				that.bullets.push(newBullet);
-				s.sendSound;
+				s.s();
 			}
 		};
 		

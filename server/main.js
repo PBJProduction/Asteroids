@@ -42,7 +42,7 @@ var main = function(server) {
         MYGAME.elapsedTime = currentTime - MYGAME.lastTimeStamp;
         MYGAME.lastTimeStamp = currentTime;
         
-        var sound = {s : sendSound};
+        var sound = {s : function(){sendSound();}};
         // console.log(sound);
         
         for(var i = 0; i < remotePlayers.length; ++i){
