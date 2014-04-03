@@ -18,8 +18,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
 			bulletPic = new Image(),
 			shipPic = new Image(),
 			asteroidPic = new Image(),
-			socket = io.connect(),
-			pewpew = new Audio("../audio/pewpew.wav"),
+			socket = io.connect(),			
 			backgroundSound = new Audio("../audio/background.mp3");
 
 			shipPic.src = "../images/ship.png";
@@ -72,8 +71,8 @@ angular.module('asteroids').controller('gameController', function($scope) {
 		});
 
 		function playPew() {
-			console.log("we here");
-			pewpew.play();
+			console.log('in playPew()');
+			new Audio('../audio/pewpew.wav').play();
 		}
 
 		function release(code) {
