@@ -5,11 +5,11 @@ var graphics = function() {
 		var that = {};
 		var dx = 0,
 			dy = 0,
-			thrust = 10,
+			thrust = 5,
 			friction = 1,
 			currentShootSpeed = 0,
 			maxShootSpeed = 200,
-			maxspeed = 20;
+			maxspeed = 10;
 
 		that.id = null;
 
@@ -31,6 +31,7 @@ var graphics = function() {
 					rotateRate : 3.14159,	// Radians per second
 					asteroid : true,
 					alive : 0,
+					thrust : 10,
 					dx : dx,
 					dy : dy
 				});
@@ -113,18 +114,18 @@ var graphics = function() {
 
 		that.checkBounds = function(){
 			if(spec.center.x+spec.height/2 <= 0)
-				spec.center.x = 500+spec.height/2;
+				spec.center.x = 1280+spec.height/2;
 
 			//if its greater than max x
-			else if(spec.center.x-spec.height/2 >= 500)
+			else if(spec.center.x-spec.height/2 >= 1280)
 				spec.center.x = -spec.height/2;
 
 			//if its less than 0 y
 			else if(spec.center.y+spec.width/2 <= 0)
-				spec.center.y = 500+spec.width/2;
+				spec.center.y = 700+spec.width/2;
 
 			//if its greater than max y
-			else if(spec.center.y-spec.width/2 >= 500)
+			else if(spec.center.y-spec.width/2 >= 700)
 				spec.center.y = -spec.width/2;
 		};
 
@@ -149,8 +150,8 @@ var graphics = function() {
 			}
 			if(spec.asteroid){
 				spec.alive += time;
-				dx = (Math.cos(spec.rotation + Math.PI/2) * thrust) + spec.dx;
-				dy = (Math.sin(spec.rotation + Math.PI/2) * thrust) + spec.dy;
+				dx = (Math.cos(spec.rotation + Math.PI/2) * spec.thrust) + spec.dx;
+				dy = (Math.sin(spec.rotation + Math.PI/2) * spec.thrust) + spec.dy;
 				if(spec.alive >= 1000){
 					that.kill = true;
 				}

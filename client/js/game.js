@@ -23,13 +23,12 @@ angular.module('asteroids').controller('gameController', function($scope) {
 			shipPic.src = "../images/ship.png";
 			bulletPic.src = "../images/bullet.png";
 			asteroidPic.src = "../images/asteroid.png";
-
 		
 		function initialize() {
 			console.log('game initializing...');
 			localPlayer = graphics.Texture( {
 				image : shipPic,
-				center : { x : 250, y : 250 },
+				center : { x : 640, y : 350 },
 				width : 100, height : 100,
 				rotation : 0,
 				bullets : []
@@ -218,7 +217,6 @@ angular.module('asteroids').controller('gameController', function($scope) {
 				console.log("No Asteroids");
 			}
 		}
-		
 		return {
 			initialize : initialize,
 			run : run
