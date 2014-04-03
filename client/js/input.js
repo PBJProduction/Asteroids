@@ -27,7 +27,7 @@ MYGAME.input = function() {
 		function mouseMove(e) {
 			that.mouseMove.push(e);
 		}
-		
+
 		that.update = function(elapsedTime) {
 			var event,
 			    handler;
@@ -310,4 +310,30 @@ if (typeof KeyEvent === 'undefined') {
 		DOM_VK_QUOTE: 222,
 		DOM_VK_META: 224
 	};
+}
+
+var settings = {
+	UP_KEY : 'W',
+	LEFT_KEY : 'A',
+	RIGHT_KEY : 'D',
+	WARP_KEY : 'S',
+	SHOOT_KEY : ' '
+};
+
+function getValues(){
+	console.log(settings.UP_KEY);
+	$('#foward-key').val(settings.UP_KEY);
+	$('#left-key').val(settings.LEFT_KEY);
+	$('#right-key').val(settings.RIGHT_KEY);
+	$('#shoot-key').val(settings.SHOOT_KEY);
+	$('#hyper-key').val(settings.WARP_KEY);
+}
+
+function setValues(){
+	settings.UP_KEY = $('#foward-key').val();
+	settings.LEFT_KEY = $('#left-key').val();
+	settings.RIGHT_KEY = $('#right-key').val();
+	settings.SHOOT_KEY = $('#shoot-key').val();
+	settings.WARP_KEY = $('#hyper-key').val();
+	$('#close-btn').click();
 }
