@@ -18,7 +18,9 @@ angular.module('asteroids').controller('gameController', function($scope) {
 			bulletPic = new Image(),
 			shipPic = new Image(),
 			asteroidPic = new Image(),
-			socket = io.connect(),			
+			socket = io.connect(),
+			pewIndex = 0,
+			pewpewArr = [],
 			backgroundSound = new Audio("../audio/background.mp3");
 
 			shipPic.src = "../images/ship.png";
@@ -41,6 +43,10 @@ angular.module('asteroids').controller('gameController', function($scope) {
 			});			
 
 			backgroundSound.play();
+
+			for (var i = 0; i < 100; ++i) {
+				pewpewArr.push(new Audio("../audio/pewpew.wav"));
+			}
 
 			socket.on("connect", onSocketConnected);
 			socket.on("disconnect", onSocketDisconnect);
@@ -71,8 +77,10 @@ angular.module('asteroids').controller('gameController', function($scope) {
 		});
 
 		function playPew() {
-			console.log('in playPew()');
-			new Audio('../audio/pewpew.wav').play();
+			console.log("we here");			
+
+			if (pewIndex > 100) pewIndex = 0;
+			pewpewArr[pewIndex++].play();
 		}
 
 		function release(code) {
