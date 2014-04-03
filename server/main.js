@@ -42,12 +42,14 @@ var main = function(server) {
         MYGAME.elapsedTime = currentTime - MYGAME.lastTimeStamp;
         MYGAME.lastTimeStamp = currentTime;
         
+        var sound = {s : sendSound};
+        // console.log(sound);
         
         for(var i = 0; i < remotePlayers.length; ++i){
-            remotePlayers[i].update(MYGAME.elapsedTime);
+            remotePlayers[i].update(MYGAME.elapsedTime, sound);
         }
         for(var index in asteroids) {
-            asteroids[index].update(MYGAME.elapsedTime);
+            asteroids[index].update(MYGAME.elapsedTime, sound);
         }
 
         var collidedShipAsteroids = getCollisions(remotePlayers, asteroids);
@@ -239,7 +241,7 @@ var main = function(server) {
     }
 
     function handleShipAsteroidCollision(ship, asteroid) {
-        breakAsteroid(asteroid);
+        // breakAsteroid(asteroid);
     }
 
     function breakAsteroid(asteroid) {
@@ -267,9 +269,13 @@ var main = function(server) {
             asteroids.push(toAdd);
         }
     }
+
+    // function callSound() {
+    //     sendSound();
+    // }
     
     function sendSound() {
-        this.broadcast.emit("play pew");
+        io.sockets.emit("play pew");
     }
 
     return {
