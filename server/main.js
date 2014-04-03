@@ -46,14 +46,14 @@ var main = function(server) {
                 x : 100,
                 y : 100,
                 rot : 0,
-                id : 'ai_id',
+                id : 1,
                 AI: true
             };
             onNewPlayer(data);
         }
         else if (remotePlayers.length > 2 && AIConnected) {
             for (var i = 0; i < remotePlayers.length; ++i) {
-                if (remotePlayers[i].id = 'ai_id') {
+                if (remotePlayers[i].id === 1) {
                     remotePlayers.splice(i, 1);
                 }
             }
