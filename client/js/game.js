@@ -40,8 +40,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
 			socket.on("move player", onMovePlayer);
 			socket.on("remove player", onRemovePlayer);
 			socket.on("new response", onSocketId);
-			socket.on("move asteroids", onMoveAsteroids);
-			socket.on("play pew", playPew);
+			socket.on("move asteroids", onMoveAsteroids);			
 		}
 		
 		$(window).keyup(function(e){
@@ -62,7 +61,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
 			}
 		});
 
-		function playPew() {
+		function sendSound() {
 			pewpew.play();
 		}
 
@@ -94,8 +93,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
 					rightpressed = true;					
 				}
 				else if(e.keyCode === KeyEvent.DOM_VK_SPACE){
-					shootpressed = true;
-					playPew();
+					shootpressed = true;					
 				}
 
 				press(e.keyCode);
