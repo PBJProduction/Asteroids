@@ -4,6 +4,7 @@ var io = require('socket.io'),
     graphics = require('./graphics.js'),
     Player = require('./player.js'),
     Random = require('./random.js'),
+    AI = require('./AI.js'),
     graphics = graphics();
 
 var main = function(server) {
@@ -11,6 +12,7 @@ var main = function(server) {
         MYGAME = {},
         shootSpeed = 1000,
         interval = null,
+        AIConnected = false,        
         asteroids = [];
 
     io = io.listen(server);
@@ -34,11 +36,31 @@ var main = function(server) {
         interval = setInterval(gameLoop, 1000/30);
     }
 
-    function gameLoop(time) {
+    function gameLoop(time) {        
         var currentTime = Date.now();
         MYGAME.elapsedTime = currentTime - MYGAME.lastTimeStamp;
         MYGAME.lastTimeStamp = currentTime;
         
+        if (remotePlayers.length < 2 && !AIConnected) {
+            var data = {
+                x : 100,
+                y : 100,
+                rot : 0,
+                id : 'ai_id',
+                AI: true
+            };
+            onNewPlayer(data);
+        }
+        else if (remotePlayers.length > 2 && AIConnected) {
+            for (var i = 0; i < remotePlayers.length; ++i) {
+                if (remotePlayers[i].id = 'ai_id') {
+                    remotePlayers.splice(i, 1);
+                }
+            }
+            
+            AIConnected = false;
+        }
+
         for(var i = 0; i < remotePlayers.length; ++i){
             remotePlayers[i].update(MYGAME.elapsedTime);
         }
@@ -81,7 +103,13 @@ var main = function(server) {
             });
 
         newPlayer.id = this.id;
-        this.emit("new response", {id : this.id});
+        if(data.AI) {
+            newPlayer.update = AI.update;
+            AIConnected = true;
+        }
+        else {
+            this.emit("new response", {id : this.id});
+        }
         //register the handler
         newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_W, newPlayer.forwardThruster);
         newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_A, newPlayer.rotateLeft);
