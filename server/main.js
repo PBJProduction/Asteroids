@@ -49,6 +49,12 @@ var main = function(server) {
         for(var index in asteroids) {
             asteroids[index].update(MYGAME.elapsedTime);
         }
+
+        var collidedShipAsteroids = getCollisions(remotePlayers, asteroids);
+        for(var index in collidedShipAsteroids) {
+            handleShipAsteroidCollision(collidedShipAsteroids[index].first, collidedShipAsteroids[index].second);
+        }
+
         MovePlayers();
         MoveAsteroids();
     }
@@ -228,6 +234,37 @@ var main = function(server) {
                     dy : tempY
                 })
             );
+            asteroids[i].setSize(3);
+        }
+    }
+
+    function handleShipAsteroidCollision(ship, asteroid) {
+        breakAsteroid(asteroid);
+            }
+
+    function breakAsteroid(asteroid) {
+        asteroid.setSize(asteroid.getSize()-1)
+        if(asteroid.getSize() == 0) {
+            for(var index in asteroids) {
+                if(asteroids[index] === asteroid) {
+                    asteroids.splice(index, 1);
+                }
+            }
+        } else {
+            var toAdd = graphics.Texture( {
+                    center : { x : Random.nextRange(0,1280), y : Random.nextRange(0,700) },
+                    width : 100, height : 100,
+                    rotation : 0,
+                    moveRate : 200,         // pixels per second
+                    rotateRate : 3.14159,   // Radians per second
+                    asteroid : true,
+                    alive : 0,
+                    thrust : 2,
+                    dx : tempX,
+                    dy : tempY
+                });
+            toAdd.setSize = asteroid.getSize();
+            asteroids.push(toAdd);
         }
     }
     

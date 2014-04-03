@@ -1,4 +1,5 @@
 var input = require('./input.js');
+var main = require('./main.js');
 
 var graphics = function() {
 	function Texture(spec) {
@@ -36,6 +37,7 @@ var graphics = function() {
 					dy : dy
 				});
 				that.bullets.push(newBullet);
+				main.sendSound();
 			}
 		};
 		
@@ -103,6 +105,18 @@ var graphics = function() {
 				spec.radius = radius;
 			}
 		};
+
+		that.getSize = function() {
+			if(spec.size === undefined) {
+				return 0;
+			} else {
+				return spec.size;
+			}
+		}
+
+		that.setSize = function(size) {
+			spec.size = size;
+		}
 
 		that.getRot = function(){
 			return spec.rotation;
