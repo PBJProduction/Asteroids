@@ -277,6 +277,12 @@ var main = function(server) {
     }
 
     function breakAsteroid(asteroid) {
+        sendParticles({
+            x: asteroid.getX(),
+            y: asteroid.getY(),
+            type: "ATR",
+            rotation: asteroid.getRot()
+        })
         asteroid.setSize(asteroid.getSize()-1)
         if (asteroid.getSize() <= 0) {
             for (var index in asteroids) {
@@ -286,23 +292,23 @@ var main = function(server) {
             }
         } else {
             if (asteroid.getSize() === 3) {
-                makeNewAsteroids(3, asteroid);
+                makeNewAsteroids(2, asteroid);
             } else if (asteroid.getSize() === 2) {
-                makeNewAsteroids(4, asteroid);
+                makeNewAsteroids(3, asteroid);
             }
+            var tempX = Random.nextRange(-2,2);
+            var tempY = Random.nextRange(-2,2);
+            if(tempY === 0 && tempX === 0)
+                tempY = 1;
+            asteroid.setDX(tempX);
+            asteroid.setDY(tempY);
         }
-        sendParticles({
-            x: asteroid.getX(),
-            y: asteroid.getY(),
-            type: "ATR",
-            rotation: asteroid.getRot()
-        })
     }
 
     function makeNewAsteroids(number, asteroid) {
         for (var i = 0; i < number; ++i) {
-            var tempX = Random.nextGaussian(-2,2);
-            var tempY = Random.nextGaussian(-2,2);
+            var tempX = Random.nextRange(-2,2);
+            var tempY = Random.nextRange(-2,2);
             if(tempY === 0 && tempX === 0)
                 tempY = 1;
             var toAdd = graphics.Texture( {
@@ -331,6 +337,12 @@ var main = function(server) {
     }
 
     function lowerLives(ship) {
+        sendParticles({
+            x: ship.getX(),
+            y: ship.getY(),
+            type: "SHP",
+            rotation: ship.rotation
+        })
         if(ship.getLives() <= 0) {
             ship_id = ship.id;
             remotePlayers.splice(remotePlayers.indexOf(ship), 1);
@@ -341,12 +353,6 @@ var main = function(server) {
             }
             replaceShip(ship);
         }
-        sendParticles({
-            x: ship.getX(),
-            y: ship.getY(),
-            type: "SHP",
-            rotation: ship.rotation
-        })
     }
 
     function replaceShip(ship) {
