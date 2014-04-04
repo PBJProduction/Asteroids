@@ -12,13 +12,15 @@ function particleSystem(spec, graphics) {
 		var direction = Random.nextCircleVector();
 		if(spec.direction)
 			direction = spec.direction;
+		if(spec.asteroid)
+			direction = Random.nextEllipseVector();
 		var p = {
 				image: spec.image,
 				size: Random.nextGaussian(spec.size.mean, spec.size.stdev),
 				center: {x: spec.center.x, y: spec.center.y},
 				direction: direction,
 				speed: Random.nextGaussian(spec.speed.mean, spec.speed.stdev), // pixels per second
-				rotation: spec.rotation,
+				rotation: 0,
 				lifetime: Random.nextGaussian(spec.lifetime.mean, spec.lifetime.stdev),	// How long the particle should live, in seconds
 				alive: 0	// How long the particle has been alive, in seconds
 			};

@@ -283,7 +283,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
                 image = ufoExplodePic;
 
             particlesArr.push( particleSystem( {
-                                    direction : Random.nextCircleVector(),
+                                    asteroid : true,
                                     image : image,
                                     size:{mean:20,stdev:5},
                                     center: {x: data.x, y: data.y},
@@ -303,3 +303,4 @@ angular.module('asteroids').controller('gameController', function($scope) {
 	init.initialize();
 	init.run();
 });
+
