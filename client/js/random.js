@@ -19,6 +19,14 @@ var Random = (function() {
 			y: Math.sin(angle)
 		};
 	}
+
+	function nextEllipseVector() {
+		var angle = Math.random() * 2 * Math.PI;
+		return {
+			x: 2*Math.cos(angle),
+			y: 10*Math.sin(angle)
+		};
+	}
 	
 	//
 	// This is used to give a small performance optimization in generating gaussian random numbers.
@@ -61,6 +69,7 @@ var Random = (function() {
 		nextDouble : nextDouble,
 		nextRange : nextRange,
 		nextCircleVector : nextCircleVector,
+		nextEllipseVector : nextEllipseVector,
 		nextGaussian : nextGaussian
 	};
 	

@@ -36,11 +36,17 @@ var main = function(server) {
     }
 
     function gameLoop(time) {
+<<<<<<< HEAD
         if(remotePlayers.length === 0)
             // return; // Prevents it from running even if there is someone watching
         if(asteroids.length === 0)
             generateAsteroids({number: Random.nextGaussian(3,2), type: 1});
 
+=======
+        if(asteroids.length === 0){
+            generateAsteroids({number: Random.nextRange(2,5), type: 1});
+        }
+>>>>>>> origin/TysonCode
         var currentTime = Date.now();
         MYGAME.elapsedTime = currentTime - MYGAME.lastTimeStamp;
         MYGAME.lastTimeStamp = currentTime;
@@ -189,7 +195,8 @@ var main = function(server) {
             var asteroid = {
                 x : asteroids[index].getX(),
                 y : asteroids[index].getY(),
-                rot : asteroids[index].getRot()
+                rot : asteroids[index].getRot(),
+                size : asteroids[index].getSize()
             };
             data.array.push(asteroid);
         }
@@ -267,6 +274,12 @@ var main = function(server) {
     }
 
     function breakAsteroid(asteroid) {
+        sendParticles({
+            x: asteroid.getX(),
+            y: asteroid.getY(),
+            type: "ATR",
+            rotation: asteroid.getRot()
+        })
         asteroid.setSize(asteroid.getSize()-1)
         if (asteroid.getSize() <= 0) {
             for (var index in asteroids) {
@@ -276,23 +289,23 @@ var main = function(server) {
             }
         } else {
             if (asteroid.getSize() === 3) {
-                makeNewAsteroids(3, asteroid);
+                makeNewAsteroids(2, asteroid);
             } else if (asteroid.getSize() === 2) {
-                makeNewAsteroids(4, asteroid);
+                makeNewAsteroids(3, asteroid);
             }
+            var tempX = Random.nextRange(-2,2);
+            var tempY = Random.nextRange(-2,2);
+            if(tempY === 0 && tempX === 0)
+                tempY = 1;
+            asteroid.setDX(tempX);
+            asteroid.setDY(tempY);
         }
-        sendParticles({
-            x: asteroid.getX(),
-            y: asteroid.getY(),
-            type: "ATR",
-            rotation: asteroid.getRot()
-        })
     }
 
     function makeNewAsteroids(number, asteroid) {
         for (var i = 0; i < number; ++i) {
-            var tempX = Random.nextGaussian(-2,2);
-            var tempY = Random.nextGaussian(-2,2);
+            var tempX = Random.nextRange(-2,2);
+            var tempY = Random.nextRange(-2,2);
             if(tempY === 0 && tempX === 0)
                 tempY = 1;
             var toAdd = graphics.Texture( {
@@ -321,6 +334,12 @@ var main = function(server) {
     }
 
     function lowerLives(ship) {
+        sendParticles({
+            x: ship.getX(),
+            y: ship.getY(),
+            type: "SHP",
+            rotation: ship.rotation
+        });
         if(ship.getLives() <= 0) {
             ship_id = ship.id;
             remotePlayers.splice(remotePlayers.indexOf(ship), 1);
@@ -331,12 +350,6 @@ var main = function(server) {
             }
             replaceShip(ship);
         }
-        sendParticles({
-            x: ship.getX(),
-            y: ship.getY(),
-            type: "SHP",
-            rotation: ship.rotation
-        });
     }
 
     function replaceShip(ship) {
