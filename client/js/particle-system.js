@@ -5,15 +5,20 @@ function particleSystem(spec, graphics) {
 	var that = {},
 		nextName = 1,	// unique identifier for the next particle
 		particles = {};	// Set of all active particles
+
+	that.remove = false;
 	
 	that.create = function() {
+		var direction = Random.nextCircleVector();
+		if(spec.direction)
+			direction = spec.direction;
 		var p = {
 				image: spec.image,
-				size: Random.nextGaussian(10, 4),
+				size: Random.nextGaussian(spec.size.mean, spec.size.stdev),
 				center: {x: spec.center.x, y: spec.center.y},
-				direction: Random.nextCircleVector(),
+				direction: direction,
 				speed: Random.nextGaussian(spec.speed.mean, spec.speed.stdev), // pixels per second
-				rotation: 0,
+				rotation: spec.rotation,
 				lifetime: Random.nextGaussian(spec.lifetime.mean, spec.lifetime.stdev),	// How long the particle should live, in seconds
 				alive: 0	// How long the particle has been alive, in seconds
 			};
@@ -55,6 +60,7 @@ function particleSystem(spec, graphics) {
 				// If the lifetime has expired, identify it for removal
 				if (particle.alive > particle.lifetime) {
 					removeMe.push(value);
+					that.remove = true;
 				}
 			}
 		}

@@ -33,18 +33,13 @@ var main = function(server) {
         interval = setInterval(gameLoop, 1000/30);
     }
 
-
-/*
-*
-*
-*
-*
-*/
     function gameLoop(time) {
-        if(remotePlayers.length === 0)
+        if(remotePlayers.length === 0) {
             // return; // Prevents it from running even if there is someone watching
-        if(asteroids.length === 0)
+        }
+        if(asteroids.length === 0) {
             generateAsteroids({number: Random.nextGaussian(3,2), type: 1});
+        }
         var currentTime = Date.now();
         MYGAME.elapsedTime = currentTime - MYGAME.lastTimeStamp;
         MYGAME.lastTimeStamp = currentTime;
@@ -73,14 +68,6 @@ var main = function(server) {
         MovePlayers();
         MoveAsteroids();
     }
-/*
-*
-*
-*
-*
-*/
-
-
 
     function onSocketConnection(client) {
         util.log("New player has connected: "+client.id);
@@ -173,7 +160,11 @@ var main = function(server) {
                 x   : remotePlayers[i].getX(),
                 y   : remotePlayers[i].getY(),
                 rot : remotePlayers[i].getRot(),
-                thrusting: remotePlayers[i].isThrusting()
+                thrusting: remotePlayers[i].isThrusting(),
+                direction : {
+                    x : remotePlayers[i].dx,
+                    y : remotePlayers[i].dy
+                }
             };
             var bullets = [];
             for(var j = 0; j < remotePlayers[i].bullets.length; ++j){
@@ -372,7 +363,7 @@ var main = function(server) {
             y: spec.y,
             type: spec.type,
             rotation: spec.rotation
-        })
+        });
     }
 
     return {
