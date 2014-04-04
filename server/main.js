@@ -34,10 +34,10 @@ var main = function(server) {
     }
 
     function gameLoop(time) {
-        if(remotePlayers.length === 0)
-            // return; // Prevents it from running even if there is someone watching
-        if(asteroids.length === 0)
-            generateAsteroids({number: Random.nextGaussian(3,2), type: 1});
+        if(asteroids.length === 0){
+            generateAsteroids({number: Random.nextRange(2,5), type: 1});
+        }
+
         var currentTime = Date.now();
         MYGAME.elapsedTime = currentTime - MYGAME.lastTimeStamp;
         MYGAME.lastTimeStamp = currentTime;
