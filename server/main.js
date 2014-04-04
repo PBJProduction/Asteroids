@@ -36,24 +36,36 @@ var main = function(server) {
     }
 
     function gameLoop(time) {
-<<<<<<< HEAD
-        if(remotePlayers.length === 0)
-            // return; // Prevents it from running even if there is someone watching
-        if(asteroids.length === 0)
-            generateAsteroids({number: Random.nextGaussian(3,2), type: 1});
-
-=======
         if(asteroids.length === 0){
             generateAsteroids({number: Random.nextRange(2,5), type: 1});
         }
->>>>>>> origin/TysonCode
         var currentTime = Date.now();
         MYGAME.elapsedTime = currentTime - MYGAME.lastTimeStamp;
         MYGAME.lastTimeStamp = currentTime;
         
         var sound = {s : function(){sendSound();}};
         
-        for(var i = 0; i < remotePlayers.length; ++i){
+        if (remotePlayers.length > 0 && remotePlayers.length < 2 && !AIConnected) {
+            var data = {
+                x : 100,
+                y : 100,
+                rot : 0,
+                id : 'ai_id',
+                AI: true
+            };
+            onNewPlayer(data);
+        }
+        else if (remotePlayers.length > 2 && AIConnected) {
+            for (var i = 0; i < remotePlayers.length; ++i) {
+                if (remotePlayers[i].id === 'ai_id') {
+                    remotePlayers.splice(i, 1);
+                }
+            }
+            
+            AIConnected = false;
+        }
+
+        for(var i = 0; i < remotePlayers.length; ++i) {
             remotePlayers[i].update(MYGAME.elapsedTime, sound);
         }
         for(var index in asteroids) {
@@ -108,6 +120,11 @@ var main = function(server) {
             });
 
         newPlayer.id = this.id;
+
+        if (data.AI) {
+            newPlayer.update = AI.update;
+            AIConnected = true;
+        }
 
         //register the handler
         newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_W, newPlayer.forwardThruster);
