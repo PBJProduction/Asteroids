@@ -320,6 +320,12 @@ var main = function(server) {
     }
 
     function lowerLives(ship) {
+        sendParticles({
+            x: ship.getX(),
+            y: ship.getY(),
+            type: "SHP",
+            rotation: ship.rotation
+        });
         if(ship.getLives() <= 0) {
             ship_id = ship.id;
             remotePlayers.splice(remotePlayers.indexOf(ship), 1);
@@ -330,12 +336,6 @@ var main = function(server) {
             }
             replaceShip(ship);
         }
-        sendParticles({
-            x: ship.getX(),
-            y: ship.getY(),
-            type: "SHP",
-            rotation: ship.rotation
-        });
     }
 
     function replaceShip(ship) {
