@@ -1,15 +1,17 @@
 var input = require('./input.js');
+var main = require('./main.js');
 
 var graphics = function() {
 	function Texture(spec) {
 		var that = {};
 		var dx = 0,
 			dy = 0,
-			thrust = 10,
+			thrust = 5,
 			friction = 1,
 			currentShootSpeed = 0,
 			maxShootSpeed = 200,
-			maxspeed = 20;
+			maxspeed = 10;
+		var thrusting = false;
 
 		that.id = null;
 
@@ -19,7 +21,8 @@ var graphics = function() {
 
 		that.myKeyboard = input.Keyboard();
 
-		that.shoot = function(elapsedTime){
+		that.shoot = function(elapsedTime, s){
+			// console.log(s);
 			currentShootSpeed+= elapsedTime;
 			if(currentShootSpeed >= maxShootSpeed){
 				currentShootSpeed = 0;
@@ -31,10 +34,12 @@ var graphics = function() {
 					rotateRate : 3.14159,	// Radians per second
 					asteroid : true,
 					alive : 0,
+					thrust : 20,
 					dx : dx,
 					dy : dy
 				});
 				that.bullets.push(newBullet);
+				s.s();
 			}
 		};
 		
@@ -65,6 +70,7 @@ var graphics = function() {
 		that.forwardThruster = function(elapsedTime){
 			dx += (Math.cos(spec.rotation + Math.PI/2) * thrust) * (elapsedTime / 1000);
 			dy += (Math.sin(spec.rotation + Math.PI/2) * thrust) * (elapsedTime / 1000);
+			thrusting = true;
 		};
 		
 		that.moveTo = function(center) {
@@ -81,7 +87,7 @@ var graphics = function() {
 
 		that.getRadius = function() {
 			if(spec.radius === undefined) {
-				return spec.width;
+				return spec.width / 2;
 			} else {
 				return spec.radius;
 			}
@@ -97,10 +103,22 @@ var graphics = function() {
 
 		that.setRadius = function(radius) {
 			if(radius === undefined) {
-				spec.radius = spec.width;
+				spec.radius = spec.width / 2;
 			} else {
 				spec.radius = radius;
 			}
+		};
+
+		that.getSize = function() {
+			if(spec.size === undefined) {
+				return 0;
+			} else {
+				return spec.size;
+			}
+		};
+
+		that.setSize = function(size) {
+			spec.size = size;
 		};
 
 		that.getRot = function(){
@@ -111,25 +129,63 @@ var graphics = function() {
 			spec.rotation = rot;
 		};
 
+		that.setDX = function(ndx){
+			dx = ndx;
+		};
+
+		that.setDY = function(ndy){
+			dy = ndy;
+		};
+
+		that.setLives = function(nlives) {
+			spec.lives = nlives;
+		};
+
+		that.getLives = function() {
+			if (spec.lives === undefined) {
+				return 0;
+			} else {
+				return spec.lives;
+			}
+		};
+
+		that.setScore = function(score){
+			spec.score = score;
+		};
+
+		that.getScore = function() {
+			if (spec.score === undefined) {
+				return 0;
+			} else {
+				return spec.score;
+			}
+		}
+
+		that.isThrusting = function() {
+			var toReturn = thrusting;
+			thrusting = false;
+			return toReturn;
+		}
+
 		that.checkBounds = function(){
 			if(spec.center.x+spec.height/2 <= 0)
-				spec.center.x = 500+spec.height/2;
+				spec.center.x = 1280+spec.height/2;
 
 			//if its greater than max x
-			else if(spec.center.x-spec.height/2 >= 500)
+			else if(spec.center.x-spec.height/2 >= 1280)
 				spec.center.x = -spec.height/2;
 
 			//if its less than 0 y
 			else if(spec.center.y+spec.width/2 <= 0)
-				spec.center.y = 500+spec.width/2;
+				spec.center.y = 700+spec.width/2;
 
 			//if its greater than max y
-			else if(spec.center.y-spec.width/2 >= 500)
+			else if(spec.center.y-spec.width/2 >= 700)
 				spec.center.y = -spec.width/2;
 		};
 
-		that.update = function(time){
-			that.myKeyboard.update(time);
+		that.update = function(time, blah){
+			that.myKeyboard.update(time, blah);
 			if(dy > maxspeed)
 				dy = maxspeed;
 			if(dy < -maxspeed)
@@ -149,12 +205,14 @@ var graphics = function() {
 			}
 			if(spec.asteroid){
 				spec.alive += time;
-				dx = (Math.cos(spec.rotation + Math.PI/2) * thrust) + spec.dx;
-				dy = (Math.sin(spec.rotation + Math.PI/2) * thrust) + spec.dy;
+				dx = (Math.cos(spec.rotation + Math.PI/2) * spec.thrust) + spec.dx;
+				dy = (Math.sin(spec.rotation + Math.PI/2) * spec.thrust) + spec.dy;
 				if(spec.alive >= 1000){
 					that.kill = true;
 				}
 			}
+			that.dx = dx;
+			that.dy = dy;
 			spec.center.x -= dx;
 			spec.center.y -= dy;
 			that.checkBounds();

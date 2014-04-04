@@ -18,22 +18,43 @@ angular.module('asteroids').controller('gameController', function($scope) {
 			bulletPic = new Image(),
 			shipPic = new Image(),
 			asteroidPic = new Image(),
-			socket = io.connect();
+            asteroidExplodePic = new Image(),
+            shipExplodePic = new Image(),
+            ufoExplodePic = new Image(),
+			socket = io.connect(),
+			pewIndex = 0,
+			pewpewArr = [],
+            particlesArr = [],
+			backgroundSound = new Audio("../audio/background.mp3");
 
 			shipPic.src = "../images/ship.png";
 			bulletPic.src = "../images/bullet.png";
 			asteroidPic.src = "../images/asteroid.png";
-
+            asteroidExplodePic.src = "../images/asteroid.png";
+            shipExplodePic.src = "../images/explosion.png";
 		
 		function initialize() {
 			console.log('game initializing...');
+
+            for (var i = 0; i < 100; ++i) {
+                pewpewArr.push(new Audio("../audio/pewpew.wav"));
+            }
+
 			localPlayer = graphics.Texture( {
 				image : shipPic,
-				center : { x : 250, y : 250 },
+				center : { x : 640, y : 350 },
 				width : 100, height : 100,
 				rotation : 0,
 				bullets : []
 			});
+
+			backgroundSound.addEventListener('ended', function() {
+				this.currentTime = 0;
+				this.play();
+			});
+
+			backgroundSound.play();
+
 			socket.on("connect", onSocketConnected);
 			socket.on("disconnect", onSocketDisconnect);
 			socket.on("new player", onNewPlayer);
@@ -41,6 +62,8 @@ angular.module('asteroids').controller('gameController', function($scope) {
 			socket.on("remove player", onRemovePlayer);
 			socket.on("new response", onSocketId);
 			socket.on("move asteroids", onMoveAsteroids);
+            socket.on("place particles", onPlaceParticles);
+			socket.on("play pew", playPew);
 		}
 		
 		$(window).keyup(function(e){
@@ -55,11 +78,16 @@ angular.module('asteroids').controller('gameController', function($scope) {
 					rightpressed = false;
 				}
 				else if(e.keyCode === KeyEvent.DOM_VK_SPACE){
-					shootpressed = false;
+					shootpressed = false;					
 				}
 				release(e.keyCode);
 			}
 		});
+
+		function playPew() {
+			if (pewIndex > 100) pewIndex = 0;
+			pewpewArr[pewIndex++].play();
+		}
 
 		function release(code) {
 			var obj = {
@@ -73,7 +101,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
 			var obj = {
 				id : localPlayer.id,
 				key : code
-			};
+			};			
 			socket.emit("key press", obj)
 		}
 
@@ -89,7 +117,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
 					rightpressed = true;					
 				}
 				else if(e.keyCode === KeyEvent.DOM_VK_SPACE){
-					shootpressed = false;
+					shootpressed = true;					
 				}
 
 				press(e.keyCode);
@@ -102,6 +130,16 @@ angular.module('asteroids').controller('gameController', function($scope) {
 			MYGAME.lastTimeStamp = currentTime;
 			myKeyboard.update(MYGAME.elapsedTime);
 			graphics.clear();
+            for(var i = 0; i < particlesArr.length; ++i){
+                particlesArr[i].update(MYGAME.elapsedTime);
+                particlesArr[i].render();
+                particlesArr[i].create();
+                if(particlesArr[i].remove){
+                    particlesArr.splice(i,1);
+                    i--;
+                }
+            }
+
 			for (var i = remotePlayers.length-1; i >= 0; --i) {
 				var bullets = remotePlayers[i].getBullets();
 				for(var j = 0; j < bullets.length; ++j){
@@ -119,7 +157,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
 		}
 
 		function run() {
-			MYGAME.lastTimeStamp = Date.now();
+			MYGAME.lastTimeStamp = Date.now();			
 			requestAnimationFrame(gameLoop);
 		}
 
@@ -166,6 +204,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
 				player.setX(data.array[i].x);
 				player.setY(data.array[i].y);
 				player.setRot(data.array[i].rot);
+
 				var bullets = [];
 				for(var j = 0; j < data.array[i].bullets.length; ++j){
 					var bullet = graphics.Texture( {
@@ -177,6 +216,21 @@ angular.module('asteroids').controller('gameController', function($scope) {
 					bullets.push(bullet);
 				}
 				player.setBullets(bullets);
+                if(data.array[i].thrusting){
+                    var deg = (Math.abs(data.array[i].rot % (2*Math.PI) * (180/Math.PI) - 360)+90) % 360;
+                    var rad = deg * (Math.PI/180);
+
+                    particlesArr.push( particleSystem( {
+                                            direction : {x : -Math.cos(rad), y : Math.sin(rad)},
+                                            image : shipExplodePic,
+                                            size:{mean:20,stdev:5},
+                                            center: {x: data.array[i].x-Math.cos(rad)*40, y: data.array[i].y +Math.sin(rad)*40},
+                                            speed: {mean: 40, stdev: .05},
+                                            lifetime: {mean: .5, stdev: .05}
+                                        },
+                                        graphics
+                                    ));
+                }
 			}
 		}
 
@@ -218,7 +272,28 @@ angular.module('asteroids').controller('gameController', function($scope) {
 				console.log("No Asteroids");
 			}
 		}
-		
+
+        function onPlaceParticles(data){
+            var image;
+            if(data.type === "ATR")
+                image = asteroidExplodePic;
+            else if(data.type === "SHP")
+                image = shipExplodePic;
+            else
+                image = ufoExplodePic;
+
+            particlesArr.push( particleSystem( {
+                                    direction : Random.nextCircleVector(),
+                                    image : image,
+                                    size:{mean:20,stdev:5},
+                                    center: {x: data.x, y: data.y},
+                                    speed: {mean: 20, stdev: 5},
+                                    lifetime: {mean: 1, stdev: 0.25}
+                                },
+                                graphics
+                            ));
+        }
+
 		return {
 			initialize : initialize,
 			run : run

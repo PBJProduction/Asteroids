@@ -2,16 +2,54 @@
 	<form class="menu">
 		<h2 class="menu-heading">Asteroids</h2><br>
 		<div class="form-group">
-			<a href="#/game" class="btn btn-lg btn-danger btn-block" id = "id-new-game">New Game</a>
+			<a href="#/game" class="btn btn-lg btn-danger btn-block" id = "id-new-game" onmouseover = "playHover()">New Game</a>
 		</div>
 		<div class="form-group">
-			<a href="#/highscore" class="btn btn-lg btn-danger btn-block" id = "id-high-scores">High Scores</a>
+			<a href="#/highscore" class="btn btn-lg btn-danger btn-block" id = "id-high-scores" onmouseover = "playHover()">High Scores</a>
 		</div>
 		<div class="form-group">
-			<a href="#/help" class="btn btn-lg btn-danger btn-block" id = "id-help">Help</a>
+			<a href="#/help" class="btn btn-lg btn-danger btn-block" id = "id-help" onmouseover = "playHover()">Help</a>
 		</div>
 		<div class="form-group">
-			<a href="#/about" class="btn btn-lg btn-danger btn-block" id = "id-about">About</a>
+			<a href="#/about" class="btn btn-lg btn-danger btn-block" id = "id-about" onmouseover = "playHover()">About</a>
+		</div>
+		<div class="form-group">
+			<a href="#settings-modal" onclick="getValues()" data-toggle="modal" class="btn btn-lg btn-danger btn-block" id = "id-settings">Settings</a>
 		</div>
 	</form>
+	<div id="settings-modal" class="modal fade">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	        <h4 class="modal-title">Settings</h4>
+	      </div>   
+	        <div class="modal-body">
+	          	<div class="form-group">
+	    		  <label for="foward-key">Forward Key</label>
+	              <input type="text" maxlength="1" class="form-control" id="foward-key">
+	            </div>
+	            <div class="form-group">
+	    		  <label for="foward-key">Left Key</label>
+	              <input type="text" maxlength="1" class="form-control" id="left-key">
+	            </div>
+	            <div class="form-group">
+	    		  <label for="foward-key">Right Key</label>
+	              <input type="text" maxlength="1" class="form-control" id="right-key">
+	            </div>
+	            <div class="form-group">
+	    		  <label for="foward-key">Shoot Key</label>
+	              <input type="text" maxlength="1" class="form-control" id="shoot-key">
+	            </div>
+	            <div class="form-group">
+	    		  <label for="foward-key">Hyper Drive Key</label>
+	              <input type="text" maxlength="1" class="form-control" id="hyper-key">
+	            </div>       
+	        </div>
+	        <div class="modal-footer">
+	          <button type="button" id="close-btn" class="btn btn-danger" data-dismiss="modal">Close</button>
+	          <button type="button" id="change-btn" onclick="setValues()" class="btn btn-primary">Submit</button>
+	        </div>
+	    </div>
+	  </div>
 </div>
