@@ -21,6 +21,7 @@ var main = function(server) {
             io.set("log level", 1);
         });
         setEventHandlers();
+        genAI();
         run();
     }
 
@@ -30,12 +31,39 @@ var main = function(server) {
 
     function run() {
         MYGAME.lastTimeStamp = Date.now();
+
         interval = setInterval(gameLoop, 1000/30);
+    }
+
+    function genAI(){
+        var newPlayer = graphics.Texture( {
+                center : { x : 640, y : 350 },
+                width : 100, height : 100,
+                rotation : 0,
+                moveRate : 100,         // pixels per second
+                rotateRate : 3.14159    // Radians per second
+            });
+
+        newPlayer.id = 'ai';
+        newPlayer.setLives(3);
+        //register the handler
+        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_W, newPlayer.forwardThruster);
+        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_A, newPlayer.rotateLeft);
+        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_D, newPlayer.rotateRight);
+        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_SPACE, newPlayer.shoot);
+        io.sockets.emit("new player",
+        {
+            id: newPlayer.id,
+            x: newPlayer.getX(),
+            y: newPlayer.getY(),
+            rot: newPlayer.getRot()
+        });
+        remotePlayers.push(newPlayer);
     }
 
     function gameLoop(time) {
         if(asteroids.length === 0){
-            generateAsteroids({number: Random.nextRange(2,5), type: 1});
+            generateAsteroids({number: Random.nextRange(2,3), type: 1});
         }
         var currentTime = Date.now();
         MYGAME.elapsedTime = currentTime - MYGAME.lastTimeStamp;
@@ -44,7 +72,7 @@ var main = function(server) {
         var sound = {s : function(){sendSound();}};
         
         for(var i = 0; i < remotePlayers.length; ++i){
-            remotePlayers[i].update(MYGAME.elapsedTime, sound);
+            remotePlayers[i].update(MYGAME.elapsedTime, sound,asteroids);
         }
         for(var index in asteroids) {
             asteroids[index].update(MYGAME.elapsedTime, sound);
