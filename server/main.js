@@ -215,7 +215,8 @@ var main = function(server) {
             var asteroid = {
                 x : asteroids[index].getX(),
                 y : asteroids[index].getY(),
-                rot : asteroids[index].getRot()
+                rot : asteroids[index].getRot(),
+                size : asteroids[index].getSize()
             };
             data.array.push(asteroid);
         }
