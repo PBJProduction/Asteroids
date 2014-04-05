@@ -3,7 +3,7 @@
 //create AI
 var AI = {};
 
-AI.update = function() {
+AI.update = function(time, sound) {
 	for (var index in MYGAME.main.asteroids) {
 		var asteroid = MYGAME.main.asteroids[index],
 			distance = Math.sqrt(Math.pow(asteroid.x - this.x, 2) + Math.pow(asteroid.y - this.y, 2)), 

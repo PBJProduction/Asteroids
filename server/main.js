@@ -129,6 +129,15 @@ var main = function(server) {
             AIConnected = true;
             console.log("created AI");
         }
+        else {
+            this.broadcast.emit("new player",
+            {
+                id: newPlayer.id,
+                x: newPlayer.getX(),
+                y: newPlayer.getY(),
+                rot: newPlayer.getRot()
+            });
+        }
 
         //register the handler
         newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_W, newPlayer.forwardThruster);
@@ -136,17 +145,11 @@ var main = function(server) {
         newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_D, newPlayer.rotateRight);
         newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_SPACE, newPlayer.shoot);        
         
-        this.broadcast.emit("new player",
-        {
-            id: newPlayer.id,
-            x: newPlayer.getX(),
-            y: newPlayer.getY(),
-            rot: newPlayer.getRot()
-        });
         
         var i, existingPlayer;
         for (i = 0; i < remotePlayers.length; ++i){
             existingPlayer = remotePlayers[i];
+
             this.emit("new player",
             {
                 id: existingPlayer.id,
