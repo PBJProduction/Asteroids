@@ -37,7 +37,7 @@ var main = function(server) {
 
     function genAI(){
         var newPlayer = graphics.Texture( {
-                center : { x : 100, y : 100 },
+                center : { x : 640, y : 350 },
                 width : 100, height : 100,
                 rotation : 0,
                 moveRate : 100,         // pixels per second
@@ -63,7 +63,7 @@ var main = function(server) {
 
     function gameLoop(time) {
         if(asteroids.length === 0){
-            generateAsteroids({number: Random.nextRange(1,1), type: 1});
+            generateAsteroids({number: Random.nextRange(2,3), type: 1});
         }
         var currentTime = Date.now();
         MYGAME.elapsedTime = currentTime - MYGAME.lastTimeStamp;

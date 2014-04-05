@@ -198,26 +198,24 @@ var graphics = function() {
             for(var i = 0; i < asteroids.length; ++i){
                 var tempMin = findMinDistance(asteroids[i]);
                 if(tempMin < minDistance){
-                    tempMin = minDistance;
+                    minDistance = tempMin;
                     result = asteroids[i];
                 }
             }
-            return {x: result.getX(), y: result.getY()};
+            return {x: result.getX(), y: result.getY(), distance : minDistance};
         }
 
         function computeAngle(point){
             var deg = (Math.abs(spec.rotation % (2*Math.PI) * (180/Math.PI) - 360)) % 360;
-            var xComponent = spec.center.x-point.x
+            var xComponent = spec.center.x-point.x;
             var yComponent = spec.center.y - point.y;
             var cComponent = Math.sqrt(Math.pow(xComponent,2)+Math.pow(yComponent,2));
-            //cos A = (b2 + c2 - a2)/2bc
             var angle = (Math.pow(yComponent,2) + Math.pow(cComponent,2) - Math.pow(xComponent,2))/(2*yComponent*cComponent);
             angle = Math.acos(angle)*(180/Math.PI);
-            //rotate left
-            var blah = (deg + angle) % 360;
-            if(blah > 180)
-                return 360 - blah;
-            return blah;
+            angle = (deg + angle) % 360;
+            if(angle > 180)
+                return 360 - angle;
+            return angle;
         }
 
         function findMinDistance(asteroid){
@@ -226,25 +224,24 @@ var graphics = function() {
 
         function updateAI(time,blah,asteroids){
             var closestAsteroid = findClosestDirection(asteroids);
-            var angle = computeAngle(closestAsteroid);
-            var deg = (Math.abs(spec.rotation % (2*Math.PI) * (180/Math.PI) - 360)) % 360;
-            if(angle <= 10)
-            {
+            if(computeAngle(closestAsteroid) <= 5){
                 release(input.KeyEvent.DOM_VK_W);
                 release(input.KeyEvent.DOM_VK_A);
                 release(input.KeyEvent.DOM_VK_D);
                 press(input.KeyEvent.DOM_VK_SPACE);
-                press(input.KeyEvent.DOM_VK_W);
             }
             else
             {
                 release(input.KeyEvent.DOM_VK_SPACE);
-                if(dx < 3 && dy < 3)
-                    press(input.KeyEvent.DOM_VK_W);
-                else
-                    release(input.KeyEvent.DOM_VK_W);
-
-                if(closestAsteroid.x > spec.center.x){
+                if(closestAsteroid.distance > 600){
+                    if(dx < 2 && dy < 2){
+                        press(input.KeyEvent.DOM_VK_W);
+                    }
+                    else{
+                        release(input.KeyEvent.DOM_VK_W);
+                    }
+                }
+                if(closestAsteroid.x < spec.center.x){
                     press(input.KeyEvent.DOM_VK_A);
                     release(input.KeyEvent.DOM_VK_D);
                 }
@@ -252,60 +249,7 @@ var graphics = function() {
                     press(input.KeyEvent.DOM_VK_D);
                     release(input.KeyEvent.DOM_VK_A);
                 }
-
             }
-            /*
-            else{
-                release(input.KeyEvent.DOM_VK_W);
-                release(input.KeyEvent.DOM_VK_A);
-                release(input.KeyEvent.DOM_VK_D);
-                console.log(deg);
-                //release(input.KeyEvent.DOM_VK_SPACE);
-                //going left, check y
-                if(deg >= 45 && deg <= 135)
-                {
-                    //if asteroid is greater
-                    if(closestAsteroid.y > spec.center.y){
-                        press(input.KeyEvent.DOM_VK_A);
-                    }
-                    else{
-                        press(input.KeyEvent.DOM_VK_D);
-                    }
-                }
-                //going up, check x
-                else if(deg <= 45 && deg >= 315)
-                {
-                    if(closestAsteroid.x > spec.center.x){
-                        press(input.KeyEvent.DOM_VK_D);
-                    }
-                    else{
-                        press(input.KeyEvent.DOM_VK_A);
-                    }
-                }
-                //going down, check x
-                else if(deg <= 315 && deg >= 225)
-                {
-                    if(closestAsteroid.x > spec.center.x){
-                        press(input.KeyEvent.DOM_VK_A);
-                    }
-                    else{
-                        press(input.KeyEvent.DOM_VK_D);
-                    }
-                }
-                //going right, check y
-                else
-                {
-                    //if asteroid is greater
-                    if(closestAsteroid.y > spec.center.y){
-                        press(input.KeyEvent.DOM_VK_D);
-                    }
-                    else{
-                        press(input.KeyEvent.DOM_VK_A);
-                    }
-                }
-            }
-            */
-
         }
 
         that.update = function(time, blah, asteroids){
