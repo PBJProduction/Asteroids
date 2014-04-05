@@ -46,6 +46,7 @@ var main = function(server) {
         var sound = {s : function(){sendSound();}};
         
         if (remotePlayers.length > 0 && remotePlayers.length < 2 && !AIConnected) {
+            console.log("creating an ai");
             var data = {
                 x : 100,
                 y : 100,
@@ -119,18 +120,22 @@ var main = function(server) {
                 rotateRate : 3.14159    // Radians per second
             });
 
-        newPlayer.id = this.id;
+        newPlayer.id = data.id == 'ai_id' ? data.id : this.id;
+
+        console.log(newPlayer.id);
 
         if (data.AI) {
             newPlayer.update = AI.update;
             AIConnected = true;
+            console.log("created AI");
         }
 
         //register the handler
         newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_W, newPlayer.forwardThruster);
         newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_A, newPlayer.rotateLeft);
         newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_D, newPlayer.rotateRight);
-        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_SPACE, newPlayer.shoot);
+        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_SPACE, newPlayer.shoot);        
+        
         this.broadcast.emit("new player",
         {
             id: newPlayer.id,
