@@ -3,7 +3,6 @@ var io = require('socket.io'),
     input = require('./input.js'),
     graphics = require('./graphics.js'),
     Random = require('./random.js'),
-    AI = require('./AI.js'),
     graphics = graphics();
 
 var main = function(server) {
