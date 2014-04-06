@@ -312,11 +312,16 @@ if (typeof KeyEvent === 'undefined') {
 	};
 }
 
-var hoverPic = new Audio("../audio/hover.wav");
+var hoverPic = [],
+	hoverIndex = 0;
+
+for (var bogusName = 0; bogusName < 20; ++bogusName) {
+	hoverPic[bogusName] = new Audio("../audio/hover.wav");
+}
 
 function playHover(){
-	var sound = hoverPic;
-	sound.play();
+	if (hoverIndex >= 30) hoverIndex = 0;
+	hoverPic[hoverIndex++].play();
 }
 
 var settings = {

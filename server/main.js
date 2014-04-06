@@ -133,29 +133,36 @@ var main = function(server) {
                 rotateRate : 3.14159    // Radians per second
             });
 
-        newPlayer.id = this.id;
+        newPlayer.id = data.id == 'ai_id' ? data.id : this.id;
+
+        console.log(newPlayer.id);
 
         if (data.AI) {
             newPlayer.update = AI.update;
             AIConnected = true;
+            console.log("created AI");
+        }
+        else {
+            this.broadcast.emit("new player",
+            {
+                id: newPlayer.id,
+                x: newPlayer.getX(),
+                y: newPlayer.getY(),
+                rot: newPlayer.getRot()
+            });
         }
 
         //register the handler
         newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_W, newPlayer.forwardThruster);
         newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_A, newPlayer.rotateLeft);
         newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_D, newPlayer.rotateRight);
-        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_SPACE, newPlayer.shoot);
-        this.broadcast.emit("new player",
-        {
-            id: newPlayer.id,
-            x: newPlayer.getX(),
-            y: newPlayer.getY(),
-            rot: newPlayer.getRot()
-        });
+        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_SPACE, newPlayer.shoot);        
+        
         
         var i, existingPlayer;
         for (i = 0; i < remotePlayers.length; ++i){
             existingPlayer = remotePlayers[i];
+
             this.emit("new player",
             {
                 id: existingPlayer.id,
