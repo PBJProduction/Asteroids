@@ -122,12 +122,28 @@ var main = function(server) {
             handleShipAsteroidCollision(collidedShipAsteroids[index].first, collidedShipAsteroids[index].second);
         }
 
+        var collidedShipUfos = getCollisions(remotePlayers, ufos);
+        for (var index in collidedShipUfos) {
+            handleShipUFOCollision(collidedShipUfos[index].first, collidedShipUfos[index].second);
+        }
+
         for(var index in remotePlayers) {
             if (remotePlayers[index].isEnabled()) {
                 var collidedBullets = getCollisions(remotePlayers[index].bullets, asteroids);
                 for(var bindex in collidedBullets) {
                     handleBulletAsteroidCollision(remotePlayers[index], collidedBullets[bindex].first, collidedBullets[bindex].second);
                 }
+                var collidedBulletsUfos = getCollisions(remotePlayers[index].bullets, ufos);
+                for (var bindex in collidedBulletsUfos) {
+                    handleBulletUFOCollision(remotePlayers[index], collidedBulletsUfos[bindex].first, collidedBulletsUfos[bindex].second);
+                }
+            }
+        }
+
+        for (var index in ufos) {
+            var collidedUFOBullets = getCollisions(ufos[index].bullets, remotePlayers);
+            for (var bindex in collidedUFOBullets) {
+                handleBulletShipCollision(collidedUFOBullets[bindex].first, collidedUFOBullets[bindex].second);
             }
         }
 
@@ -301,7 +317,7 @@ var main = function(server) {
     }
 
     function MoveUFO() {
-        if(ufos.length > 0){
+        // if(ufos.length > 0){
             var data =  {
                 array : []
             };
@@ -325,7 +341,7 @@ var main = function(server) {
                 data.array.push(ufo);
             }
             io.sockets.emit("move ufo", data);
-        }
+        // }
     }
     
     function playerById(id) {
@@ -396,6 +412,33 @@ var main = function(server) {
         updateScore(ship, asteroid);
         bullet.kill = true;
         breakAsteroid(asteroid);
+    }
+
+    function handleShipUFOCollision(ship, ufo) {
+        updateScoreUFO(ship, ufo);
+        breakUFO(ufo);
+        lowerLives(ship);
+    }
+
+    function handleBulletUFOCollision(ship, bullet, ufo) {
+        updateScore(ship, ufo);
+        bullet.kill = true;
+        breakUFO(ufo);
+    }
+
+    function handleBulletShipCollision(bullet, ship) {
+        bullet.kill = true;
+        lowerLives(ship);
+    }
+
+    function updateScoreUFO(ship, ufo) {
+        score = 200;
+
+        ship.setScore(ship.getScore() + score);
+
+        if (ship.getScore() % 10000 === 0) {
+            ship.setLives(ship.getLives() + 1);
+        }
     }
 
     function updateScore(ship, asteroid) {
@@ -507,6 +550,17 @@ var main = function(server) {
             }
             replaceShip(ship);
         }
+    }
+
+    function breakUFO(ufo) {
+        sendParticles({
+            x: ufo.getX(),
+            y: ufo.getY(),
+            type: "UFO",
+            rotation: ufo.rotation
+        });
+        ufos.splice(ufos.indexOf(ufo), 1);
+        ufoTime = 0;
     }
 
     function replaceShip(ship) {
