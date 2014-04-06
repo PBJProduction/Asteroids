@@ -2,9 +2,7 @@ var io = require('socket.io'),
     util = require('util'),
     input = require('./input.js'),
     graphics = require('./graphics.js'),
-    Player = require('./player.js'),
     Random = require('./random.js'),
-    AI = require('./AI.js'),
     graphics = graphics();
 
 var main = function(server) {
@@ -53,6 +51,7 @@ var main = function(server) {
         newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_A, newPlayer.rotateLeft);
         newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_D, newPlayer.rotateRight);
         newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_SPACE, newPlayer.shoot);
+        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_S, newPlayer.warp);
         io.sockets.emit("new player",
         {
             id: newPlayer.id,
@@ -75,8 +74,11 @@ var main = function(server) {
         
         for(var i = 0; i < remotePlayers.length; ++i){
             if(remotePlayers[i].isEnabled()) {
-                remotePlayers[i].update(MYGAME.elapsedTime, sound,asteroids);
-                // console.log("fail");
+                remotePlayers[i].update(MYGAME.elapsedTime, sound, asteroids);
+                if(remotePlayers[i].prev){
+                    warpSpeed(remotePlayers[i].prev);
+                    delete remotePlayers[i].prev;
+                }
             }
         }
         
@@ -150,14 +152,24 @@ var main = function(server) {
                 y: newPlayer.getY(),
                 rot: newPlayer.getRot()
             });
+            this.emit("new response", {id : this.id});
         }
+        newPlayer.setLives(3);
+        
 
         //register the handler
         newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_W, newPlayer.forwardThruster);
         newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_A, newPlayer.rotateLeft);
         newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_D, newPlayer.rotateRight);
-        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_SPACE, newPlayer.shoot);        
-        
+        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_SPACE, newPlayer.shoot);
+        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_S, newPlayer.warp);
+        this.broadcast.emit("new player",
+        {
+            id: newPlayer.id,
+            x: newPlayer.getX(),
+            y: newPlayer.getY(),
+            rot: newPlayer.getRot()
+        });
         
         var i, existingPlayer;
         for (i = 0; i < remotePlayers.length; ++i){
@@ -190,6 +202,15 @@ var main = function(server) {
             return;
         }
         movePlayer.myKeyboard.keyRelease(data.key);
+    }
+
+    function warpSpeed(spec){
+        sendParticles({
+            x: spec.x,
+            y: spec.y,
+            type: "WRP",
+            rotation: 0
+        });
     }
 
     function MovePlayers() {
@@ -341,8 +362,8 @@ var main = function(server) {
             y: asteroid.getY(),
             type: "ATR",
             rotation: asteroid.getRot()
-        })
-        asteroid.setSize(asteroid.getSize()-1)
+        });
+        asteroid.setSize(asteroid.getSize()-1);
         if (asteroid.getSize() <= 0) {
             for (var index in asteroids) {
                 if (asteroids[index] === asteroid) {
@@ -350,9 +371,9 @@ var main = function(server) {
                 }
             }
         } else {
-            if (asteroid.getSize() === 3) {
+            if (asteroid.getSize() === 2) {
                 makeNewAsteroids(2, asteroid);
-            } else if (asteroid.getSize() === 2) {
+            } else if (asteroid.getSize() === 1) {
                 makeNewAsteroids(3, asteroid);
             }
             // var tempX = Random.nextRange(-2,2);

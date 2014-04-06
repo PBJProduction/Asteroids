@@ -1,5 +1,6 @@
 var input = require('./input.js');
 var main = require('./main.js');
+var random = require('./random.js');
 
 var graphics = function() {
     function Texture(spec) {
@@ -9,6 +10,7 @@ var graphics = function() {
             thrust = 5,
             friction = 1,
             currentShootSpeed = 0,
+            warpSpeed = 0,
             maxShootSpeed = 200,
             maxspeed = 10;
         var thrusting = false;
@@ -40,6 +42,19 @@ var graphics = function() {
                 });
                 that.bullets.push(newBullet);
                 s.s();
+            };
+        };
+
+        that.warp = function(elapsedTime){
+            warpSpeed += elapsedTime;
+            if(warpSpeed >= 250){
+                warpSpeed = 0;
+                that.prev = {
+                    x : spec.center.x,
+                    y : spec.center.y
+                };
+                spec.center.x = random.nextRange(0,1280);
+                spec.center.y = random.nextRange(0,700);
             }
         };
         
@@ -253,13 +268,11 @@ var graphics = function() {
             else
             {
                 release(input.KeyEvent.DOM_VK_SPACE);
-                if(closestAsteroid.distance > 600){
-                    if(dx < 2 && dy < 2){
-                        press(input.KeyEvent.DOM_VK_W);
-                    }
-                    else{
-                        release(input.KeyEvent.DOM_VK_W);
-                    }
+                if((dx < 2 && dy < 2) || closestAsteroid.distance < 300){
+                    press(input.KeyEvent.DOM_VK_W);
+                }
+                else{
+                    release(input.KeyEvent.DOM_VK_W);
                 }
                 if(closestAsteroid.x < spec.center.x){
                     press(input.KeyEvent.DOM_VK_A);
