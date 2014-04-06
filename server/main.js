@@ -51,6 +51,7 @@ var main = function(server) {
         newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_A, newPlayer.rotateLeft);
         newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_D, newPlayer.rotateRight);
         newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_SPACE, newPlayer.shoot);
+        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_S, newPlayer.warp);
         io.sockets.emit("new player",
         {
             id: newPlayer.id,
@@ -74,6 +75,10 @@ var main = function(server) {
         for(var i = 0; i < remotePlayers.length; ++i){
             if(remotePlayers[i].isEnabled()) {
                 remotePlayers[i].update(MYGAME.elapsedTime, sound, asteroids);
+                if(remotePlayers[i].prev){
+                    warpSpeed(remotePlayers[i].prev);
+                    delete remotePlayers[i].prev;
+                }
             }
         }
         
@@ -141,6 +146,7 @@ var main = function(server) {
         newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_A, newPlayer.rotateLeft);
         newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_D, newPlayer.rotateRight);
         newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_SPACE, newPlayer.shoot);
+        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_S, newPlayer.warp);
         this.broadcast.emit("new player",
         {
             id: newPlayer.id,
@@ -179,6 +185,15 @@ var main = function(server) {
             return;
         }
         movePlayer.myKeyboard.keyRelease(data.key);
+    }
+
+    function warpSpeed(spec){
+        sendParticles({
+            x: spec.x,
+            y: spec.y,
+            type: "WRP",
+            rotation: 0
+        });
     }
 
     function MovePlayers() {
@@ -330,7 +345,7 @@ var main = function(server) {
             y: asteroid.getY(),
             type: "ATR",
             rotation: asteroid.getRot()
-        })
+        });
         asteroid.setSize(asteroid.getSize()-1)
         if (asteroid.getSize() <= 0) {
             for (var index in asteroids) {

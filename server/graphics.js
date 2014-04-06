@@ -1,5 +1,6 @@
 var input = require('./input.js');
 var main = require('./main.js');
+var random = require('./random.js');
 
 var graphics = function() {
     function Texture(spec) {
@@ -9,6 +10,7 @@ var graphics = function() {
             thrust = 5,
             friction = 1,
             currentShootSpeed = 0,
+            warpSpeed = 0,
             maxShootSpeed = 200,
             maxspeed = 10;
         var thrusting = false;
@@ -40,6 +42,19 @@ var graphics = function() {
                 });
                 that.bullets.push(newBullet);
                 s.s();
+            };
+        };
+
+        that.warp = function(elapsedTime){
+            warpSpeed += elapsedTime;
+            if(warpSpeed >= 250){
+                warpSpeed = 0;
+                that.prev = {
+                    x : spec.center.x,
+                    y : spec.center.y
+                };
+                spec.center.x = random.nextRange(0,1280);
+                spec.center.y = random.nextRange(0,700);
             }
         };
         

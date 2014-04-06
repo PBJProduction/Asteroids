@@ -12,6 +12,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
             localPlayer = null,
             remotePlayers = [],
             asteroids = [],
+            warppressed = false,
             forwardpressed = false,
             leftpressed = false,
             rightpressed = false,
@@ -77,6 +78,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
         
         $(window).keyup(function(e){
             if (e.keyCode === settings.UP_KEY.charCodeAt(0) ||
+                e.keyCode === settings.WARP_KEY.charCodeAt(0) ||
                 e.keyCode === settings.LEFT_KEY.charCodeAt(0) ||
                 e.keyCode === settings.RIGHT_KEY.charCodeAt(0) ||
                 e.keyCode === settings.SHOOT_KEY.charCodeAt(0)){
@@ -95,6 +97,10 @@ angular.module('asteroids').controller('gameController', function($scope) {
                 else if(e.keyCode === settings.SHOOT_KEY.charCodeAt(0)){
                     shootpressed = false;
                     e.keyCode = KeyEvent.DOM_VK_SPACE;
+                }
+                else if(e.keyCode === settings.WARP_KEY.charCodeAt(0)){
+                    warppressed = false;
+                    e.keyCode = KeyEvent.DOM_VK_S;
                 }
                 release(e.keyCode);
             }
@@ -122,6 +128,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
 
         $(window).keydown(function(e){
             if (e.keyCode === settings.UP_KEY.charCodeAt(0) ||
+                e.keyCode === settings.WARP_KEY.charCodeAt(0) ||
                 e.keyCode === settings.LEFT_KEY.charCodeAt(0) ||
                 e.keyCode === settings.RIGHT_KEY.charCodeAt(0) ||
                 e.keyCode === settings.SHOOT_KEY.charCodeAt(0)) {
@@ -137,9 +144,13 @@ angular.module('asteroids').controller('gameController', function($scope) {
                     rightpressed = true;
                     e.keyCode = KeyEvent.DOM_VK_D;
                 }
-                else if(e.keyCode === settings.SHOOT_KEY.charCodeAt(0)){
-                    shootpressed = false;
+                else if(e.keyCode === settings.SHOOT_KEY.charCodeAt(0) && !shootpressed){
+                    shootpressed = true;
                     e.keyCode = KeyEvent.DOM_VK_SPACE;
+                }
+                else if(e.keyCode === settings.WARP_KEY.charCodeAt(0) && !warppressed){
+                    warppressed = true;
+                    e.keyCode = KeyEvent.DOM_VK_S;
                 }
 
                 press(e.keyCode);
@@ -304,22 +315,30 @@ angular.module('asteroids').controller('gameController', function($scope) {
 
         function onPlaceParticles(data){
             var image;
+            var asteroid = true;
             var size = 20;
+            var speed = 20;
             if(data.type === "ATR")
                 image = asteroidExplodePic;
             else if(data.type === "SHP"){
                 image = shipExplodePic;
                 size =50;
             }
+            else if(data.type === "WRP"){
+                image = shipExplodePic;
+                size =50;
+                speed = 100;
+                asteroid = false;
+            }
             else
                 image = ufoExplodePic;
 
             particlesArr.push( particleSystem( {
-                                    asteroid : true,
+                                    asteroid : asteroid,
                                     image : image,
                                     size:{mean:size,stdev:5},
                                     center: {x: data.x, y: data.y},
-                                    speed: {mean: 20, stdev: 5},
+                                    speed: {mean: speed, stdev: 5},
                                     lifetime: {mean: 1, stdev: 0.25}
                                 },
                                 graphics
