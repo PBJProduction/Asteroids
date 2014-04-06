@@ -16,8 +16,10 @@ angular.module('asteroids').controller('gameController', function($scope) {
             forwardpressed = false,
             leftpressed = false,
             rightpressed = false,
+            shootpressed = false,
             bulletPic = new Image(),
             shipPic = new Image(),
+            ufoPic = new Image(),
             asteroidPic = new Image(),
             asteroidExplodePic = new Image(),
             shipExplodePic = new Image(),
@@ -26,12 +28,14 @@ angular.module('asteroids').controller('gameController', function($scope) {
             pewIndex = 0,
             pewpewArr = [],
             particlesArr = [],
+            ufos = [],
             alive,
             backgroundSound = new Audio("../audio/background.mp3");
 
             shipPic.src = "../images/ship.png";
             bulletPic.src = "../images/bullet.png";
             asteroidPic.src = "../images/asteroid.png";
+            ufoPic.src = "../images/ufo.png";
             asteroidExplodePic.src = "../images/asteroid.png";
             shipExplodePic.src = "../images/explosion.png";
         
@@ -66,6 +70,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
             socket.on("remove player", onRemovePlayer);
             socket.on("new response", onSocketId);
             socket.on("move asteroids", onMoveAsteroids);
+            socket.on("move ufo", onMoveUFO);
             socket.on("place particles", onPlaceParticles);
             socket.on("play pew", playPew);
             socket.on("toggle player", togglePlayer);
@@ -184,6 +189,14 @@ angular.module('asteroids').controller('gameController', function($scope) {
             }
             for (var index in asteroids) {
                 asteroids[index].draw();
+            }
+
+            for(var index in ufos){
+                var bullets = ufos[index].getBullets();
+                for(var j = 0; j < bullets.length; ++j){
+                    bullets[j].draw();
+                }
+                ufos[index].draw();
             }
 
             if (!cancelNextRequest) {
@@ -310,6 +323,32 @@ angular.module('asteroids').controller('gameController', function($scope) {
             } else {
                 asteroids = [];
                 console.log("No Asteroids");
+            }
+        }
+
+        function onMoveUFO(data){
+            ufos = [];
+            for(var i in data.array) {
+                var bullets = [];
+                for(var j = 0; j < data.array[i].bullets.length; ++j){
+                    var bullet = graphics.Texture( {
+                        image : bulletPic,
+                        center : { x : data.array[i].bullets[j].x, y : data.array[i].bullets[j].y },
+                        width : 20, height : 20,
+                        rotation : data.array[i].bullets[j].rot
+                    });
+                    bullets.push(bullet);
+                }
+                ufos.push(
+                    graphics.Texture({
+                        image : ufoPic,
+                        center : { x : data.array[i].x, y : data.array[i].y },
+                        width : 100,
+                        height : 50,
+                        rotation : 0,
+                        bullets : bullets
+                    })
+                );
             }
         }
 

@@ -7,10 +7,12 @@ var io = require('socket.io'),
 
 var main = function(server) {
     var remotePlayers = [],
+        ufos = [],
         MYGAME = {},
         shootSpeed = 1000,
         interval = null,
-        AIConnected = false,        
+        AIConnected = false,
+        ufoTime = 0,
         asteroids = [];
 
     io = io.listen(server);
@@ -62,6 +64,26 @@ var main = function(server) {
         remotePlayers.push(newPlayer);
     }
 
+    function genUFO(){
+        var newPlayer = graphics.Texture( {
+                center : { x : 0, y : Random.nextRange(0,700) },
+                width : 100, height : 100,
+                rotation : 0,
+                moveRate : 100,         // pixels per second
+                rotateRate : 3.14159    // Radians per second
+            });
+        newPlayer.id = 'ufo';
+        newPlayer.setLives(1);
+        //register the handler
+        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_W, newPlayer.forwardThruster);
+        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_A, newPlayer.rotateLeft);
+        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_D, newPlayer.rotateRight);
+        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_SPACE, newPlayer.shoot);
+        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_S, newPlayer.warp);
+
+        ufos.push(newPlayer);
+    }
+
     function gameLoop(time) {
         if(asteroids.length === 0){
             generateAsteroids({number: Random.nextRange(2,3), type: 1});
@@ -69,8 +91,17 @@ var main = function(server) {
         var currentTime = Date.now();
         MYGAME.elapsedTime = currentTime - MYGAME.lastTimeStamp;
         MYGAME.lastTimeStamp = currentTime;
-        
+        ufoTime+=MYGAME.elapsedTime;
+
         var sound = {s : function(){sendSound();}};
+
+        if(ufoTime >= 10000 && ufos.length === 0){
+            ufoTime = 0;
+            genUFO();
+        }
+        for(var i = 0; i < ufos.length; ++i){
+            ufos[i].update(MYGAME.elapsedTime,sound);
+        }
         
         for(var i = 0; i < remotePlayers.length; ++i){
             if(remotePlayers[i].isEnabled()) {
@@ -101,6 +132,7 @@ var main = function(server) {
         }
 
         MovePlayers();
+        MoveUFO();
         MoveAsteroids();
     }
 
@@ -249,6 +281,34 @@ var main = function(server) {
             data.array.push(asteroid);
         }
         io.sockets.emit("move asteroids", data);
+    }
+
+    function MoveUFO() {
+        if(ufos.length > 0){
+            var data =  {
+                array : []
+            };
+
+            for(var i in ufos) {
+                var ufo = {
+                    x : ufos[i].getX(),
+                    y : ufos[i].getY(),
+                    rot : ufos[i].getRot()
+                };
+                var bullets = [];
+                for(var j = 0; j < ufos[i].bullets.length; ++j){
+                    var bullet = {
+                        x: ufos[i].bullets[j].getX(),
+                        y: ufos[i].bullets[j].getY(),
+                        rot : ufos[i].bullets[j].getRot()
+                    };
+                    bullets.push(bullet);
+                }
+                ufo.bullets = bullets;
+                data.array.push(ufo);
+            }
+            io.sockets.emit("move ufo", data);
+        }
     }
     
     function playerById(id) {

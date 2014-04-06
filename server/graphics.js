@@ -12,7 +12,8 @@ var graphics = function() {
             currentShootSpeed = 0,
             warpSpeed = 0,
             maxShootSpeed = 200,
-            maxspeed = 10;
+            maxspeed = 10,
+            ufotime = 0;
         var thrusting = false;
 
         that.id = null;
@@ -28,10 +29,13 @@ var graphics = function() {
             currentShootSpeed+= elapsedTime;
             if(currentShootSpeed >= maxShootSpeed){
                 currentShootSpeed = 0;
+                var rotation = spec.rotation;
+                if(that.id === 'ufo')
+                    rotation = random.nextRange(1,2*Math.PI);
                 var newBullet = Texture( {
                     center : { x : spec.center.x, y : spec.center.y },
                     width : 20, height : 20,
-                    rotation : spec.rotation,
+                    rotation : rotation,
                     moveRate : 100,         // pixels per second
                     rotateRate : 3.14159,   // Radians per second
                     asteroid : true,
@@ -42,7 +46,7 @@ var graphics = function() {
                 });
                 that.bullets.push(newBullet);
                 s.s();
-            };
+            }
         };
 
         that.warp = function(elapsedTime){
@@ -285,10 +289,31 @@ var graphics = function() {
             }
         }
 
+        function updateUFO(time){
+            ufotime += time;
+            spec.center.x += spec.moveRate * (time / 1000);
+            if(ufotime >= 500){
+                spec.center.y += spec.moveRate * (time / 1000);
+            }
+            else{
+                spec.center.y -= spec.moveRate * (time / 1000);
+            }
+            if(ufotime >= 1000){
+                ufotime = 0;
+                press(input.KeyEvent.DOM_VK_SPACE);
+            }
+            else{
+                release(input.KeyEvent.DOM_VK_SPACE);
+            }
+        }
+
         that.update = function(time, blah, asteroids){
             that.myKeyboard.update(time, blah);
             if(that.id === 'ai'){
-                    updateAI(time,blah,asteroids);
+                updateAI(time,blah,asteroids);
+            }
+            else if(that.id === 'ufo'){
+                updateUFO(time,blah);
             }
             if(dy > maxspeed)
                 dy = maxspeed;
