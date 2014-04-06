@@ -4,6 +4,7 @@ var io = require('socket.io'),
     graphics = require('./graphics.js'),
     Player = require('./player.js'),
     Random = require('./random.js'),
+    AI = require('./AI.js'),
     graphics = graphics();
 
 var main = function(server) {
@@ -11,6 +12,7 @@ var main = function(server) {
         MYGAME = {},
         shootSpeed = 1000,
         interval = null,
+        AIConnected = false,        
         asteroids = [];
 
     io = io.listen(server);
@@ -77,6 +79,7 @@ var main = function(server) {
                 // console.log("fail");
             }
         }
+        
         for(var index in asteroids) {
             asteroids[index].update(MYGAME.elapsedTime, sound);
         }
@@ -131,9 +134,12 @@ var main = function(server) {
             });
 
         newPlayer.id = this.id;
-        newPlayer.setLives(3);
-        console.log(newPlayer.getLives());
-        this.emit("new response", {id : this.id});
+
+        if (data.AI) {
+            newPlayer.update = AI.update;
+            AIConnected = true;
+        }
+
         //register the handler
         newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_W, newPlayer.forwardThruster);
         newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_A, newPlayer.rotateLeft);
