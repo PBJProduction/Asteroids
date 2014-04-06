@@ -253,13 +253,11 @@ var graphics = function() {
             else
             {
                 release(input.KeyEvent.DOM_VK_SPACE);
-                if(closestAsteroid.distance > 600){
-                    if(dx < 2 && dy < 2){
-                        press(input.KeyEvent.DOM_VK_W);
-                    }
-                    else{
-                        release(input.KeyEvent.DOM_VK_W);
-                    }
+                if((dx < 2 && dy < 2) || closestAsteroid.distance < 300){
+                    press(input.KeyEvent.DOM_VK_W);
+                }
+                else{
+                    release(input.KeyEvent.DOM_VK_W);
                 }
                 if(closestAsteroid.x < spec.center.x){
                     press(input.KeyEvent.DOM_VK_A);

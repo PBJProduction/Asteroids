@@ -73,8 +73,7 @@ var main = function(server) {
         
         for(var i = 0; i < remotePlayers.length; ++i){
             if(remotePlayers[i].isEnabled()) {
-                remotePlayers[i].update(MYGAME.elapsedTime, sound,asteroids);
-                // console.log("fail");
+                remotePlayers[i].update(MYGAME.elapsedTime, sound, asteroids);
             }
         }
         
@@ -133,10 +132,9 @@ var main = function(server) {
 
         newPlayer.id = this.id;
 
-        if (data.AI) {
-            newPlayer.update = AI.update;
-            AIConnected = true;
-        }
+
+        newPlayer.setLives(3);
+        this.emit("new response", {id : this.id});
 
         //register the handler
         newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_W, newPlayer.forwardThruster);
@@ -408,8 +406,8 @@ var main = function(server) {
         });
         if(ship.getLives() <= 0) {
             ship_id = ship.id;
-            remotePlayers.splice(remotePlayers.indexOf(ship), 1);
-            io.sockets.emit("remove player", {id: ship_id});
+            //remotePlayers.splice(remotePlayers.indexOf(ship), 1);
+            //io.sockets.emit("remove player", {id: ship_id});
             // toggleShip(ship);
         } else {
             if(ship.getLives() !== undefined) {
