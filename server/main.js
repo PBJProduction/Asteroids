@@ -2,7 +2,6 @@ var io = require('socket.io'),
     util = require('util'),
     input = require('./input.js'),
     graphics = require('./graphics.js'),
-    Player = require('./player.js'),
     Random = require('./random.js'),
     graphics = graphics();
 
