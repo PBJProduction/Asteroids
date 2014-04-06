@@ -3,6 +3,7 @@ var io = require('socket.io'),
     input = require('./input.js'),
     graphics = require('./graphics.js'),
     Random = require('./random.js'),
+    AI = require('./AI.js'),
     graphics = graphics();
 
 var main = function(server) {
@@ -10,6 +11,7 @@ var main = function(server) {
         MYGAME = {},
         shootSpeed = 1000,
         interval = null,
+        AIConnected = false,        
         asteroids = [];
 
     io = io.listen(server);
@@ -71,8 +73,12 @@ var main = function(server) {
         var sound = {s : function(){sendSound();}};
         
         for(var i = 0; i < remotePlayers.length; ++i){
-            remotePlayers[i].update(MYGAME.elapsedTime, sound,asteroids);
+            if(remotePlayers[i].isEnabled()) {
+                remotePlayers[i].update(MYGAME.elapsedTime, sound,asteroids);
+                // console.log("fail");
+            }
         }
+        
         for(var index in asteroids) {
             asteroids[index].update(MYGAME.elapsedTime, sound);
         }
@@ -83,9 +89,11 @@ var main = function(server) {
         }
 
         for(var index in remotePlayers) {
-            var collidedBullets = getCollisions(remotePlayers[index].bullets, asteroids);
-            for(var bindex in collidedBullets) {
-                handleBulletAsteroidCollision(remotePlayers[index], collidedBullets[bindex].first, collidedBullets[bindex].second);
+            if (remotePlayers[index].isEnabled()) {
+                var collidedBullets = getCollisions(remotePlayers[index].bullets, asteroids);
+                for(var bindex in collidedBullets) {
+                    handleBulletAsteroidCollision(remotePlayers[index], collidedBullets[bindex].first, collidedBullets[bindex].second);
+                }
             }
         }
 
@@ -125,9 +133,12 @@ var main = function(server) {
             });
 
         newPlayer.id = this.id;
-        newPlayer.setLives(3);
-        console.log(newPlayer.getLives());
-        this.emit("new response", {id : this.id});
+
+        if (data.AI) {
+            newPlayer.update = AI.update;
+            AIConnected = true;
+        }
+
         //register the handler
         newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_W, newPlayer.forwardThruster);
         newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_A, newPlayer.rotateLeft);
@@ -179,28 +190,33 @@ var main = function(server) {
         };
 
         for(var i = 0; i < remotePlayers.length; ++i){
-            var obj = {
-                id  : remotePlayers[i].id,
-                x   : remotePlayers[i].getX(),
-                y   : remotePlayers[i].getY(),
-                rot : remotePlayers[i].getRot(),
-                thrusting: remotePlayers[i].isThrusting(),
-                direction : {
-                    x : remotePlayers[i].dx,
-                    y : remotePlayers[i].dy
-                }
-            };
-            var bullets = [];
-            for(var j = 0; j < remotePlayers[i].bullets.length; ++j){
-                var bullet = {
-                    x: remotePlayers[i].bullets[j].getX(),
-                    y: remotePlayers[i].bullets[j].getY(),
-                    rot : remotePlayers[i].bullets[j].getRot()
+            if (remotePlayers[i].isEnabled()) {
+                var obj = {
+                    id  : remotePlayers[i].id,
+                    x   : remotePlayers[i].getX(),
+                    y   : remotePlayers[i].getY(),
+                    rot : remotePlayers[i].getRot(),
+                    thrusting: remotePlayers[i].isThrusting(),
+                    direction : {
+                        x : remotePlayers[i].dx,
+                        y : remotePlayers[i].dy
+                    },
+                    // lives: remotePlayers[i].getLives(),
+                    // score: remotePlayers[i].getScore(),
+                    // rounds: remotePlayer[i].getRounds()
                 };
-                bullets.push(bullet);
+                var bullets = [];
+                for(var j = 0; j < remotePlayers[i].bullets.length; ++j){
+                    var bullet = {
+                        x: remotePlayers[i].bullets[j].getX(),
+                        y: remotePlayers[i].bullets[j].getY(),
+                        rot : remotePlayers[i].bullets[j].getRot()
+                    };
+                    bullets.push(bullet);
+                }
+                obj.bullets = bullets;
+                data.array.push(obj);
             }
-            obj.bullets = bullets;
-            data.array.push(obj);
         }
         io.sockets.emit("move player", data);
     }
@@ -215,7 +231,8 @@ var main = function(server) {
                 x : asteroids[index].getX(),
                 y : asteroids[index].getY(),
                 rot : asteroids[index].getRot(),
-                size : asteroids[index].getSize()
+                size : asteroids[index].getSize(),
+                radius : asteroids[index].getRadius()
             };
             data.array.push(asteroid);
         }
@@ -258,10 +275,10 @@ var main = function(server) {
 
     function generateAsteroids(spec) {
         for(var i = 0; i < spec.number; ++i) {
-            var tempX = Random.nextRange(-2,2);
-            var tempY = Random.nextRange(-2,2);
-            if(tempY === 0 && tempX === 0)
-                tempY = 1;
+            // var tempX = Random.nextRange(-2,2);
+            // var tempY = Random.nextRange(-2,2);
+            // if(tempY === 0 && tempX === 0)
+            //     tempY = 1;
             asteroids.push(
                 graphics.Texture( {
                     center : { x : Random.nextRange(0,1280), y : Random.nextRange(0,700) },
@@ -272,8 +289,8 @@ var main = function(server) {
                     asteroid : true,
                     alive : 0,
                     thrust : 2,
-                    dx : tempX,
-                    dy : tempY
+                    dx : makeDirection(),
+                    dy : makeDirection()
                 })
             );
             asteroids[i].setSize(3);
@@ -281,15 +298,33 @@ var main = function(server) {
     }
 
     function handleShipAsteroidCollision(ship, asteroid) {
+        updateScore(ship, asteroid);
         breakAsteroid(asteroid);
         lowerLives(ship);
     }
 
     function handleBulletAsteroidCollision(ship, bullet, asteroid) {
-        //Base scoring off of asteroids?
-        ship.setScore(ship.getScore() + 1);
+        updateScore(ship, asteroid);
         bullet.kill = true;
         breakAsteroid(asteroid);
+    }
+
+    function updateScore(ship, asteroid) {
+        score = 1;
+
+        if (asteroid.getSize() === 3) {
+            score = 20;
+        } else if (asteroid.getSize() === 2) {
+            score = 50;
+        } else if (asteroid.getSize() === 1) {
+            score = 100;
+        }
+
+        ship.setScore(ship.getScore() + score);
+
+        if (ship.getScore() % 10000 === 0) {
+            ship.setLives(ship.getLives() + 1);
+        }
     }
 
     function breakAsteroid(asteroid) {
@@ -312,12 +347,18 @@ var main = function(server) {
             } else if (asteroid.getSize() === 2) {
                 makeNewAsteroids(3, asteroid);
             }
-            var tempX = Random.nextRange(-2,2);
-            var tempY = Random.nextRange(-2,2);
-            if(tempY === 0 && tempX === 0)
-                tempY = 1;
-            asteroid.setDX(tempX);
-            asteroid.setDY(tempY);
+            // var tempX = Random.nextRange(-2,2);
+            // var tempY = Random.nextRange(-2,2);
+            // if(tempY === 0 && tempX === 0)
+            //     tempY = 1;
+            asteroid.setDX(makeDirection());
+            asteroid.setDY(makeDirection());
+
+            if(asteroid.getSize() == 2) {
+                asteroid.setRadius(35);
+            } else if (asteroid.getSize() == 1) {
+                asteroid.setRadius(20);
+            }
         }
     }
 
@@ -340,14 +381,21 @@ var main = function(server) {
                     dy : tempY
                 });
 
-            tempX = Random.nextGaussian(-2,2);
-            tempY = Random.nextGaussian(-2,2);
-            if(tempY === 0 && tempX === 0)
-                tempY = 1;
-            asteroid.setDX(tempX);
-            asteroid.setDY(tempY);
+            // tempX = Random.nextRange(-2,2);
+            // tempY = Random.nextRange(-2,2);
+            // if(tempY === 0 && tempX === 0)
+            //     tempY = 1;
+            asteroid.setDX(makeDirection());
+            asteroid.setDY(makeDirection());
 
             toAdd.setSize(asteroid.getSize());
+
+            if(toAdd.getSize() == 2) {
+                toAdd.setRadius(35);
+            } else if (toAdd.getSize() == 1) {
+                toAdd.setRadius(20);
+            }
+
             asteroids.push(toAdd);
         }
     }
@@ -363,6 +411,7 @@ var main = function(server) {
             ship_id = ship.id;
             remotePlayers.splice(remotePlayers.indexOf(ship), 1);
             io.sockets.emit("remove player", {id: ship_id});
+            // toggleShip(ship);
         } else {
             if(ship.getLives() !== undefined) {
                 ship.setLives(ship.getLives() - 1);
@@ -389,6 +438,25 @@ var main = function(server) {
             type: spec.type,
             rotation: spec.rotation
         });
+    }
+
+    function toggleShip(ship) {
+        util.log("Player has toggled: "+ship.id);
+
+        if(ship.isEnabled()) {
+            ship.disable();
+        } else {
+            ship.enable();
+        }
+
+        io.sockets.emit("toggle player", {id: ship.id});
+    }
+
+    function makeDirection() {
+        tempY = Random.nextRange(-2,2);
+        if(tempY <= 0.1 && tempY >= -0.1)
+            return makeDirection();
+        return tempY;
     }
 
     return {

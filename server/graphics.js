@@ -167,6 +167,26 @@ var graphics = function() {
             return toReturn;
         }
 
+        that.disable = function() {
+            spec.disabled = true;
+        }
+
+        that.enable = function() {
+            spec.disabled = false;
+        }
+
+        that.isEnabled = function() {
+            if (spec.disabled === undefined) {
+                return true;
+            } else {
+                if (spec.disabled) {
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+        }
+
         that.checkBounds = function(){
             if(spec.center.x+spec.height/2 <= 0)
                 spec.center.x = 1280+spec.height/2;
