@@ -25,6 +25,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
 			pewIndex = 0,
 			pewpewArr = [],
             particlesArr = [],
+            alive,
 			backgroundSound = new Audio("../audio/background.mp3");
 
 			shipPic.src = "../images/ship.png";
@@ -36,7 +37,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
 		function initialize() {
 			console.log('game initializing...');
 
-            for (var i = 0; i < 100; ++i) {
+            for (var i = 0; i < 50; ++i) {
                 pewpewArr.push(new Audio("../audio/pewpew.wav"));
             }
 
@@ -47,6 +48,8 @@ angular.module('asteroids').controller('gameController', function($scope) {
 				rotation : 0,
 				bullets : []
 			});
+
+			alive = true;
 
 			backgroundSound.addEventListener('ended', function() {
 				this.currentTime = 0;
@@ -64,6 +67,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
 			socket.on("move asteroids", onMoveAsteroids);
             socket.on("place particles", onPlaceParticles);
 			socket.on("play pew", playPew);
+			socket.on("toggle player", togglePlayer);
 		}
 		
 		$(window).keyup(function(e){
@@ -85,24 +89,28 @@ angular.module('asteroids').controller('gameController', function($scope) {
 		});
 
 		function playPew() {
-			if (pewIndex > 100) pewIndex = 0;
+			if (pewIndex > 50) pewIndex = 0;
 			pewpewArr[pewIndex++].play();
 		}
 
 		function release(code) {
-			var obj = {
-				id : localPlayer.id,
-				key : code
-			};
-			socket.emit("key release", obj);
+			if (alive) {
+				var obj = {
+					id : localPlayer.id,
+					key : code
+				};
+				socket.emit("key release", obj);
+			}		
 		}
 
 		function press(code) {
-			var obj = {
-				id : localPlayer.id,
-				key : code
-			};			
-			socket.emit("key press", obj)
+			if (alive) {
+				var obj = {
+					id : localPlayer.id,
+					key : code
+				};			
+				socket.emit("key press", obj);
+			}
 		}
 
 		$(window).keydown(function(e){
@@ -145,7 +153,9 @@ angular.module('asteroids').controller('gameController', function($scope) {
 				for(var j = 0; j < bullets.length; ++j){
 					bullets[j].draw();
 				}
-				remotePlayers[i].draw();
+				if (remotePlayers[i].isEnabled()) {
+					remotePlayers[i].draw();    
+				}
 			}
 			for (var index in asteroids) {
 				asteroids[index].draw();
@@ -237,6 +247,10 @@ angular.module('asteroids').controller('gameController', function($scope) {
 		function onRemovePlayer(data) {
 			var removePlayer = playerById(data.id);
 
+			if (localPlayer.id == data.id) {
+				alive = false;
+			}
+
 			if (!removePlayer) {
 				console.log("Player not found: "+data.id);
 				return;
@@ -262,7 +276,8 @@ angular.module('asteroids').controller('gameController', function($scope) {
 						graphics.Texture({
 							image : asteroidPic,
 							center : { x : data.array[index].x, y : data.array[index].y },
-							width : 100, height : 100,
+							width : data.array[index].radius * 2,
+							height : data.array[index].radius * 2,
 							rotation : data.array[index].rot
 						})
 					);
@@ -292,6 +307,17 @@ angular.module('asteroids').controller('gameController', function($scope) {
                                 },
                                 graphics
                             ));
+        }
+
+        function togglePlayer(data) {
+        	var ship = playerById(data.id);
+
+        	if(ship.isEnabled()) {
+        	    ship.disable();
+        	} else {
+        	    ship.enable();
+        	}
+
         }
 
 		return {

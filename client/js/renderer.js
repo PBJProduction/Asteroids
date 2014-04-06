@@ -83,6 +83,26 @@ MYGAME.graphics = function() {
 			
 			context.restore();
 		};
+
+		that.disable = function() {
+		    spec.disabled = true;
+		}
+
+		that.enable = function() {
+		    spec.disabled = false;
+		}
+
+		that.isEnabled = function() {
+		    if (spec.disabled === undefined) {
+		        return true;
+		    } else {
+		        if (spec.disabled) {
+		            return false;
+		        } else {
+		            return true;
+		        }
+		    }
+		}
 		
 		return that;
 	}
