@@ -13,6 +13,7 @@ var main = function(server) {
         interval = null,
         AIConnected = false,
         ufoTime = 0,
+        running = false,
         asteroids = [];
 
     io = io.listen(server);
@@ -23,19 +24,6 @@ var main = function(server) {
             io.set("log level", 1);
         });
         setEventHandlers();
-        genAI();
-        
-        /*
-        genObj({
-                center : { x : 640, y : 350 },
-                width : 100, height : 100,
-                rotation : 0,
-                moveRate : 100,         // pixels per second
-                rotateRate : 3.14159,   // Radians per second
-                id : 'ai'
-            });
-*/
-        run();
     }
 
     function setEventHandlers(){
@@ -44,7 +32,6 @@ var main = function(server) {
 
     function run() {
         MYGAME.lastTimeStamp = Date.now();
-
         interval = setInterval(gameLoop, 1000/30);
     }
 
@@ -76,7 +63,13 @@ var main = function(server) {
         remotePlayers.push(newPlayer);
     }
 
-    
+    function onStartGame(){
+        if(running === false){
+            running = true;
+            run();
+        }
+    }
+
     function genUFO(){
         var newPlayer = graphics.Texture( {
                 center : { x : 0, y : Random.nextRange(0,700) },
@@ -119,49 +112,28 @@ var main = function(server) {
 
         ufos.push(newPlayer);
     }
-    
-
-    function genObj(spec) {
-        var newPlayer = graphics.Texture( {
-            center : {x : spec.x, y : spec.y},
-            width : spec.width,
-            height : spec.height,
-            rotation : spec.rotation,
-            moveRate : spec.moveRate,
-            rotateRight : spec.rotateRight
-        });
-        
-        newPlayer.id = spec.id;
-        
-        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_W, newPlayer.forwardThruster);
-        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_A, newPlayer.rotateLeft);
-        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_D, newPlayer.rotateRight);
-        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_SPACE, newPlayer.shoot);
-        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_S, newPlayer.warp);
-
-        if (newPlayer.id === 'ufo') {
-            newPlayer.setLives(1);
-            ufos.push(newPlayer);
-        }
-        else {
-            newPlayer.setLives(3);
-            io.sockets.emit("new player",
-            {
-                id : newPlayer.id,
-                x : newPlayer.getX(),
-                y : newPlayer.getY(),
-                rot : newPlayer.getRot()
-            });
-
-            remotePlayers.push(newPlayer);
-        }
-    }
 
     function gameLoop(time) {
         if(asteroids.length === 0){
             generateAsteroids({number: Random.nextRange(2,3), type: 1});
         }
 
+        if(remotePlayers.length > 0 && remotePlayers.length < 2 && AIConnected === false){
+            genAI();
+            AIConnected = true;
+        }
+        else if(remotePlayers.length > 2 && AIConnected === true){
+            var removePlayer = playerById('ai');
+
+            if (!removePlayer) {
+                console.log('errors');
+            }
+            else{
+                remotePlayers.splice(remotePlayers.indexOf(removePlayer), 1);
+                io.sockets.emit("remove player", {id: 'ai'});
+                AIConnected = false;
+            }
+        }
         var currentTime = Date.now();
         MYGAME.elapsedTime = currentTime - MYGAME.lastTimeStamp;
         MYGAME.lastTimeStamp = currentTime;
@@ -178,15 +150,6 @@ var main = function(server) {
             else {
                 genBigUfo();
             }
-            /*
-            genObj({
-                center : { x : 0, y : Random.nextRange(0,700) },
-                width : 100, height : 100,
-                rotation : 0,
-                moveRate : 100,         // pixels per second
-                rotateRate : 3.14159,   // Radians per second
-                id : 'ufo'
-            });*/
         }
         for(var i = 0; i < ufos.length; ++i){
             ufos[i].update(MYGAME.elapsedTime,sound);
@@ -239,6 +202,7 @@ var main = function(server) {
         MovePlayers();
         MoveUFO();
         MoveAsteroids();
+        handleEndGame();
     }
 
     function onSocketConnection(client) {
@@ -247,6 +211,7 @@ var main = function(server) {
         client.on("new player", onNewPlayer);
         client.on("key press", onKeyPress);
         client.on("key release", onKeyRelease);
+        client.on("start game", onStartGame);
     }
 
     function onClientDisconnect() {
@@ -271,24 +236,9 @@ var main = function(server) {
                 moveRate : 100,         // pixels per second
                 rotateRate : 3.14159    // Radians per second
             });
-
-        newPlayer.id = data.id == 'ai' ? data.id : this.id;
-
-        if (data.AI) {
-            newPlayer.update = AI.update;
-            AIConnected = true;
-            console.log("created AI");
-        }
-        else {
-            this.broadcast.emit("new player",
-            {
-                id: newPlayer.id,
-                x: newPlayer.getX(),
-                y: newPlayer.getY(),
-                rot: newPlayer.getRot()
-            });
-            this.emit("new response", {id : this.id});
-        }
+        
+        newPlayer.id = this.id;
+        this.emit("new response", {id : this.id});
         newPlayer.setLives(3);
         
 
@@ -309,13 +259,12 @@ var main = function(server) {
         var i, existingPlayer;
         for (i = 0; i < remotePlayers.length; ++i){
             existingPlayer = remotePlayers[i];
-
             this.emit("new player",
             {
                 id: existingPlayer.id,
-                x: existingPlayer.x,
-                y: existingPlayer.y,
-                rot: existingPlayer.rot
+                x: existingPlayer.getX(),
+                y: existingPlayer.getY(),
+                rot: existingPlayer.getRot()
             });
         }
         remotePlayers.push(newPlayer);
@@ -382,6 +331,7 @@ var main = function(server) {
                 data.array.push(obj);
             }
         }
+        //console.log(data);
         io.sockets.emit("move player", data);
     }
 
@@ -688,6 +638,17 @@ var main = function(server) {
         if(tempY <= 0.1 && tempY >= -0.1)
             return makeDirection();
         return tempY;
+    }
+
+    function handleEndGame(){
+        if(remotePlayers.length === 0){
+            io.sockets.emit("end game", {
+                scores : 'none'
+            });
+            clearInterval(interval);
+            running = false;
+            AIConnected = false;
+        }
     }
 
     return {
