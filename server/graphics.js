@@ -206,6 +206,18 @@ var graphics = function() {
             }
         }
 
+        that.getRounds = function() {
+            if (spec.rounds === undefined) {
+                return 0;
+            } else {
+                return spec.rounds;
+            }
+        }
+
+        that.setRounds = function(value) {
+            spec.rounds = value;
+        }
+
         that.checkBounds = function(){
             if(spec.center.x+spec.height/2 <= 0)
                 spec.center.x = 1280+spec.height/2;

@@ -87,6 +87,9 @@ var main = function(server) {
     function gameLoop(time) {
         if(asteroids.length === 0){
             generateAsteroids({number: Random.nextRange(2,3), type: 1});
+            for (var index in remotePlayers) {
+                remotePlayers[index].setRounds(remotePlayers[index].getRounds() + 1);
+            }
         }
         var currentTime = Date.now();
         MYGAME.elapsedTime = currentTime - MYGAME.lastTimeStamp;
