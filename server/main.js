@@ -475,6 +475,10 @@ var main = function(server) {
     function updateScoreUFO(ship, ufo) {
         score = 200;
 
+        if (ufo.id === "bigUfo") {
+            score = 1000;
+        }
+
         ship.setScore(ship.getScore() + score);
 
         if (ship.getScore() % 10000 === 0) {
