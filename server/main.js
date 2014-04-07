@@ -63,9 +63,44 @@ var main = function(server) {
         remotePlayers.push(newPlayer);
     }
 
+    function sendPlayers(){
+        var clients = io.sockets.clients();
+        console.log(clients.length);
+        for(var client in clients){
+            var newPlayer = graphics.Texture( {
+                    center : { x : 640, y : 350 },
+                    width : 100, height : 100,
+                    rotation : 0,
+                    moveRate : 100,         // pixels per second
+                    rotateRate : 3.14159    // Radians per second
+                });
+            
+            newPlayer.id = client.id;
+            newPlayer.setLives(3);
+            
+
+            //register the handler
+            newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_W, newPlayer.forwardThruster);
+            newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_A, newPlayer.rotateLeft);
+            newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_D, newPlayer.rotateRight);
+            newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_SPACE, newPlayer.shoot);
+            newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_S, newPlayer.warp);
+
+            io.sockets.emit("new player",
+            {
+                id: newPlayer.id,
+                x: newPlayer.getX(),
+                y: newPlayer.getY(),
+                rot: newPlayer.getRot()
+            });
+            remotePlayers.push(newPlayer);
+        }
+    }
+
     function onStartGame(){
         if(running === false){
             running = true;
+            //sendPlayers();
             run();
         }
     }
@@ -100,7 +135,6 @@ var main = function(server) {
                 rotateRate : 3.14159
         });
 
-        console.log('created a big one');
         newPlayer.id = 'bigUfo';
         newPlayer.setLives(1);
 
@@ -121,7 +155,7 @@ var main = function(server) {
             }
         }
 
-        if(remotePlayers.length > 0 && remotePlayers.length < 2 && AIConnected === false){
+        if(remotePlayers.length < 2 && AIConnected === false){
             genAI();
             AIConnected = true;
         }
