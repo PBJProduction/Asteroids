@@ -1,6 +1,5 @@
 angular.module('asteroids').controller('gameController', function($scope) {
     $scope.restart = function(){
-        console.log('restart');
         $('#endgame-modal').modal('hide');
         setTimeout(function(){
             location.reload();
@@ -8,10 +7,10 @@ angular.module('asteroids').controller('gameController', function($scope) {
     };
 
     $scope.main = function(){
-        console.log('main');
         $('#endgame-modal').modal('hide');
         setTimeout(function(){
             window.location = "#/";
+            location.reload();
         }, 500);
     };
 
@@ -65,6 +64,54 @@ angular.module('asteroids').controller('gameController', function($scope) {
         
         function initialize() {
             console.log('game initializing...');
+
+            input = MYGAME.input();
+            graphics = MYGAME.graphics();
+            mouseCapture = false;
+            myMouse = input.Mouse();
+            myKeyboard = input.Keyboard();
+            myAutomatic = input.Auto();
+            myTouch = input.Touch();
+            cancelNextRequest = false;
+            localPlayer = null;
+            remotePlayers = [];
+            asteroids = [];
+            warppressed = false;
+            forwardpressed = false;
+            leftpressed = false;
+            rightpressed = false;
+            shootpressed = false;
+            bulletPic = new Image();
+            shipPic = new Image();
+            otherShipPic = new Image();
+            ufoPic = new Image();
+            asteroidPic = new Image();
+            asteroidExplodePic = new Image();
+            shipExplodePic = new Image();
+            ufoExplodePic = new Image();
+            sparklePic = new Image();
+            ufoSparklePic = new Image();
+            socket = io.connect();
+            pewIndex = 0;
+            pewpewArr = [];
+            particlesArr = [];
+            ufos = [];
+            gameStarted = false;
+            backgroundSound = new Audio("../audio/background.mp3");
+
+            shipPic.src = "../images/ship.png";
+            otherShipPic.src = "../images/otherShip.png";
+            bulletPic.src = "../images/bullet.png";
+            asteroidPic.src = "../images/asteroid.png";
+            ufoPic.src = "../images/ufo.png";
+            ufoExplodePic.src = '../images/ufoExplosion.png';
+            asteroidExplodePic.src = "../images/asteroidExplosion.png";
+            shipExplodePic.src = "../images/explosion.png";
+            sparklePic.src = "../images/sparkle.png";
+            ufoSparklePic.src = "../images/ufoSparkle.png";
+
+
+
 
             for (var i = 0; i < 50; ++i) {
                 pewpewArr.push(new Audio("../audio/pewpew.wav"));
