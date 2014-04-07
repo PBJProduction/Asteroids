@@ -2,6 +2,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
     $scope.restart = function(){
         $('#endgame-modal').modal('hide');
         setTimeout(function(){
+            $scope.socket.emit("start game");
             location.reload();
         }, 500);
     };
@@ -13,6 +14,8 @@ angular.module('asteroids').controller('gameController', function($scope) {
             location.reload();
         }, 500);
     };
+
+    $scope.socket = io.connect();
 
     var init = (function() {
 
@@ -43,7 +46,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
             ufoExplodePic = new Image(),
             sparklePic = new Image(),
             ufoSparklePic = new Image(),
-            socket = io.connect(),
+            socket = $scope.socket,
             pewIndex = 0,
             pewpewArr = [],
             particlesArr = [],
@@ -96,7 +99,6 @@ angular.module('asteroids').controller('gameController', function($scope) {
             ufoExplodePic = new Image();
             sparklePic = new Image();
             ufoSparklePic = new Image();
-            socket = io.connect();
             pewIndex = 0;
             pewpewArr = [];
             particlesArr = [];
@@ -322,6 +324,11 @@ angular.module('asteroids').controller('gameController', function($scope) {
 
         function onNewPlayer(data) {
             console.log("New player connected: "+data.id);
+            var image = otherShipPic;
+            if(data.id === localPlayer.id){
+                image = shipPic;
+            }
+
             var newPlayer = graphics.Texture( {
                 image : otherShipPic,
                 center : { x : data.x, y : data.y },
@@ -329,6 +336,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
                 rotation : data.rot,
                 bullets : []
             });
+
             newPlayer.id = data.id;
             remotePlayers.push(newPlayer);
         }
@@ -437,7 +445,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
                     });
                     bullets.push(bullet);
                 }
-                
+
                 if (data.array[i].id === 'bigUfo') {
                     ufos.push(
                         graphics.Texture({
