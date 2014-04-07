@@ -272,7 +272,7 @@ var graphics = function() {
             var cComponent = Math.sqrt(Math.pow(xComponent,2)+Math.pow(yComponent,2));
             var angle = (Math.pow(yComponent,2) + Math.pow(cComponent,2) - Math.pow(xComponent,2))/(2*yComponent*cComponent);
             angle = Math.acos(angle)*(180/Math.PI);
-            angle = (deg + angle) % 180;
+            angle = (deg + angle) % 360;
             
              if (angle > 180)
                  return 360 - angle;
@@ -335,7 +335,7 @@ var graphics = function() {
         function updateBigUfo(time) {
             updateUFO(time);
 
-            if (ufotime >= 500) {
+            if (ufotime >= 100) {
                 ufotime = 0;
                 press(input.KeyEvent.DOM_VK_SPACE)
             }
