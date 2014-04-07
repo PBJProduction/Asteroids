@@ -462,7 +462,7 @@ var main = function(server) {
     }
 
     function handleBulletUFOCollision(ship, bullet, ufo) {
-        updateScore(ship, ufo);
+        updateScoreUFO(ship, ufo);
         bullet.kill = true;
         breakUFO(ufo);
     }
@@ -495,6 +495,8 @@ var main = function(server) {
             score = 50;
         } else if (asteroid.getSize() === 1) {
             score = 100;
+        } else {
+            score = 0;
         }
 
         ship.setScore(ship.getScore() + score);
