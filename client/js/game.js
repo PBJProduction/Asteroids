@@ -282,9 +282,11 @@ angular.module('asteroids').controller('gameController', function($scope) {
 
             graphics.context.fillStyle = "white";
             graphics.context.font = "20pt Arial";
-            graphics.context.fillText(lives, 1200, 30)
-            graphics.context.fillText(score, 1200, 60)
-            graphics.context.fillText(rounds, 1200, 90)
+            if (lives != null) {
+                graphics.context.fillText(lives, 1200, 30)
+                graphics.context.fillText(score, 1200, 60)
+                graphics.context.fillText(rounds, 1200, 90)
+            }
 
             if (!cancelNextRequest) {
                 requestAnimationFrame(gameLoop);
