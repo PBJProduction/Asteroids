@@ -584,7 +584,7 @@ var main = function(server) {
             type: "SHP",
             rotation: ship.rotation
         });
-        if(ship.getLives() <= 0) {
+        if(ship.getLives() <= 1) {
             ship_id = ship.id;
             remotePlayers.splice(remotePlayers.indexOf(ship), 1);
             io.sockets.emit("remove player", {id: ship_id});
