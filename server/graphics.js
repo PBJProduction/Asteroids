@@ -267,14 +267,15 @@ var graphics = function() {
 
         function computeAngle(point){
             var deg = (Math.abs(spec.rotation % (2*Math.PI) * (180/Math.PI) - 360)) % 360;
-            var xComponent = spec.center.x-point.x;
+            var xComponent = spec.center.x - point.x;
             var yComponent = spec.center.y - point.y;
             var cComponent = Math.sqrt(Math.pow(xComponent,2)+Math.pow(yComponent,2));
             var angle = (Math.pow(yComponent,2) + Math.pow(cComponent,2) - Math.pow(xComponent,2))/(2*yComponent*cComponent);
             angle = Math.acos(angle)*(180/Math.PI);
             angle = (deg + angle) % 360;
-            if(angle > 180)
-                return 360 - angle;
+            
+             if (angle > 180)
+                 return 360 - angle;
             return angle;
         }
 

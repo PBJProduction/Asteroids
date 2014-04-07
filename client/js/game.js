@@ -437,8 +437,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
                     });
                     bullets.push(bullet);
                 }
-
-                console.log(data.array[i].id);
+                
                 if (data.array[i].id === 'bigUfo') {
                     ufos.push(
                         graphics.Texture({
