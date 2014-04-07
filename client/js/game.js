@@ -19,6 +19,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
             shootpressed = false,
             bulletPic = new Image(),
             shipPic = new Image(),
+            otherShipPic = new Image(),
             ufoPic = new Image(),
             asteroidPic = new Image(),
             asteroidExplodePic = new Image(),
@@ -33,11 +34,12 @@ angular.module('asteroids').controller('gameController', function($scope) {
             backgroundSound = new Audio("../audio/background.mp3");
 
             shipPic.src = "../images/ship.png";
+            otherShipPic.src = "../images/otherShip.png";
             bulletPic.src = "../images/bullet.png";
             asteroidPic.src = "../images/asteroid.png";
             ufoPic.src = "../images/ufo.png";
             ufoExplodePic.src = '../images/explosion.png';
-            asteroidExplodePic.src = "../images/asteroid.png";
+            asteroidExplodePic.src = "../images/asteroidExplosion.png";
             shipExplodePic.src = "../images/explosion.png";
         
         function initialize() {
@@ -233,7 +235,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
         function onNewPlayer(data) {
             console.log("New player connected: "+data.id);
             var newPlayer = graphics.Texture( {
-                image : shipPic,
+                image : otherShipPic,
                 center : { x : data.x, y : data.y },
                 width : 100, height : 100,
                 rotation : data.rot,
