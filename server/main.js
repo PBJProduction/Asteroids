@@ -317,9 +317,9 @@ var main = function(server) {
                         x : remotePlayers[i].dx,
                         y : remotePlayers[i].dy
                     },
-                    // lives: remotePlayers[i].getLives(),
-                    // score: remotePlayers[i].getScore(),
-                    // rounds: remotePlayer[i].getRounds()
+                    lives: remotePlayers[i].getLives(),
+                    score: remotePlayers[i].getScore(),
+                    rounds: remotePlayers[i].getRounds()
                 };
                 var bullets = [];
                 for(var j = 0; j < remotePlayers[i].bullets.length; ++j){
