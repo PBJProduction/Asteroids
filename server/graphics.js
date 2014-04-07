@@ -49,7 +49,7 @@ var graphics = function() {
             }
         };
 
-        that.warp = function(elapsedTime){
+        that.warp = function(elapsedTime, s, asteroids){
             warpSpeed += elapsedTime;
             if(warpSpeed >= 250){
                 warpSpeed = 0;
@@ -308,7 +308,7 @@ var graphics = function() {
         }
 
         that.update = function(time, blah, asteroids){
-            that.myKeyboard.update(time, blah);
+            that.myKeyboard.update(time, blah,asteroids);
             if(that.id === 'ai'){
                 updateAI(time,blah,asteroids);
             }

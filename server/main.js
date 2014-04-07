@@ -13,6 +13,7 @@ var main = function(server) {
         interval = null,
         AIConnected = false,
         ufoTime = 0,
+        running = false,
         asteroids = [];
 
     io = io.listen(server);
@@ -23,8 +24,6 @@ var main = function(server) {
             io.set("log level", 1);
         });
         setEventHandlers();
-        genAI();
-        run();
     }
 
     function setEventHandlers(){
@@ -33,7 +32,6 @@ var main = function(server) {
 
     function run() {
         MYGAME.lastTimeStamp = Date.now();
-
         interval = setInterval(gameLoop, 1000/30);
     }
 
@@ -64,6 +62,13 @@ var main = function(server) {
         remotePlayers.push(newPlayer);
     }
 
+    function onStartGame(){
+        if(running === false){
+            running = true;
+            run();
+        }
+    }
+
     function genUFO(){
         var newPlayer = graphics.Texture( {
                 center : { x : 0, y : Random.nextRange(0,700) },
@@ -87,6 +92,22 @@ var main = function(server) {
     function gameLoop(time) {
         if(asteroids.length === 0){
             generateAsteroids({number: Random.nextRange(2,3), type: 1});
+        }
+        if(remotePlayers.length > 0 && remotePlayers.length < 2 && AIConnected === false){
+            genAI();
+            AIConnected = true;
+        }
+        else if(remotePlayers.length > 2 && AIConnected === true){
+            var removePlayer = playerById('ai');
+
+            if (!removePlayer) {
+                console.log('errors');
+            }
+            else{
+                remotePlayers.splice(remotePlayers.indexOf(removePlayer), 1);
+                io.sockets.emit("remove player", {id: 'ai'});
+                AIConnected = false;
+            }
         }
         var currentTime = Date.now();
         MYGAME.elapsedTime = currentTime - MYGAME.lastTimeStamp;
@@ -150,6 +171,7 @@ var main = function(server) {
         MovePlayers();
         MoveUFO();
         MoveAsteroids();
+        handleEndGame();
     }
 
     function onSocketConnection(client) {
@@ -158,6 +180,7 @@ var main = function(server) {
         client.on("new player", onNewPlayer);
         client.on("key press", onKeyPress);
         client.on("key release", onKeyRelease);
+        client.on("start game", onStartGame);
     }
 
     function onClientDisconnect() {
@@ -183,25 +206,8 @@ var main = function(server) {
                 rotateRate : 3.14159    // Radians per second
             });
 
-        newPlayer.id = data.id == 'ai_id' ? data.id : this.id;
-
-        console.log(newPlayer.id);
-
-        if (data.AI) {
-            newPlayer.update = AI.update;
-            AIConnected = true;
-            console.log("created AI");
-        }
-        else {
-            this.broadcast.emit("new player",
-            {
-                id: newPlayer.id,
-                x: newPlayer.getX(),
-                y: newPlayer.getY(),
-                rot: newPlayer.getRot()
-            });
-            this.emit("new response", {id : this.id});
-        }
+        newPlayer.id = this.id;
+        this.emit("new response", {id : this.id});
         newPlayer.setLives(3);
         
 
@@ -222,13 +228,12 @@ var main = function(server) {
         var i, existingPlayer;
         for (i = 0; i < remotePlayers.length; ++i){
             existingPlayer = remotePlayers[i];
-
             this.emit("new player",
             {
                 id: existingPlayer.id,
-                x: existingPlayer.x,
-                y: existingPlayer.y,
-                rot: existingPlayer.rot
+                x: existingPlayer.getX(),
+                y: existingPlayer.getY(),
+                rot: existingPlayer.getRot()
             });
         }
         remotePlayers.push(newPlayer);
@@ -295,6 +300,7 @@ var main = function(server) {
                 data.array.push(obj);
             }
         }
+        //console.log(data);
         io.sockets.emit("move player", data);
     }
 
@@ -600,6 +606,17 @@ var main = function(server) {
         if(tempY <= 0.1 && tempY >= -0.1)
             return makeDirection();
         return tempY;
+    }
+
+    function handleEndGame(){
+        if(remotePlayers.length === 0){
+            io.sockets.emit("end game", {
+                scores : 'none'
+            });
+            clearInterval(interval);
+            running = false;
+            AIConnected = false;
+        }
     }
 
     return {

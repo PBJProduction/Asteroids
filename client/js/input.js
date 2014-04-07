@@ -315,12 +315,12 @@ if (typeof KeyEvent === 'undefined') {
 var hoverPic = [],
 	hoverIndex = 0;
 
-for (var bogusName = 0; bogusName < 20; ++bogusName) {
+for (var bogusName = 0; bogusName < 40; ++bogusName) {
 	hoverPic[bogusName] = new Audio("../audio/hover.wav");
 }
 
 function playHover(){
-	if (hoverIndex >= 30) hoverIndex = 0;
+	if (hoverIndex >= 40) hoverIndex = 0;
 	hoverPic[hoverIndex++].play();
 }
 

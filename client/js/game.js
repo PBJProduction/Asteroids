@@ -1,4 +1,20 @@
 angular.module('asteroids').controller('gameController', function($scope) {
+    $scope.restart = function(){
+        console.log('restart');
+        $('#endgame-modal').modal('hide');
+        setTimeout(function(){
+            location.reload();
+        }, 500);
+    };
+
+    $scope.main = function(){
+        console.log('main');
+        $('#endgame-modal').modal('hide');
+        setTimeout(function(){
+            window.location = "#/";
+        }, 500);
+    };
+
     var init = (function() {
 
         var input = MYGAME.input(),
@@ -29,6 +45,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
             pewpewArr = [],
             particlesArr = [],
             ufos = [],
+            gameStarted = false,
             alive,
             backgroundSound = new Audio("../audio/background.mp3");
 
@@ -75,6 +92,11 @@ angular.module('asteroids').controller('gameController', function($scope) {
             socket.on("place particles", onPlaceParticles);
             socket.on("play pew", playPew);
             socket.on("toggle player", togglePlayer);
+            socket.on("end game", onShowScores);
+        }
+
+        function onShowScores(data){
+            $('#endgame-modal').modal('show');
         }
 
         function playPew() {
@@ -212,12 +234,14 @@ angular.module('asteroids').controller('gameController', function($scope) {
 
         function onSocketConnected() {
             console.log("Connected to socket server");
+            socket.emit("start game");
             socket.emit("new player",
             {
                 x   : localPlayer.getX(),
                 y   : localPlayer.getY(),
                 rot : localPlayer.getRot()
             });
+
         }
 
         function onSocketId(data){
