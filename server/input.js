@@ -29,11 +29,11 @@ var input = (function() {
 			that.handlers.push({ key : key, handler : handler, single : true});
 		};
 
-		that.update = function(elapsedTime, sendSound) {
+		that.update = function(elapsedTime, sendSound, asteroids) {
 			// console.log(sendSound);
 			for (key = 0; key < that.handlers.length; key++) {
 				if (typeof that.keys[that.handlers[key].key] !== 'undefined') {
-					that.handlers[key].handler(elapsedTime, sendSound);
+					that.handlers[key].handler(elapsedTime, sendSound, asteroids);
 					if(that.handlers[key].single)
 						delete that.keys[that.handlers[key].key];
 				}

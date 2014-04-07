@@ -1,4 +1,19 @@
 angular.module('asteroids').controller('gameController', function($scope) {
+    $scope.restart = function(){
+        $('#endgame-modal').modal('hide');
+        setTimeout(function(){
+            location.reload();
+        }, 500);
+    };
+
+    $scope.main = function(){
+        $('#endgame-modal').modal('hide');
+        setTimeout(function(){
+            window.location = "#/";
+            location.reload();
+        }, 500);
+    };
+
     var init = (function() {
 
         var input = MYGAME.input(),
@@ -19,28 +34,86 @@ angular.module('asteroids').controller('gameController', function($scope) {
             shootpressed = false,
             bulletPic = new Image(),
             shipPic = new Image(),
+            otherShipPic = new Image(),
             ufoPic = new Image(),
+            bigUfoPic = new Image(),
             asteroidPic = new Image(),
             asteroidExplodePic = new Image(),
             shipExplodePic = new Image(),
             ufoExplodePic = new Image(),
+            sparklePic = new Image(),
+            ufoSparklePic = new Image(),
             socket = io.connect(),
             pewIndex = 0,
             pewpewArr = [],
             particlesArr = [],
             ufos = [],
+            gameStarted = false,
             alive,
             backgroundSound = new Audio("../audio/background.mp3");
 
             shipPic.src = "../images/ship.png";
+            otherShipPic.src = "../images/otherShip.png";
             bulletPic.src = "../images/bullet.png";
             asteroidPic.src = "../images/asteroid.png";
             ufoPic.src = "../images/ufo.png";
-            asteroidExplodePic.src = "../images/asteroid.png";
+            ufoExplodePic.src = '../images/ufoExplosion.png';
+            asteroidExplodePic.src = "../images/asteroidExplosion.png";
             shipExplodePic.src = "../images/explosion.png";
+            sparklePic.src = "../images/sparkle.png";
+            ufoSparklePic.src = "../images/ufoSparkle.png";
+            bigUfoPic.src = "../images/bigUfo.png";
         
         function initialize() {
             console.log('game initializing...');
+
+            input = MYGAME.input();
+            graphics = MYGAME.graphics();
+            mouseCapture = false;
+            myMouse = input.Mouse();
+            myKeyboard = input.Keyboard();
+            myAutomatic = input.Auto();
+            myTouch = input.Touch();
+            cancelNextRequest = false;
+            localPlayer = null;
+            remotePlayers = [];
+            asteroids = [];
+            warppressed = false;
+            forwardpressed = false;
+            leftpressed = false;
+            rightpressed = false;
+            shootpressed = false;
+            bulletPic = new Image();
+            shipPic = new Image();
+            otherShipPic = new Image();
+            ufoPic = new Image();
+            asteroidPic = new Image();
+            asteroidExplodePic = new Image();
+            shipExplodePic = new Image();
+            ufoExplodePic = new Image();
+            sparklePic = new Image();
+            ufoSparklePic = new Image();
+            socket = io.connect();
+            pewIndex = 0;
+            pewpewArr = [];
+            particlesArr = [];
+            ufos = [];
+            gameStarted = false;
+            backgroundSound = new Audio("../audio/background.mp3");
+
+            shipPic.src = "../images/ship.png";
+            otherShipPic.src = "../images/otherShip.png";
+            bulletPic.src = "../images/bullet.png";
+            asteroidPic.src = "../images/asteroid.png";
+            ufoPic.src = "../images/ufo.png";
+            ufoExplodePic.src = '../images/ufoExplosion.png';
+            asteroidExplodePic.src = "../images/asteroidExplosion.png";
+            shipExplodePic.src = "../images/explosion.png";
+            sparklePic.src = "../images/sparkle.png";
+            ufoSparklePic.src = "../images/ufoSparkle.png";
+
+
+
 
             for (var i = 0; i < 50; ++i) {
                 pewpewArr.push(new Audio("../audio/pewpew.wav"));
@@ -74,6 +147,11 @@ angular.module('asteroids').controller('gameController', function($scope) {
             socket.on("place particles", onPlaceParticles);
             socket.on("play pew", playPew);
             socket.on("toggle player", togglePlayer);
+            socket.on("end game", onShowScores);
+        }
+
+        function onShowScores(data){
+            $('#endgame-modal').modal('show');
         }
 
         function playPew() {
@@ -211,12 +289,14 @@ angular.module('asteroids').controller('gameController', function($scope) {
 
         function onSocketConnected() {
             console.log("Connected to socket server");
+            socket.emit("start game");
             socket.emit("new player",
             {
                 x   : localPlayer.getX(),
                 y   : localPlayer.getY(),
                 rot : localPlayer.getRot()
             });
+
         }
 
         function onSocketId(data){
@@ -232,7 +312,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
         function onNewPlayer(data) {
             console.log("New player connected: "+data.id);
             var newPlayer = graphics.Texture( {
-                image : shipPic,
+                image : otherShipPic,
                 center : { x : data.x, y : data.y },
                 width : 100, height : 100,
                 rotation : data.rot,
@@ -339,38 +419,92 @@ angular.module('asteroids').controller('gameController', function($scope) {
                     });
                     bullets.push(bullet);
                 }
-                ufos.push(
-                    graphics.Texture({
-                        image : ufoPic,
-                        center : { x : data.array[i].x, y : data.array[i].y },
-                        width : 100,
-                        height : 50,
-                        rotation : 0,
-                        bullets : bullets
-                    })
-                );
+
+                console.log(data.array[i].id);
+                if (data.array[i].id === 'bigUfo') {
+                    ufos.push(
+                        graphics.Texture({
+                            image : bigUfoPic,
+                            center : { x : data.array[i].x, y : data.array[i].y },
+                            width : 200,
+                            height : 200,
+                            rotation : 0,
+                            bullets : bullets
+                        })
+                    );                    
+                }
+
+                else {
+                    ufos.push(
+                        graphics.Texture({
+                            image : ufoPic,
+                            center : { x : data.array[i].x, y : data.array[i].y },
+                            width : 100,
+                            height : 50,
+                            rotation : 0,
+                            bullets : bullets
+                        })
+                    );
+                }
             }
         }
 
-        function onPlaceParticles(data){
+        function onPlaceParticles(data) {
             var image;
             var asteroid = true;
             var size = 20;
             var speed = 20;
-            if(data.type === "ATR")
+            if(data.type === "ATR") {
                 image = asteroidExplodePic;
-            else if(data.type === "SHP"){
-                image = shipExplodePic;
-                size =50;
+
+                particlesArr.push( particleSystem( {
+                                    asteroid : asteroid,
+                                    image : asteroidPic,
+                                    size:{mean:size,stdev:5},
+                                    center: {x: data.x, y: data.y},
+                                    speed: {mean: speed, stdev: 5},
+                                    lifetime: {mean: 1, stdev: 0.25}
+                                },
+                                graphics
+                            ));
             }
-            else if(data.type === "WRP"){
+            else if(data.type === "SHP") {
+                particlesArr.push( particleSystem( {
+                                    asteroid : false,
+                                    image : sparklePic,
+                                    size:{mean:10, stdev:5},
+                                    center: {x: data.x, y: data.y},
+                                    speed: {mean: 100, stdev: 5},
+                                    lifetime: {mean: 1, stdev: 0.25}
+                                },
+                                graphics
+                            ));
+
+                image = shipExplodePic;
+            }
+            else if(data.type === "WRP") {
                 image = shipExplodePic;
                 size =50;
                 speed = 100;
                 asteroid = false;
             }
-            else
+            else {
                 image = ufoExplodePic;
+                size = 50;
+                speed = 100;
+                asteroid = false;
+
+                particlesArr.push( particleSystem( {
+                                    asteroid : false,
+                                    image : ufoSparklePic,
+                                    size:{mean:20, stdev:5},
+                                    center: {x: data.x, y: data.y},
+                                    speed: {mean: 100, stdev: 5},
+                                    lifetime: {mean: 1, stdev: 0.25}
+                                },
+                                graphics
+                            ));
+            }
 
             particlesArr.push( particleSystem( {
                                     asteroid : asteroid,
