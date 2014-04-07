@@ -155,7 +155,7 @@ var main = function(server) {
             }
         }
 
-        if(remotePlayers.length > 0 && remotePlayers.length < 2 && AIConnected === false){
+        if(remotePlayers.length < 2 && AIConnected === false){
             genAI();
             AIConnected = true;
         }
