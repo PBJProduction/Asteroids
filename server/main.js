@@ -97,6 +97,28 @@ var main = function(server) {
 
         ufos.push(newPlayer);
     }
+
+    function genBigUfo() {
+        var newPlayer = graphics.Texture({
+                center : { x : 0, y : Random.nextRange(0, 700) },
+                width : 200, height : 200,
+                rotation : 0,
+                moveRate : 150,
+                rotateRate : 3.14159
+        });
+
+        console.log('created a big one');
+        newPlayer.id = 'bigUfo';
+        newPlayer.setLives(1);
+
+        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_W, newPlayer.forwardThruster);
+        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_A, newPlayer.rotateLeft);
+        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_D, newPlayer.rotateRight);
+        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_SPACE, newPlayer.shoot);
+        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_S, newPlayer.warp);
+
+        ufos.push(newPlayer);
+    }
     
 
     function genObj(spec) {
@@ -149,7 +171,13 @@ var main = function(server) {
 
         if(ufoTime >= 10000 && ufos.length === 0){
             ufoTime = 0;
-            genUFO();
+
+            if (Random.nextRange(1, 3) === 1) {
+                genUFO();
+            }
+            else {
+                genBigUfo();
+            }
             /*
             genObj({
                 center : { x : 0, y : Random.nextRange(0,700) },
@@ -385,7 +413,8 @@ var main = function(server) {
                 var ufo = {
                     x : ufos[i].getX(),
                     y : ufos[i].getY(),
-                    rot : ufos[i].getRot()
+                    rot : ufos[i].getRot(),
+                    id : ufos[i].id
                 };
                 var bullets = [];
                 for(var j = 0; j < ufos[i].bullets.length; ++j){

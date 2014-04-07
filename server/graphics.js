@@ -30,7 +30,7 @@ var graphics = function() {
             if(currentShootSpeed >= maxShootSpeed){
                 currentShootSpeed = 0;
                 var rotation = spec.rotation;
-                if(that.id === 'ufo')
+                if(that.id === 'ufo' || that.id === 'bigUfo')
                     rotation = random.nextRange(1,2*Math.PI);
                 var newBullet = Texture( {
                     center : { x : spec.center.x, y : spec.center.y },
@@ -307,11 +307,26 @@ var graphics = function() {
             else{
                 spec.center.y -= spec.moveRate * (time / 1000);
             }
+
+            if (spec.id === 'bigUfo') return;
+
             if(ufotime >= 1000){
                 ufotime = 0;
                 press(input.KeyEvent.DOM_VK_SPACE);
             }
             else{
+                release(input.KeyEvent.DOM_VK_SPACE);
+            }
+        }
+
+        function updateBigUfo(time) {
+            updateUFO(time);
+
+            if (ufotime >= 500) {
+                ufotime = 0;
+                press(input.KeyEvent.DOM_VK_SPACE)
+            }
+            else {
                 release(input.KeyEvent.DOM_VK_SPACE);
             }
         }
@@ -322,7 +337,10 @@ var graphics = function() {
                 updateAI(time,blah,asteroids);
             }
             else if(that.id === 'ufo'){
-                updateUFO(time,blah);
+                updateUFO(time);
+            }
+            else if (that.id === 'bigUfo') {
+                updateBigUfo(time);
             }
             if(dy > maxspeed)
                 dy = maxspeed;

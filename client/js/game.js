@@ -21,6 +21,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
             shipPic = new Image(),
             otherShipPic = new Image(),
             ufoPic = new Image(),
+            bigUfoPic = new Image(),
             asteroidPic = new Image(),
             asteroidExplodePic = new Image(),
             shipExplodePic = new Image(),
@@ -45,6 +46,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
             shipExplodePic.src = "../images/explosion.png";
             sparklePic.src = "../images/sparkle.png";
             ufoSparklePic.src = "../images/ufoSparkle.png";
+            bigUfoPic.src = "../images/bigUfo.png";
         
         function initialize() {
             console.log('game initializing...');
@@ -346,16 +348,33 @@ angular.module('asteroids').controller('gameController', function($scope) {
                     });
                     bullets.push(bullet);
                 }
-                ufos.push(
-                    graphics.Texture({
-                        image : ufoPic,
-                        center : { x : data.array[i].x, y : data.array[i].y },
-                        width : 100,
-                        height : 50,
-                        rotation : 0,
-                        bullets : bullets
-                    })
-                );
+
+                console.log(data.array[i].id);
+                if (data.array[i].id === 'bigUfo') {
+                    ufos.push(
+                        graphics.Texture({
+                            image : bigUfoPic,
+                            center : { x : data.array[i].x, y : data.array[i].y },
+                            width : 200,
+                            height : 200,
+                            rotation : 0,
+                            bullets : bullets
+                        })
+                    );                    
+                }
+
+                else {
+                    ufos.push(
+                        graphics.Texture({
+                            image : ufoPic,
+                            center : { x : data.array[i].x, y : data.array[i].y },
+                            width : 100,
+                            height : 50,
+                            rotation : 0,
+                            bullets : bullets
+                        })
+                    );
+                }
             }
         }
 
