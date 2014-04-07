@@ -36,6 +36,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
             bulletPic.src = "../images/bullet.png";
             asteroidPic.src = "../images/asteroid.png";
             ufoPic.src = "../images/ufo.png";
+            ufoExplodePic.src = '../images/explosion.png';
             asteroidExplodePic.src = "../images/asteroid.png";
             shipExplodePic.src = "../images/explosion.png";
         
