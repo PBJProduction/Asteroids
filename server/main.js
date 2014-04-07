@@ -94,7 +94,7 @@ var main = function(server) {
     function genBigUfo() {
         var newPlayer = graphics.Texture({
                 center : { x : 0, y : Random.nextRange(0, 700) },
-                width : 200, height : 200,
+                width : 100, height : 100,
                 rotation : 0,
                 moveRate : 150,
                 rotateRate : 3.14159
