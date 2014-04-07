@@ -285,9 +285,15 @@ angular.module('asteroids').controller('gameController', function($scope) {
             graphics.context.fillStyle = "white";
             graphics.context.font = "14pt Arial";
             if (lives != null) {
-                graphics.context.fillText("Lives remaining: " + lives, 1100, 30)
-                graphics.context.fillText("Score: " + score, 1100, 60)
-                graphics.context.fillText("Current round: " + rounds, 1100, 90)
+                var testSpacer = 0;
+
+                for (var aVar = 0; aVar < lives; ++aVar) {
+                    graphics.context.drawImage(shipPic, 1100 + testSpacer, 30, 30, 30);
+                    testSpacer += 30;
+                }
+            
+                graphics.context.fillText("Score: " + score, 1100, 90);
+                graphics.context.fillText("Current round: " + rounds, 1100, 110);
             }
 
             if (!cancelNextRequest) {
