@@ -24,6 +24,17 @@ var main = function(server) {
         });
         setEventHandlers();
         genAI();
+        
+        /*
+        genObj({
+                center : { x : 640, y : 350 },
+                width : 100, height : 100,
+                rotation : 0,
+                moveRate : 100,         // pixels per second
+                rotateRate : 3.14159,   // Radians per second
+                id : 'ai'
+            });
+*/
         run();
     }
 
@@ -36,6 +47,7 @@ var main = function(server) {
 
         interval = setInterval(gameLoop, 1000/30);
     }
+
 
     function genAI(){
         var newPlayer = graphics.Texture( {
@@ -64,6 +76,7 @@ var main = function(server) {
         remotePlayers.push(newPlayer);
     }
 
+    
     function genUFO(){
         var newPlayer = graphics.Texture( {
                 center : { x : 0, y : Random.nextRange(0,700) },
@@ -72,6 +85,7 @@ var main = function(server) {
                 moveRate : 100,         // pixels per second
                 rotateRate : 3.14159    // Radians per second
             });
+
         newPlayer.id = 'ufo';
         newPlayer.setLives(1);
         //register the handler
@@ -83,11 +97,49 @@ var main = function(server) {
 
         ufos.push(newPlayer);
     }
+    
+
+    function genObj(spec) {
+        var newPlayer = graphics.Texture( {
+            center : {x : spec.x, y : spec.y},
+            width : spec.width,
+            height : spec.height,
+            rotation : spec.rotation,
+            moveRate : spec.moveRate,
+            rotateRight : spec.rotateRight
+        });
+        
+        newPlayer.id = spec.id;
+        
+        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_W, newPlayer.forwardThruster);
+        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_A, newPlayer.rotateLeft);
+        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_D, newPlayer.rotateRight);
+        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_SPACE, newPlayer.shoot);
+        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_S, newPlayer.warp);
+
+        if (newPlayer.id === 'ufo') {
+            newPlayer.setLives(1);
+            ufos.push(newPlayer);
+        }
+        else {
+            newPlayer.setLives(3);
+            io.sockets.emit("new player",
+            {
+                id : newPlayer.id,
+                x : newPlayer.getX(),
+                y : newPlayer.getY(),
+                rot : newPlayer.getRot()
+            });
+
+            remotePlayers.push(newPlayer);
+        }
+    }
 
     function gameLoop(time) {
         if(asteroids.length === 0){
             generateAsteroids({number: Random.nextRange(2,3), type: 1});
         }
+
         var currentTime = Date.now();
         MYGAME.elapsedTime = currentTime - MYGAME.lastTimeStamp;
         MYGAME.lastTimeStamp = currentTime;
@@ -98,6 +150,15 @@ var main = function(server) {
         if(ufoTime >= 10000 && ufos.length === 0){
             ufoTime = 0;
             genUFO();
+            /*
+            genObj({
+                center : { x : 0, y : Random.nextRange(0,700) },
+                width : 100, height : 100,
+                rotation : 0,
+                moveRate : 100,         // pixels per second
+                rotateRate : 3.14159,   // Radians per second
+                id : 'ufo'
+            });*/
         }
         for(var i = 0; i < ufos.length; ++i){
             ufos[i].update(MYGAME.elapsedTime,sound);
@@ -183,9 +244,7 @@ var main = function(server) {
                 rotateRate : 3.14159    // Radians per second
             });
 
-        newPlayer.id = data.id == 'ai_id' ? data.id : this.id;
-
-        console.log(newPlayer.id);
+        newPlayer.id = data.id == 'ai' ? data.id : this.id;
 
         if (data.AI) {
             newPlayer.update = AI.update;
@@ -552,7 +611,7 @@ var main = function(server) {
         }
     }
 
-    function breakUFO(ufo) {
+    function breakUFO(ufo) {        
         sendParticles({
             x: ufo.getX(),
             y: ufo.getY(),

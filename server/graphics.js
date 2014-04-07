@@ -49,7 +49,7 @@ var graphics = function() {
             }
         };
 
-        that.warp = function(elapsedTime){
+        that.warp = function(elapsedTime, s, asteroids){
             warpSpeed += elapsedTime;
             if(warpSpeed >= 250){
                 warpSpeed = 0;
@@ -59,6 +59,15 @@ var graphics = function() {
                 };
                 spec.center.x = random.nextRange(0,1280);
                 spec.center.y = random.nextRange(0,700);
+
+                for (var index in asteroids) {
+                    var asteroid = asteroids[index];
+
+                    while (Math.sqrt(Math.pow(spec.center.x - asteroid.getX(), 2) + Math.pow(spec.center.y - asteroid.getY(), 2)) < 100) {
+                        spec.center.x = random.nextRange(0,1280);
+                        spec.center.y = random.nextRange(0,700);
+                    }
+                }
             }
         };
         
@@ -308,7 +317,7 @@ var graphics = function() {
         }
 
         that.update = function(time, blah, asteroids){
-            that.myKeyboard.update(time, blah);
+            that.myKeyboard.update(time, blah, asteroids);
             if(that.id === 'ai'){
                 updateAI(time,blah,asteroids);
             }

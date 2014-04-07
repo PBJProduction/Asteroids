@@ -371,7 +371,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
                 asteroid = false;
             }
             else
-                image = ufoExplodePic;
+                image = shipExplodePic;
 
             particlesArr.push( particleSystem( {
                                     asteroid : asteroid,
