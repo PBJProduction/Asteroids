@@ -126,6 +126,7 @@ MYGAME.graphics = function() {
 	return {
 		clear : clear,
 		Texture : Texture,
-		drawImage : drawImage
+		drawImage : drawImage,
+		context : context
 	};
 };
