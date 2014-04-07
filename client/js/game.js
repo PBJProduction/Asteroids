@@ -53,6 +53,9 @@ angular.module('asteroids').controller('gameController', function($scope) {
             ufos = [],
             gameStarted = false,
             alive,
+            lives = null,
+            score = null,
+            rounds = null,
             backgroundSound = new Audio("../audio/background.mp3");
 
             shipPic.src = "../images/ship.png";
@@ -264,7 +267,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
                     bullets[j].draw();
                 }
                 if (remotePlayers[i].isEnabled()) {
-                    remotePlayers[i].draw();    
+                    remotePlayers[i].draw();                        
                 }
             }
             for (var index in asteroids) {
@@ -277,6 +280,14 @@ angular.module('asteroids').controller('gameController', function($scope) {
                     bullets[j].draw();
                 }
                 ufos[index].draw();
+            }
+
+            graphics.context.fillStyle = "white";
+            graphics.context.font = "14pt Arial";
+            if (lives != null) {
+                graphics.context.fillText("Lives remaining: " + lives, 1100, 30)
+                graphics.context.fillText("Score: " + score, 1100, 60)
+                graphics.context.fillText("Current round: " + rounds, 1100, 90)
             }
 
             if (!cancelNextRequest) {
@@ -333,6 +344,13 @@ angular.module('asteroids').controller('gameController', function($scope) {
         function onMovePlayer(data) {
             for(var i = 0; i < remotePlayers.length; ++i){
                 var player = playerById(data.array[i].id);
+
+                if (localPlayer.id === data.array[i].id) {
+                    lives = data.array[i].lives;
+                    score = data.array[i].score;
+                    rounds = data.array[i].rounds;
+                }
+
                 if (!player) {
                     console.log("Player not found: "+data.id);
                     continue;
@@ -427,6 +445,7 @@ angular.module('asteroids').controller('gameController', function($scope) {
                     });
                     bullets.push(bullet);
                 }
+
                 if (data.array[i].id === 'bigUfo') {
                     ufos.push(
                         graphics.Texture({

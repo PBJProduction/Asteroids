@@ -129,7 +129,7 @@ var main = function(server) {
     function genBigUfo() {
         var newPlayer = graphics.Texture({
                 center : { x : 0, y : Random.nextRange(0, 700) },
-                width : 200, height : 200,
+                width : 100, height : 100,
                 rotation : 0,
                 moveRate : 150,
                 rotateRate : 3.14159
@@ -149,7 +149,7 @@ var main = function(server) {
 
     function gameLoop(time) {
         if(asteroids.length === 0){
-            generateAsteroids({number: Random.nextRange(2,3), type: 1});
+            generateAsteroids({number: Random.nextRange(2,5), type: 1});
             for (var index in remotePlayers) {
                 remotePlayers[index].setRounds(remotePlayers[index].getRounds() + 1);
             }
@@ -351,9 +351,9 @@ var main = function(server) {
                         x : remotePlayers[i].dx,
                         y : remotePlayers[i].dy
                     },
-                    // lives: remotePlayers[i].getLives(),
-                    // score: remotePlayers[i].getScore(),
-                    // rounds: remotePlayer[i].getRounds()
+                    lives: remotePlayers[i].getLives(),
+                    score: remotePlayers[i].getScore(),
+                    rounds: remotePlayers[i].getRounds()
                 };
                 var bullets = [];
                 for(var j = 0; j < remotePlayers[i].bullets.length; ++j){
@@ -496,7 +496,7 @@ var main = function(server) {
     }
 
     function handleBulletUFOCollision(ship, bullet, ufo) {
-        updateScore(ship, ufo);
+        updateScoreUFO(ship, ufo);
         bullet.kill = true;
         breakUFO(ufo);
     }
@@ -529,6 +529,8 @@ var main = function(server) {
             score = 50;
         } else if (asteroid.getSize() === 1) {
             score = 100;
+        } else {
+            score = 0;
         }
 
         ship.setScore(ship.getScore() + score);
