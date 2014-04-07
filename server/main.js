@@ -35,6 +35,7 @@ var main = function(server) {
         interval = setInterval(gameLoop, 1000/30);
     }
 
+
     function genAI(){
         var newPlayer = graphics.Texture( {
                 center : { x : 640, y : 350 },
@@ -77,6 +78,7 @@ var main = function(server) {
                 moveRate : 100,         // pixels per second
                 rotateRate : 3.14159    // Radians per second
             });
+
         newPlayer.id = 'ufo';
         newPlayer.setLives(1);
         //register the handler
@@ -93,6 +95,7 @@ var main = function(server) {
         if(asteroids.length === 0){
             generateAsteroids({number: Random.nextRange(2,3), type: 1});
         }
+
         if(remotePlayers.length > 0 && remotePlayers.length < 2 && AIConnected === false){
             genAI();
             AIConnected = true;
@@ -205,7 +208,7 @@ var main = function(server) {
                 moveRate : 100,         // pixels per second
                 rotateRate : 3.14159    // Radians per second
             });
-
+        
         newPlayer.id = this.id;
         this.emit("new response", {id : this.id});
         newPlayer.setLives(3);
@@ -558,7 +561,7 @@ var main = function(server) {
         }
     }
 
-    function breakUFO(ufo) {
+    function breakUFO(ufo) {        
         sendParticles({
             x: ufo.getX(),
             y: ufo.getY(),
