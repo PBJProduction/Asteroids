@@ -15,16 +15,16 @@ var Random = (function () {
 	function nextCircleVector () {
 		var angle = Math.random() * 2 * Math.PI;
 		return {
-			x: Math.cos(angle),
-			y: Math.sin(angle)
+			x : Math.cos(angle),
+			y : Math.sin(angle)
 		};
 	}
 
 	function nextEllipseVector () {
 		var angle = Math.random() * 2 * Math.PI;
 		return {
-			x: 2*Math.cos(angle),
-			y: 10*Math.sin(angle)
+			x : 2*Math.cos(angle),
+			y : 10*Math.sin(angle)
 		};
 	}
 	
