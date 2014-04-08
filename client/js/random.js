@@ -1,6 +1,6 @@
 /*jslint browser: true, white: true */
 /*global Random */
-var Random = (function ) {
+var Random = (function () {
 	'use strict';
 	
 	function nextDouble () {
