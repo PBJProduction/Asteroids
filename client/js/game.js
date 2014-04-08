@@ -284,15 +284,15 @@ angular.module('asteroids').controller('gameController', function ($scope) {
                 var testSpacer = 0;
 
                 for (var aVar = 0; aVar < lives; ++aVar) {
-                    graphics.context.drawImage(shipPic, 1100 + testSpacer, 30, 30, 30);
+                    graphics.context.drawImage(shipPic, 100 + testSpacer, 30, 30, 30);
                     testSpacer += 30;
                 }
 
                 graphics.context.fillStyle = "white";
                 graphics.context.font = "14pt Arial";
             
-                graphics.context.fillText("Score: " + score, 1100, 90);
-                graphics.context.fillText("Current round: " + rounds, 1100, 110);
+                graphics.context.fillText("Score: " + score, 100, 90);
+                graphics.context.fillText("Current round: " + rounds, 100, 110);
             }
 
             if (!cancelNextRequest) {
