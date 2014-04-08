@@ -5,43 +5,44 @@
 //
 //
 // ------------------------------------------------------------------
-var input = (function() {
-	function Keyboard() {
+var input = (function () {
+	function Keyboard () {
 		var that = {
 				keys : {},
 				handlers : []
 			},
 			key;
 		
-		that.keyPress = function(e) {
+		that.keyPress = function (e) {
 			that.keys[e] = 1;
 		};
 		
-		that.keyRelease = function(e) {
+		that.keyRelease = function (e) {
 			delete that.keys[e];
 		};
 
-		that.registerCommand = function(key, handler) {
+		that.registerCommand = function (key, handler) {
 			that.handlers.push({ key : key, handler : handler, single : false});
 		};
 
-		that.registerSingleCommand = function(key,handler){
+		that.registerSingleCommand = function (key,handler){
 			that.handlers.push({ key : key, handler : handler, single : true});
 		};
 
-		that.update = function(elapsedTime, sendSound, asteroids) {
-			// console.log(sendSound);
-			for (key = 0; key < that.handlers.length; key++) {
-				if (typeof that.keys[that.handlers[key].key] !== 'undefined') {
+		that.update = function (elapsedTime, sendSound, asteroids) {
+			for (key = 0; key < that.handlers.length; ++key) {
+				if ('undefined' !== typeof that.keys[that.handlers[key].key]) {
 					that.handlers[key].handler(elapsedTime, sendSound, asteroids);
-					if(that.handlers[key].single)
+					if(that.handlers[key].single) {
 						delete that.keys[that.handlers[key].key];
+					}
 				}
 			}
 		};
 		
 		return that;
 	}
+	
 	var KeyEvent = {
 		DOM_VK_CANCEL: 3,
 		DOM_VK_HELP: 6,
