@@ -51,6 +51,7 @@ var main = function (server) {
 
         newPlayer.id = 'ai';
         newPlayer.setLives(3);
+        
         //register the handler
         newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_W, newPlayer.forwardThruster);
         newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_A, newPlayer.rotateLeft);
