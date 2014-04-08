@@ -58,6 +58,7 @@ angular.module('asteroids').controller('gameController', function ($scope) {
             lives = null,
             score = null,
             rounds = null,
+            cleared = false,
             backgroundSound = new Audio("../audio/background.mp3");
 
             shipPic.src = "../images/ship.png";
@@ -106,6 +107,7 @@ angular.module('asteroids').controller('gameController', function ($scope) {
             particlesArr = [];
             ufos = [];
             gameStarted = false;
+            cleared = false;
             backgroundSound = new Audio("../audio/background.mp3");
 
             shipPic.src = "../images/ship.png";
@@ -282,19 +284,21 @@ angular.module('asteroids').controller('gameController', function ($scope) {
                 ufos[index].draw();
             }
             
-            if (lives != null) {
-                var testSpacer = 0;
+            if (null !== null || null !== score || null !== rounds) {
+                var testSpacer = 0;                
 
-                for (var aVar = 0; aVar < lives; ++aVar) {
-                    graphics.context.drawImage(shipPic, 1100 + testSpacer, 30, 30, 30);
-                    testSpacer += 30;
-                }
+                if (alive) {
+                    for (var aVar = 0; aVar < lives; ++aVar) {
+                        graphics.context.drawImage(shipPic, 100 + testSpacer, 30, 30, 30);
+                        testSpacer += 30;
+                    }           
+                }     
 
                 graphics.context.fillStyle = "white";
                 graphics.context.font = "14pt Arial";
-            
-                graphics.context.fillText("Score: " + score, 1100, 90);
-                graphics.context.fillText("Current round: " + rounds, 1100, 110);
+
+                graphics.context.fillText("Score: " + score, 100, 90);
+                graphics.context.fillText("Current round: " + rounds, 100, 110);
             }
 
             if (!cancelNextRequest) {

@@ -1,45 +1,43 @@
 /*jslint browser: true, white: true */
 /*global Random */
-var Random = (function() {
+var Random = (function () {
 	'use strict';
 	
-	function nextDouble() {
+	function nextDouble () {
 		return Math.random();
 	}
 	
-	function nextRange(min, max) {
+	function nextRange (min, max) {
 		var range = max - min;
 		return Math.floor((Math.random() * range) + min);
 	}
 	
-	function nextCircleVector() {
+	function nextCircleVector () {
 		var angle = Math.random() * 2 * Math.PI;
 		return {
-			x: Math.cos(angle),
-			y: Math.sin(angle)
+			x : Math.cos(angle),
+			y : Math.sin(angle)
 		};
 	}
 
-	function nextEllipseVector() {
+	function nextEllipseVector () {
 		var angle = Math.random() * 2 * Math.PI;
 		return {
-			x: 2*Math.cos(angle),
-			y: 10*Math.sin(angle)
+			x : 2*Math.cos(angle),
+			y : 10*Math.sin(angle)
 		};
 	}
 	
-	//
 	// This is used to give a small performance optimization in generating gaussian random numbers.
 	var usePrevious = false,
 		y2;
 	
-	//
+	
 	// Generate a normally distributed random number.
 	//
 	// NOTE: This code is adapted from a wiki reference I found a long time ago.  I originally
 	// wrote the code in C# and am now converting it over to JavaScript.
-	//
-	function nextGaussian(mean, stdDev) {
+	function nextGaussian (mean, stdDev) {
 		if (usePrevious) {
 			usePrevious = false;
 			return mean + y2 * stdDev;
