@@ -1,6 +1,6 @@
 /*jslint browser: true, white: true, plusplus: true */
 /*global Random */
-function particleSystem(spec, graphics) {
+function particleSystem (spec, graphics) {
 	'use strict';
 	var that = {},
 		nextName = 1,	// unique identifier for the next particle
@@ -8,12 +8,16 @@ function particleSystem(spec, graphics) {
 
 	that.remove = false;
 	
-	that.create = function() {
+	that.create = function () {
 		var direction = Random.nextCircleVector();
-		if(spec.direction)
+		if (spec.direction) {
 			direction = spec.direction;
-		if(spec.asteroid)
+		}
+
+		if (spec.asteroid) {
 			direction = Random.nextEllipseVector();
+		}
+
 		var p = {
 				image: spec.image,
 				size: Random.nextGaussian(spec.size.mean, spec.size.stdev),
@@ -36,29 +40,27 @@ function particleSystem(spec, graphics) {
 		particles[nextName++] = p;
 	};
 	
-	that.update = function(elapsedTime) {
+	that.update = function (elapsedTime) {
 		var removeMe = [],
 			value,
 			particle;
+		
 		elapsedTime /= 1000;
 		
 		for (value in particles) {
 			if (particles.hasOwnProperty(value)) {
 				particle = particles[value];
-				//
+				
 				// Update how long it has been alive
 				particle.alive += elapsedTime;
-				
-				//
+								
 				// Update its position
 				particle.center.x += (elapsedTime * particle.speed * particle.direction.x);
 				particle.center.y += (elapsedTime * particle.speed * particle.direction.y);
-				
-				//
+								
 				// Rotate proportional to its speed
 				particle.rotation += particle.speed / 500;
-				
-				//
+								
 				// If the lifetime has expired, identify it for removal
 				if (particle.alive > particle.lifetime) {
 					removeMe.push(value);
@@ -67,15 +69,15 @@ function particleSystem(spec, graphics) {
 			}
 		}
 
-		//
 		// Remove all of the expired particles
-		for (particle = 0; particle < removeMe.length; particle++) {
+		for (particle = 0; particle < removeMe.length; ++particle) {
 			delete particles[removeMe[particle]];
 		}
+		
 		removeMe.length = 0;
 	};
 
-	that.render = function() {
+	that.render = function () {
 		var value,
 			particle;
 		
