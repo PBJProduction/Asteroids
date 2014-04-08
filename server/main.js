@@ -3,6 +3,7 @@ var io = require('socket.io'),
     input = require('./input.js'),
     graphics = require('./graphics.js'),
     Random = require('./random.js'),
+    scores = require('./score.js'),
     graphics = graphics();
 
 var main = function (server) {
@@ -14,11 +15,13 @@ var main = function (server) {
         AIConnected = false,
         ufoTime = 0,
         running = false,
-        asteroids = [];
+        asteroids = [],
+        removedPlayers = [];
 
     io = io.listen(server);
 
     function init () {
+        scores.init();
         io.configure(function () {
             io.enable('browser client minification');
             io.set("log level", 1);
@@ -31,6 +34,7 @@ var main = function (server) {
     }
 
     function run () {
+        removedPlayers = [];
         MYGAME.lastTimeStamp = Date.now();
         interval = setInterval(gameLoop, 1000/30);
     }
@@ -255,6 +259,7 @@ var main = function (server) {
         client.on("key press", onKeyPress);
         client.on("key release", onKeyRelease);
         client.on("start game", onStartGame);
+        client.on("name", onSaveScore);
     }
 
     function onClientDisconnect () {
@@ -637,6 +642,10 @@ var main = function (server) {
 
         if (ship.getLives() <= 1) {
             ship_id = ship.id;
+            removedPlayers.push({
+                id: ship_id,
+                score: ship.getScore()
+            })
             remotePlayers.splice(remotePlayers.indexOf(ship), 1);
             io.sockets.emit("remove player", {id: ship_id});
         } else {
@@ -711,6 +720,19 @@ var main = function (server) {
             clearInterval(interval);
             running = false;
             AIConnected = false;
+        }
+    }
+
+    function onSaveScore(data) {
+        for (var index in removedPlayers) {
+            if (data.id === removedPlayers[index].id) {
+                scores.post({
+                    name: data.name,
+                    score: removedPlayers[index].score
+                });
+                removedPlayers.splice(index, 1);
+                console.log(removedPlayers[index]);
+            }
         }
     }
 
