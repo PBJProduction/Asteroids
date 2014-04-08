@@ -1,5 +1,6 @@
 angular.module('asteroids').controller('gameController', function ($scope) {
     $scope.restart = function () {
+    	$scope.init.save();
         $('#endgame-modal').modal('hide');
         setTimeout(function () {
             $scope.socket.emit("start game");
@@ -8,6 +9,7 @@ angular.module('asteroids').controller('gameController', function ($scope) {
     };
 
     $scope.main = function () {
+    	$scope.init.save();
         $('#endgame-modal').modal('hide');
         setTimeout(function(){
             window.location = "#/";
@@ -17,7 +19,7 @@ angular.module('asteroids').controller('gameController', function ($scope) {
 
     $scope.socket = io.connect();
 
-    var init = (function () {
+    $scope.init = (function () {
 
         var input = MYGAME.input(),
             graphics = MYGAME.graphics(),
@@ -568,12 +570,22 @@ angular.module('asteroids').controller('gameController', function ($scope) {
 
         }
 
+        function save() {
+        	if($("#name").val() != "") {
+	        	socket.emit("name", {
+					"name": $("#name").val(),
+					"id": localPlayer.id
+				});
+	        }
+        }
+
         return {
             initialize : initialize,
-            run : run
+            run : run,
+            save: save
         };
     }());
 
-    init.initialize();
-    init.run();
+    $scope.init.initialize();
+    $scope.init.run();
 });
