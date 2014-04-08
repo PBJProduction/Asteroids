@@ -5,8 +5,8 @@
 //
 //
 // ------------------------------------------------------------------
-MYGAME.input = function() {
-	function Mouse() {
+MYGAME.input = function () {
+	function Mouse () {
 		var that = {
 				mouseDown : [],
 				mouseUp : [],
@@ -16,19 +16,19 @@ MYGAME.input = function() {
 				handlersMove : []
 			};
 		
-		function mouseDown(e) {
+		function mouseDown (e) {
 			that.mouseDown.push(e);
 		}
 		
-		function mouseUp(e) {
+		function mouseUp (e) {
 			that.mouseUp.push(e);
 		}
 		
-		function mouseMove(e) {
+		function mouseMove (e) {
 			that.mouseMove.push(e);
 		}
 
-		that.update = function(elapsedTime) {
+		that.update = function (elapsedTime) {
 			var event,
 			    handler;
 			//
@@ -58,14 +58,12 @@ MYGAME.input = function() {
 			that.mouseMove.length = 0;
 		};
 		
-		that.registerCommand = function(type, handler) {
-			if (type === 'mousedown') {
+		that.registerCommand = function (type, handler) {
+			if ('mousedown' === type) {
 				that.handlersDown.push(handler);
-			}
-			else if (type === 'mouseup') {
+			} else if ('mouseup' === type) {
 				that.handlersUp.push(handler);
-			}
-			else if (type === 'mousemove') {
+			} else if ('mousemove' === type) {
 				that.handlersMove.push(handler);
 			}
 		};
@@ -77,18 +75,18 @@ MYGAME.input = function() {
 		return that;
 	}
 	
-	function Keyboard() {
+	function Keyboard () {
 		var that = {
 				keys : {},
 				handlers : []
 			},
 			key;
 		
-		function keyPress(e) {
+		function keyPress (e) {
 			that.keys[e.keyCode] = e.timeStamp;
 		}
 		
-		function keyRelease(e) {
+		function keyRelease (e) {
 			delete that.keys[e.keyCode];
 		}
 		
@@ -97,11 +95,11 @@ MYGAME.input = function() {
 		// Allows the client code to register a keyboard handler
 		//
 		// ------------------------------------------------------------------
-		that.registerCommand = function(key, handler) {
+		that.registerCommand = function (key, handler) {
 			that.handlers.push({ key : key, handler : handler, single : false});
 		};
 
-		that.registerSingleCommand = function(key,handler){
+		that.registerSingleCommand = function (key,handler){
 			that.handlers.push({ key : key, handler : handler, single : true});
 		};
 		
@@ -110,12 +108,14 @@ MYGAME.input = function() {
 		// Allows the client to invoke all the handlers for the registered key/handlers.
 		//
 		// ------------------------------------------------------------------
-		that.update = function(elapsedTime) {
+		that.update = function (elapsedTime) {
 			for (key = 0; key < that.handlers.length; key++) {
 				if (typeof that.keys[that.handlers[key].key] !== 'undefined') {
 					that.handlers[key].handler(elapsedTime);
-					if(that.handlers[key].single)
+
+					if (that.handlers[key].single) {
 						delete that.keys[that.handlers[key].key];
+					}
 				}
 			}
 		};
@@ -128,16 +128,16 @@ MYGAME.input = function() {
 		return that;
 	}
 
-	function Auto() {
+	function Auto () {
 		var that = {
 			handlers : []
 		},key;
 
-		that.registerAutomaticMove = function(handler){
+		that.registerAutomaticMove = function (handler) {
 			that.handlers.push({handler : handler});
 		};
 
-		that.update = function(elapsedTime){
+		that.update = function (elapsedTime) {
 			for (key = 0; key < that.handlers.length; key++) {
 				that.handlers[key].handler(elapsedTime);
 			}
@@ -146,19 +146,19 @@ MYGAME.input = function() {
 		return that;
 	}
 
-	function Touch(){
+	function Touch() {
 		var that = {
 			touchstartshandler : [],
 			touchstarts : []
 		}, key;
 
-		that.registerCommand = function(type, handler) {
-			if (type === 'touchstart') {
+		that.registerCommand = function (type, handler) {
+			if ('touchstart' === type) {
 				that.touchstartshandler.push({handler : handler});
 			}
 		};
 
-		that.update = function(elapsedTime){
+		that.update = function (elapsedTime) {
 			var event,
 			    handler;
 			for (event = 0; event < that.touchstarts.length; event++) {
@@ -166,10 +166,11 @@ MYGAME.input = function() {
 					that.touchstartshandler[handler].handler(that.touchstarts[event]);
 				}
 			}
+
 			that.touchstarts.length = 0;
 		};
 
-		function touchstart(e) {
+		function touchstart (e) {
 			that.touchstarts.push(e);
 		}
 
@@ -319,8 +320,10 @@ for (var bogusName = 0; bogusName < 40; ++bogusName) {
 	hoverPic[bogusName] = new Audio("../audio/hover.wav");
 }
 
-function playHover(){
-	if (hoverIndex >= 40) hoverIndex = 0;
+function playHover () {
+	if (hoverIndex >= 40) {
+		hoverIndex = 0;
+	}
 	hoverPic[hoverIndex++].play();
 }
 
@@ -332,7 +335,7 @@ var settings = {
 	SHOOT_KEY : ' '
 };
 
-function getValues(){
+function getValues () {
 	console.log(settings.UP_KEY);
 	$('#foward-key').val(settings.UP_KEY);
 	$('#left-key').val(settings.LEFT_KEY);
@@ -341,7 +344,7 @@ function getValues(){
 	$('#hyper-key').val(settings.WARP_KEY);
 }
 
-function setValues(){
+function setValues () {
 	settings.UP_KEY = $('#foward-key').val();
 	settings.LEFT_KEY = $('#left-key').val();
 	settings.RIGHT_KEY = $('#right-key').val();
