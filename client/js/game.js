@@ -282,7 +282,7 @@ angular.module('asteroids').controller('gameController', function ($scope) {
                 ufos[index].draw();
             }
             
-            if (lives != null || score != null || rounds != null) {
+            if (null !== null || null !== score || null !== rounds) {
                 var testSpacer = 0;                
 
                 if (alive) {
