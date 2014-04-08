@@ -105,7 +105,7 @@ var main = function (server) {
     }
 
     function onStartGame () {
-        if(false === running){
+        if (false === running) {
             running = true;            
             run();
         }
@@ -154,7 +154,7 @@ var main = function (server) {
     }
 
     function gameLoop (time) {
-        if(0 === asteroids.length){
+        if (0 === asteroids.length) {
             generateAsteroids({number: Random.nextRange(2,5), type: 1});
             
             for (var index in remotePlayers) {
@@ -184,7 +184,7 @@ var main = function (server) {
 
         var sound = {s : function () { sendSound(); }};
 
-        if(ufoTime >= 10000 && 0 === ufos.length){
+        if (ufoTime >= 10000 && 0 === ufos.length) {
             ufoTime = 0;
 
             if (1 === Random.nextRange(1, 3)) {
@@ -198,7 +198,7 @@ var main = function (server) {
         }
         
         for (var i = 0; i < remotePlayers.length; ++i) {
-            if(remotePlayers[i].isEnabled()) {
+            if (remotePlayers[i].isEnabled()) {
                 remotePlayers[i].update(MYGAME.elapsedTime, sound, asteroids);
                 if (remotePlayers[i].prev) {
                     warpSpeed(remotePlayers[i].prev);
@@ -227,7 +227,7 @@ var main = function (server) {
             if (remotePlayers[index].isEnabled()) {
                 var collidedBullets = getCollisions(remotePlayers[index].bullets, asteroids);
 
-                for(var bindex in collidedBullets) {
+                for (var bindex in collidedBullets) {
                     handleBulletAsteroidCollision(remotePlayers[index], collidedBullets[bindex].first, collidedBullets[bindex].second);
                 }
 
@@ -307,7 +307,7 @@ var main = function (server) {
         
         var i, existingPlayer;
 
-        for (i = 0; i < remotePlayers.length; ++i){
+        for (i = 0; i < remotePlayers.length; ++i) {
             existingPlayer = remotePlayers[i];
 
             this.emit("new player",
@@ -480,7 +480,7 @@ var main = function (server) {
     }
 
     function generateAsteroids (spec) {
-        for(var i = 0; i < spec.number; ++i) {
+        for (var i = 0; i < spec.number; ++i) {
             asteroids.push(
                 graphics.Texture( {
                     center : { x : Random.nextRange(0,1280), y : Random.nextRange(0,700) },
@@ -601,7 +601,7 @@ var main = function (server) {
         for (var i = 0; i < number; ++i) {
             var tempX = Random.nextRange(-2, 2);
             var tempY = Random.nextRange(-2, 2);
-            if(0 === tempY && 0 === tempX) {
+            if (0 === tempY && 0 === tempX) {
                 tempY = 1;
             }
 
@@ -650,7 +650,7 @@ var main = function (server) {
             remotePlayers.splice(remotePlayers.indexOf(ship), 1);
             io.sockets.emit("remove player", {id: ship_id});
         } else {
-            if(undefined !== ship.getLives()) {
+            if (undefined !== ship.getLives()) {
                 ship.setLives(ship.getLives() - 1);
             }
 
@@ -693,7 +693,7 @@ var main = function (server) {
     function toggleShip (ship) {
         util.log("Player has toggled: " + ship.id);
 
-        if(ship.isEnabled()) {
+        if (ship.isEnabled()) {
             ship.disable();
         } else {
             ship.enable();
@@ -705,15 +705,15 @@ var main = function (server) {
     function makeDirection () {
         tempY = Random.nextRange(-2, 2);
         
-        if(tempY <= 0.1 && tempY >= -0.1) {
+        if (tempY <= 0.1 && tempY >= -0.1) {
             return makeDirection();
         }
 
         return tempY;
     }
 
-    function handleEndGame(){
-        if (0 === remotePlayers.length){
+    function handleEndGame() {
+        if (0 === remotePlayers.length) {
             io.sockets.emit("end game", {
                 scores : 'none'
             });
