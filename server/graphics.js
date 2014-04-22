@@ -15,6 +15,7 @@ var graphics = function () {
             warpSpeed = 0,
             maxShootSpeed = 200,
             maxspeed = 15,
+            lifeTime = 0,
             ufotime = 0;
         var thrusting = false;
 
@@ -54,9 +55,9 @@ var graphics = function () {
         };
 
         that.warp = function (elapsedTime, s, asteroids){
-            warpSpeed += elapsedTime;
+            // warpSpeed += elapsedTime;
 
-            if (warpSpeed >= 250) {
+            if (warpSpeed >= 2000) {
                 warpSpeed = 0;
                 
                 that.prev = {
@@ -242,6 +243,26 @@ var graphics = function () {
             spec.rounds = value;
         }
 
+        that.getShields = function () {
+            if (spec.shields === undefined || lifeTime >= 10000) {
+                return 0;
+            } else {
+                return spec.shields;
+            }
+        }
+
+        that.setShields = function (value) {
+            spec.shields = value;
+        }
+
+        that.getWarpSpeed = function () {
+            if (warpSpeed === undefined) {
+                return 0;
+            } else {
+                return warpSpeed;
+            }
+        }
+
         that.checkBounds = function () {
             if (spec.center.x + spec.height / 2 <= 0) {
                 spec.center.x = 1280 + spec.height / 2;
@@ -382,6 +403,9 @@ var graphics = function () {
             if(dx < -maxspeed) {
                 dx = -maxspeed;
             }
+
+            lifeTime += time;
+            warpSpeed += time;
 
             for (var i = 0; i < that.bullets.length; ++i) {
                 if (that.bullets[i].kill) {

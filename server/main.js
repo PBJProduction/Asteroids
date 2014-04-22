@@ -382,7 +382,9 @@ var main = function (server) {
                     },
                     lives: remotePlayers[i].getLives(),
                     score: remotePlayers[i].getScore(),
-                    rounds: remotePlayers[i].getRounds()
+                    rounds: remotePlayers[i].getRounds(),
+                    shields: remotePlayers[i].getShields(),
+                    hyperspace: remotePlayers[i].getWarpSpeed()
                 };
 
                 var bullets = [];
@@ -657,27 +659,37 @@ var main = function (server) {
     }
 
     function lowerLives (ship) {
-        sendParticles({
-            x: ship.getX(),
-            y: ship.getY(),
-            type: "SHP",
-            rotation: ship.rotation
-        });
+        if (ship.getShields() <= 0) {
+            sendParticles({
+                x: ship.getX(),
+                y: ship.getY(),
+                type: "SHP",
+                rotation: ship.rotation
+            });
 
-        if (ship.getLives() <= 1) {
-            ship_id = ship.id;
-            removedPlayers.push({
-                id: ship_id,
-                score: ship.getScore()
-            })
-            remotePlayers.splice(remotePlayers.indexOf(ship), 1);
-            io.sockets.emit("remove player", {id: ship_id});
-        } else {
-            if (undefined !== ship.getLives()) {
-                ship.setLives(ship.getLives() - 1);
+            if (ship.getLives() <= 1) {
+                ship_id = ship.id;
+                removedPlayers.push({
+                    id: ship_id,
+                    score: ship.getScore()
+                })
+                remotePlayers.splice(remotePlayers.indexOf(ship), 1);
+                io.sockets.emit("remove player", {id: ship_id});
+            } else {
+                if (undefined !== ship.getLives()) {
+                    ship.setLives(ship.getLives() - 1);
+                }
+
+                replaceShip(ship);
             }
-
-            replaceShip(ship);
+        } else {
+            ship.setShields(ship.getShields() - 1);
+            sendParticles({
+                x: ship.getX(),
+                y: ship.getY(),
+                type: "SHI",
+                rotation: ship.rotation
+            });
         }
     }
 
