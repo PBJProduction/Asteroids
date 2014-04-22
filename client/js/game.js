@@ -37,6 +37,7 @@ angular.module('asteroids').controller('gameController', function ($scope) {
             leftpressed = false,
             rightpressed = false,
             shootpressed = false,
+            warping = false,
             bulletPic = new Image(),
             shipPic = new Image(),
             otherShipPic = new Image(),
@@ -61,6 +62,7 @@ angular.module('asteroids').controller('gameController', function ($scope) {
             score = null,
             rounds = null,
             cleared = false,            
+            missingPercent = 0,
             backgroundSound = new Audio("../audio/background.mp3");
 
             shipPic.src = "../images/ship.png";
@@ -94,6 +96,7 @@ angular.module('asteroids').controller('gameController', function ($scope) {
             leftpressed = false;
             rightpressed = false;
             shootpressed = false;
+            warping = false;
             bulletPic = new Image();
             shipPic = new Image();
             otherShipPic = new Image();
@@ -112,6 +115,7 @@ angular.module('asteroids').controller('gameController', function ($scope) {
             ufos = [];
             gameStarted = false;
             cleared = false;
+            missingPercent = 0;
             backgroundSound = new Audio("../audio/background.mp3");
 
             shipPic.src = "../images/ship.png";
@@ -245,8 +249,13 @@ angular.module('asteroids').controller('gameController', function ($scope) {
                     shootpressed = true;
                     e.keyCode = KeyEvent.DOM_VK_SPACE;
                 } else if (e.keyCode === settings.WARP_KEY.charCodeAt(0) && !warppressed) {
-                    warppressed = true;
-                    e.keyCode = KeyEvent.DOM_VK_S;
+                    if (missingPercent <= 0 && !warping) {
+                        missingPercent = 100;
+                        warppressed = true;
+                        warping = true;
+                        e.keyCode = KeyEvent.DOM_VK_S;
+                    }
+                    console.log(missingPercent);
                 }
 
                 press(e.keyCode);
@@ -328,8 +337,14 @@ angular.module('asteroids').controller('gameController', function ($scope) {
                 graphics.context.fillRect(rectX+(cornerRadius/2), rectY+(cornerRadius/2), rectWidth-cornerRadius, rectHeight-cornerRadius);
 
                 graphics.context.fillStyle = "blue";
-                var missingPercent = 100;
-                graphics.context.fillRect(rectX+(cornerRadius/2), rectY+(cornerRadius/2), rectWidth-cornerRadius - missingPercent + 4, rectHeight-cornerRadius);                
+                
+                if (missingPercent >= 0) {
+                    missingPercent -= MYGAME.elapsedTime / 10;
+                } else {
+                    warping = false;
+                }
+
+                graphics.context.fillRect(rectX+(cornerRadius/2), rectY+(cornerRadius/2), rectWidth-cornerRadius - missingPercent, rectHeight-cornerRadius);                
 
                 //graphics.context.fillRect(100, 130, 100, 20);
 
@@ -564,7 +579,7 @@ angular.module('asteroids').controller('gameController', function ($scope) {
                 size = 50;
                 speed = 100;
                 asteroid = false;
-                playWhoosh()
+                playWhoosh();
             } else {
                 image = ufoExplodePic;
                 size = 50;
