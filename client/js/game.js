@@ -308,8 +308,32 @@ angular.module('asteroids').controller('gameController', function ($scope) {
                 graphics.context.fillStyle = "white";
                 graphics.context.font = "14pt Arial";
 
-                graphics.context.fillText("Score: " + score, 100, 90);
-                graphics.context.fillText("Current round: " + rounds, 100, 110);
+                graphics.context.fillText("Score: " + score, 100, 110);
+                graphics.context.fillText("Current round: " + rounds, 100, 130);
+                
+                graphics.context.globalAlpha = 0.2;
+
+                var rectX = 100;
+                var rectY = 70;
+                var rectWidth = 100;
+                var rectHeight = 20;
+                var cornerRadius = 5;                
+
+                // Set faux rounded corners
+                graphics.context.lineJoin = "round";
+                graphics.context.lineWidth = cornerRadius;
+
+                // Change origin and dimensions to match true size (a stroke makes the shape a bit larger)
+                graphics.context.strokeRect(rectX+(cornerRadius/2), rectY+(cornerRadius/2), rectWidth-cornerRadius, rectHeight-cornerRadius);
+                graphics.context.fillRect(rectX+(cornerRadius/2), rectY+(cornerRadius/2), rectWidth-cornerRadius, rectHeight-cornerRadius);
+
+                graphics.context.fillStyle = "blue";
+                var missingPercent = 100;
+                graphics.context.fillRect(rectX+(cornerRadius/2), rectY+(cornerRadius/2), rectWidth-cornerRadius - missingPercent + 4, rectHeight-cornerRadius);                
+
+                //graphics.context.fillRect(100, 130, 100, 20);
+
+                graphics.context.globalAlpha = 1.0;
             }
 
             if (!cancelNextRequest) {
