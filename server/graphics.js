@@ -26,8 +26,7 @@ var graphics = function () {
 
         that.myKeyboard = input.Keyboard();
 
-        that.shoot = function (elapsedTime, s) {
-            // console.log(s);
+        that.shoot = function (elapsedTime, s) {            
             currentShootSpeed += elapsedTime;
             if (currentShootSpeed >= maxShootSpeed) {
                 currentShootSpeed = 0;
