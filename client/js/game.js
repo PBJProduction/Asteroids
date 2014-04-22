@@ -50,7 +50,9 @@ angular.module('asteroids').controller('gameController', function ($scope) {
             ufoSparklePic = new Image(),
             socket = $scope.socket,
             pewIndex = 0,
+            whooshIndex = 0,
             pewpewArr = [],
+            whooshArr = [],
             particlesArr = [],
             ufos = [],
             gameStarted = false,
@@ -58,7 +60,7 @@ angular.module('asteroids').controller('gameController', function ($scope) {
             lives = null,
             score = null,
             rounds = null,
-            cleared = false,
+            cleared = false,            
             backgroundSound = new Audio("../audio/background.mp3");
 
             shipPic.src = "../images/ship.png";
@@ -103,7 +105,9 @@ angular.module('asteroids').controller('gameController', function ($scope) {
             sparklePic = new Image();
             ufoSparklePic = new Image();
             pewIndex = 0;
+            whooshIndex = 0;
             pewpewArr = [];
+            whooshArr = [];
             particlesArr = [];
             ufos = [];
             gameStarted = false;
@@ -122,7 +126,9 @@ angular.module('asteroids').controller('gameController', function ($scope) {
             ufoSparklePic.src = "../images/ufoSparkle.png";
 
 
-
+            for (var i = 0; i < 50; ++i) {
+                whooshArr.push(new Audio("../audio/whoosh.wav"));
+            }
 
             for (var i = 0; i < 50; ++i) {
                 pewpewArr.push(new Audio("../audio/pewpew.wav"));
@@ -154,7 +160,7 @@ angular.module('asteroids').controller('gameController', function ($scope) {
             socket.on("move asteroids", onMoveAsteroids);
             socket.on("move ufo", onMoveUFO);
             socket.on("place particles", onPlaceParticles);
-            socket.on("play pew", playPew);
+            socket.on("play pew", playPew);            
             socket.on("toggle player", togglePlayer);
             socket.on("end game", onShowScores);
         }
@@ -166,6 +172,11 @@ angular.module('asteroids').controller('gameController', function ($scope) {
         function playPew () {
             if (pewIndex >= 50) pewIndex = 0;
             pewpewArr[pewIndex++].play();
+        }
+
+        function playWhoosh() {
+            if (whooshIndex >= 50) whooshIndex = 0;
+            whooshArr[whooshIndex++].play();
         }
         
         $(window).keyup(function (e) {
@@ -529,6 +540,7 @@ angular.module('asteroids').controller('gameController', function ($scope) {
                 size = 50;
                 speed = 100;
                 asteroid = false;
+                playWhoosh()
             } else {
                 image = ufoExplodePic;
                 size = 50;
