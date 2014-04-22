@@ -1,7 +1,7 @@
 =========
 Asteroids
 =========
-Simple asteroids game with muliplayer.
+Simple Asteroids game with muliplayer.
 
 =======
 Sprints
