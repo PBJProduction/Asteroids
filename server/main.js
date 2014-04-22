@@ -43,10 +43,10 @@ var main = function (server) {
     function genAI () {
         var newPlayer = graphics.Texture( {
                 center : { x : 640, y : 350 },
-                width : 100, height : 100,
+                width : 50, height : 50,
                 rotation : 0,
-                moveRate : 100,         // pixels per second
-                rotateRate : 3.14159    // Radians per second
+                moveRate : 200,         // pixels per second
+                rotateRate : 1.2 * 3.14159    // Radians per second
             });
 
         newPlayer.id = 'ai';
@@ -76,10 +76,10 @@ var main = function (server) {
         for (var client in clients) {
             var newPlayer = graphics.Texture( {
                     center : { x : 640, y : 350 },
-                    width : 100, height : 100,
+                    width : 50, height : 50,
                     rotation : 0,
-                    moveRate : 100,         // pixels per second
-                    rotateRate : 3.14159    // Radians per second
+                    moveRate : 200,         // pixels per second
+                    rotateRate : 1.2 * 3.14159    // Radians per second
                 });
             
             newPlayer.id = client.id;
@@ -106,7 +106,7 @@ var main = function (server) {
 
     function onStartGame () {
         if (false === running) {
-            running = true;            
+            running = true;       
             run();
         }
     }
@@ -116,8 +116,8 @@ var main = function (server) {
                 center : { x : 0, y : Random.nextRange(0,700) },
                 width : 100, height : 100,
                 rotation : 0,
-                moveRate : 100,         // pixels per second
-                rotateRate : 3.14159    // Radians per second
+                moveRate : 200,         // pixels per second
+                rotateRate : 1.2 * 3.14159    // Radians per second
             });
 
         newPlayer.id = 'ufo';
@@ -137,8 +137,8 @@ var main = function (server) {
                 center : { x : 0, y : Random.nextRange(0, 700) },
                 width : 100, height : 100,
                 rotation : 0,
-                moveRate : 150,
-                rotateRate : 3.14159
+                moveRate : 250,
+                rotateRate : 1.2 * 3.14159
         });
 
         newPlayer.id = 'bigUfo';
@@ -280,10 +280,10 @@ var main = function (server) {
     function onNewPlayer (data) {
         var newPlayer = graphics.Texture( {
                 center : { x : data.x, y : data.y },
-                width : 100, height : 100,
+                width : 50, height : 50,
                 rotation : data.rot,
-                moveRate : 100,         // pixels per second
-                rotateRate : 3.14159    // Radians per second
+                moveRate : 200,         // pixels per second
+                rotateRate : 1.2 * 3.14159    // Radians per second
             });
         
         newPlayer.id = this.id;
@@ -487,7 +487,7 @@ var main = function (server) {
                     width : 100, height : 100,
                     rotation : 0,
                     moveRate : 200,         // pixels per second
-                    rotateRate : 3.14159,   // Radians per second
+                    rotateRate : 1.2 * 3.14159,   // Radians per second
                     asteroid : true,
                     alive : 0,
                     thrust : 2,
@@ -610,7 +610,7 @@ var main = function (server) {
                     width : 100, height : 100,
                     rotation : 0,
                     moveRate : 200,         // pixels per second
-                    rotateRate : 3.14159,   // Radians per second
+                    rotateRate : 1.2 * 3.14159,   // Radians per second
                     asteroid : true,
                     alive : 0,
                     thrust : 2,

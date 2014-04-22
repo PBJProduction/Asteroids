@@ -9,12 +9,12 @@ var graphics = function () {
         var that = {};
         var dx = 0,
             dy = 0,
-            thrust = 5,
+            thrust = 10,
             friction = 1,
             currentShootSpeed = 0,
             warpSpeed = 0,
             maxShootSpeed = 200,
-            maxspeed = 10,
+            maxspeed = 15,
             ufotime = 0;
         var thrusting = false;
 

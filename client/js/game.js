@@ -131,7 +131,7 @@ angular.module('asteroids').controller('gameController', function ($scope) {
             localPlayer = graphics.Texture( {
                 image : shipPic,
                 center : { x : 640, y : 350 },
-                width : 100, height : 100,
+                width : 50, height : 50,
                 rotation : 0,
                 bullets : []
             });
@@ -343,7 +343,7 @@ angular.module('asteroids').controller('gameController', function ($scope) {
             var newPlayer = graphics.Texture( {
                 image : otherShipPic,
                 center : { x : data.x, y : data.y },
-                width : 100, height : 100,
+                width : 50, height : 50,
                 rotation : data.rot,
                 bullets : []
             });
@@ -393,7 +393,7 @@ angular.module('asteroids').controller('gameController', function ($scope) {
                                             direction : { x : -Math.cos(rad), y : Math.sin(rad) },
                                             image : shipExplodePic,
                                             size:{mean:20,stdev:5},
-                                            center: {x: data.array[i].x-Math.cos(rad)*40, y: data.array[i].y +Math.sin(rad)*40},
+                                            center: {x: data.array[i].x-Math.cos(rad)*20, y: data.array[i].y +Math.sin(rad)*20},
                                             speed: {mean: 40, stdev: .05},
                                             lifetime: {mean: .5, stdev: .05}
                                         },
