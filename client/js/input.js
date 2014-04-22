@@ -83,6 +83,7 @@ MYGAME.input = function () {
 			key;
 		
 		function keyPress (e) {
+			e.preventDefault();
 			that.keys[e.keyCode] = e.timeStamp;
 		}
 		
