@@ -85,6 +85,9 @@ var main = function (server) {
             newPlayer.id = client.id;
             newPlayer.setLives(3);
             
+            newPlayer.setRadius(300);
+            fixLocation(newPlayer, asteroids);
+            newPlayer.setRadius(25);
 
             //register the handler
             newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_W, newPlayer.forwardThruster);
@@ -151,6 +154,13 @@ var main = function (server) {
         newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_S, newPlayer.warp);
 
         ufos.push(newPlayer);
+    }
+
+    function fixLocation(item, asteroids) {
+        var list = getCollisions([item], asteroids);
+        if (list.length != 0) {
+            item.warp(10000, null, asteroids);
+        }
     }
 
     function gameLoop (time) {
@@ -285,6 +295,8 @@ var main = function (server) {
                 moveRate : 200,         // pixels per second
                 rotateRate : 1.2 * 3.14159    // Radians per second
             });
+        fixLocation(newPlayer, asteroids);
+        newPlayer.setWidth
         
         newPlayer.id = this.id;
         this.emit("new response", {id : this.id});
@@ -481,19 +493,24 @@ var main = function (server) {
 
     function generateAsteroids (spec) {
         for (var i = 0; i < spec.number; ++i) {
+            var asteroid = graphics.Texture( {
+                center : { x : Random.nextRange(0,1280), y : Random.nextRange(0,700) },
+                width : 100, height : 100,
+                rotation : 0,
+                moveRate : 200,         // pixels per second
+                rotateRate : 1.2 * 3.14159,   // Radians per second
+                asteroid : true,
+                alive : 0,
+                thrust : 2,
+                dx : makeDirection(),
+                dy : makeDirection()
+            });
+            
+            // console.log(asteroid.getDX());
+            // console.log(asteroid.getDY());
+
             asteroids.push(
-                graphics.Texture( {
-                    center : { x : Random.nextRange(0,1280), y : Random.nextRange(0,700) },
-                    width : 100, height : 100,
-                    rotation : 0,
-                    moveRate : 200,         // pixels per second
-                    rotateRate : 1.2 * 3.14159,   // Radians per second
-                    asteroid : true,
-                    alive : 0,
-                    thrust : 2,
-                    dx : makeDirection(),
-                    dy : makeDirection()
-                })
+                asteroid
             );
 
             asteroids[i].setSize(3);
@@ -588,6 +605,8 @@ var main = function (server) {
             
             asteroid.setDX(makeDirection());
             asteroid.setDY(makeDirection());
+            // console.log(asteroid.getDX());
+            // console.log(asteroid.getDY());
 
             if (2 === asteroid.getSize()) {
                 asteroid.setRadius(35);
@@ -614,12 +633,16 @@ var main = function (server) {
                     asteroid : true,
                     alive : 0,
                     thrust : 2,
-                    dx : tempX,
-                    dy : tempY
+                    dx : makeDirection(),
+                    dy : makeDirection()
                 });
 
             asteroid.setDX(makeDirection());
             asteroid.setDY(makeDirection());
+            // console.log(asteroid.getDX());
+            // console.log(asteroid.getDY());
+            // console.log(toAdd.getDX());
+            // console.log(toAdd.getDY());
 
             toAdd.setSize(asteroid.getSize());
 
@@ -672,6 +695,9 @@ var main = function (server) {
 
     function replaceShip (ship) {
         ship.moveTo({ x : 640, y : 350 });
+        ship.setRadius(300);
+        fixLocation(ship, asteroids);
+        ship.setRadius(25);
         ship.setRot(0);
         ship.setDX(0);
         ship.setDY(0);
@@ -703,7 +729,7 @@ var main = function (server) {
     }
 
     function makeDirection () {
-        tempY = Random.nextRange(-2, 2);
+        tempY = Random.nextRange(-2.0, 2.0);
         
         if (tempY <= 0.1 && tempY >= -0.1) {
             return makeDirection();

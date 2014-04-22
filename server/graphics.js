@@ -173,6 +173,14 @@ var graphics = function () {
             dy = ndy;
         };
 
+        that.getDX = function() {
+            return dx;
+        };
+
+        that.getDY = function() {
+            return dy;
+        };
+
         that.setLives = function (nlives) {
             spec.lives = nlives;
         };

@@ -9,7 +9,7 @@ var Random = (function () {
 	
 	function nextRange (min, max) {
 		var range = max - min;
-		return Math.floor((Math.random() * range) + min);
+		return (Math.random() * range) + min;
 	}
 	
 	function nextCircleVector () {
