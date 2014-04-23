@@ -15,6 +15,7 @@ var graphics = function () {
             warpSpeed = 0,
             maxShootSpeed = 200,
             maxspeed = 15,
+            lifeTime = 0,
             ufotime = 0;
         var thrusting = false;
 
@@ -26,8 +27,7 @@ var graphics = function () {
 
         that.myKeyboard = input.Keyboard();
 
-        that.shoot = function (elapsedTime, s) {
-            // console.log(s);
+        that.shoot = function (elapsedTime, s) {            
             currentShootSpeed += elapsedTime;
             if (currentShootSpeed >= maxShootSpeed) {
                 currentShootSpeed = 0;
@@ -55,9 +55,9 @@ var graphics = function () {
         };
 
         that.warp = function (elapsedTime, s, asteroids){
-            warpSpeed += elapsedTime;
+            // warpSpeed += elapsedTime;
 
-            if (warpSpeed >= 250) {
+            if (warpSpeed >= 2000) {
                 warpSpeed = 0;
                 
                 that.prev = {
@@ -173,6 +173,14 @@ var graphics = function () {
             dy = ndy;
         };
 
+        that.getDX = function() {
+            return dx;
+        };
+
+        that.getDY = function() {
+            return dy;
+        };
+
         that.setLives = function (nlives) {
             spec.lives = nlives;
         };
@@ -233,6 +241,26 @@ var graphics = function () {
 
         that.setRounds = function (value) {
             spec.rounds = value;
+        }
+
+        that.getShields = function () {
+            if (spec.shields === undefined || lifeTime >= 10000) {
+                return 0;
+            } else {
+                return spec.shields;
+            }
+        }
+
+        that.setShields = function (value) {
+            spec.shields = value;
+        }
+
+        that.getWarpSpeed = function () {
+            if (warpSpeed === undefined) {
+                return 0;
+            } else {
+                return warpSpeed;
+            }
         }
 
         that.checkBounds = function () {
@@ -375,6 +403,9 @@ var graphics = function () {
             if(dx < -maxspeed) {
                 dx = -maxspeed;
             }
+
+            lifeTime += time;
+            warpSpeed += time;
 
             for (var i = 0; i < that.bullets.length; ++i) {
                 if (that.bullets[i].kill) {

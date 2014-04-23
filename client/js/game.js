@@ -37,6 +37,7 @@ angular.module('asteroids').controller('gameController', function ($scope) {
             leftpressed = false,
             rightpressed = false,
             shootpressed = false,
+            warping = false,
             bulletPic = new Image(),
             shipPic = new Image(),
             otherShipPic = new Image(),
@@ -50,7 +51,9 @@ angular.module('asteroids').controller('gameController', function ($scope) {
             ufoSparklePic = new Image(),
             socket = $scope.socket,
             pewIndex = 0,
+            whooshIndex = 0,
             pewpewArr = [],
+            whooshArr = [],
             particlesArr = [],
             ufos = [],
             gameStarted = false,
@@ -58,7 +61,8 @@ angular.module('asteroids').controller('gameController', function ($scope) {
             lives = null,
             score = null,
             rounds = null,
-            cleared = false,
+            cleared = false,            
+            missingPercent = 0,
             backgroundSound = new Audio("../audio/background.mp3");
 
             shipPic.src = "../images/ship.png";
@@ -93,6 +97,7 @@ angular.module('asteroids').controller('gameController', function ($scope) {
             leftpressed = false;
             rightpressed = false;
             shootpressed = false;
+            warping = false;
             bulletPic = new Image();
             shipPic = new Image();
             otherShipPic = new Image();
@@ -104,11 +109,14 @@ angular.module('asteroids').controller('gameController', function ($scope) {
             sparklePic = new Image();
             ufoSparklePic = new Image();
             pewIndex = 0;
+            whooshIndex = 0;
             pewpewArr = [];
+            whooshArr = [];
             particlesArr = [];
             ufos = [];
             gameStarted = false;
             cleared = false;
+            missingPercent = 0;
             backgroundSound = new Audio("../audio/background.mp3");
 
             shipPic.src = "../images/ship.png";
@@ -123,7 +131,9 @@ angular.module('asteroids').controller('gameController', function ($scope) {
             ufoSparklePic.src = "../images/ufoSparkle.png";
 
 
-
+            for (var i = 0; i < 50; ++i) {
+                whooshArr.push(new Audio("../audio/whoosh.wav"));
+            }
 
             for (var i = 0; i < 50; ++i) {
                 pewpewArr.push(new Audio("../audio/pewpew.wav"));
@@ -155,7 +165,7 @@ angular.module('asteroids').controller('gameController', function ($scope) {
             socket.on("move asteroids", onMoveAsteroids);
             socket.on("move ufo", onMoveUFO);
             socket.on("place particles", onPlaceParticles);
-            socket.on("play pew", playPew);
+            socket.on("play pew", playPew);            
             socket.on("toggle player", togglePlayer);
             socket.on("end game", onShowScores);
         }
@@ -167,6 +177,11 @@ angular.module('asteroids').controller('gameController', function ($scope) {
         function playPew () {
             if (pewIndex >= 50) pewIndex = 0;
             pewpewArr[pewIndex++].play();
+        }
+
+        function playWhoosh() {
+            if (whooshIndex >= 50) whooshIndex = 0;
+            whooshArr[whooshIndex++].play();
         }
         
         $(window).keyup(function (e) {
@@ -235,9 +250,19 @@ angular.module('asteroids').controller('gameController', function ($scope) {
                     shootpressed = true;
                     e.keyCode = KeyEvent.DOM_VK_SPACE;
                 } else if (e.keyCode === settings.WARP_KEY.charCodeAt(0) && !warppressed) {
+<<<<<<< HEAD
                     warppressed = true;
                     e.keyCode = KeyEvent.DOM_VK_S;
                     
+=======
+                    if (missingPercent <= 0 && !warping) {
+                        missingPercent = 100;
+                        warppressed = true;
+                        warping = true;
+                        e.keyCode = KeyEvent.DOM_VK_S;
+                    }
+                    console.log(missingPercent);
+>>>>>>> 745b27ff88d42bc5b10b0d58769b332bb7006bf8
                 }
 
                 press(e.keyCode);
@@ -299,8 +324,38 @@ angular.module('asteroids').controller('gameController', function ($scope) {
                 graphics.context.fillStyle = "white";
                 graphics.context.font = "14pt Arial";
 
-                graphics.context.fillText("Score: " + score, 100, 90);
-                graphics.context.fillText("Current round: " + rounds, 100, 110);
+                graphics.context.fillText("Score: " + score, 100, 110);
+                graphics.context.fillText("Current round: " + rounds, 100, 130);
+                
+                graphics.context.globalAlpha = 0.2;
+
+                var rectX = 100;
+                var rectY = 70;
+                var rectWidth = 100;
+                var rectHeight = 20;
+                var cornerRadius = 5;                
+
+                // Set faux rounded corners
+                graphics.context.lineJoin = "round";
+                graphics.context.lineWidth = cornerRadius;
+
+                // Change origin and dimensions to match true size (a stroke makes the shape a bit larger)
+                graphics.context.strokeRect(rectX+(cornerRadius/2), rectY+(cornerRadius/2), rectWidth-cornerRadius, rectHeight-cornerRadius);
+                graphics.context.fillRect(rectX+(cornerRadius/2), rectY+(cornerRadius/2), rectWidth-cornerRadius, rectHeight-cornerRadius);
+
+                graphics.context.fillStyle = "blue";
+                
+                if (missingPercent >= 0) {
+                    missingPercent -= MYGAME.elapsedTime / 10;
+                } else {
+                    warping = false;
+                }
+
+                graphics.context.fillRect(rectX+(cornerRadius/2), rectY+(cornerRadius/2), rectWidth-cornerRadius - missingPercent, rectHeight-cornerRadius);                
+
+                //graphics.context.fillRect(100, 130, 100, 20);
+
+                graphics.context.globalAlpha = 1.0;
             }
 
             if (!cancelNextRequest) {
@@ -531,6 +586,7 @@ angular.module('asteroids').controller('gameController', function ($scope) {
                 size = 50;
                 speed = 100;
                 asteroid = false;
+                playWhoosh();
             } else {
                 image = ufoExplodePic;
                 size = 50;
