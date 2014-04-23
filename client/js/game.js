@@ -88,6 +88,7 @@ angular.module('asteroids').controller('gameController', function ($scope) {
             remotePlayers = [];
             asteroids = [];
             warppressed = false;
+            warping = false;
             forwardpressed = false;
             leftpressed = false;
             rightpressed = false;
@@ -236,6 +237,7 @@ angular.module('asteroids').controller('gameController', function ($scope) {
                 } else if (e.keyCode === settings.WARP_KEY.charCodeAt(0) && !warppressed) {
                     warppressed = true;
                     e.keyCode = KeyEvent.DOM_VK_S;
+                    
                 }
 
                 press(e.keyCode);
