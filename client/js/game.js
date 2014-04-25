@@ -250,11 +250,6 @@ angular.module('asteroids').controller('gameController', function ($scope) {
                     shootpressed = true;
                     e.keyCode = KeyEvent.DOM_VK_SPACE;
                 } else if (e.keyCode === settings.WARP_KEY.charCodeAt(0) && !warppressed) {
-<<<<<<< HEAD
-                    warppressed = true;
-                    e.keyCode = KeyEvent.DOM_VK_S;
-                    
-=======
                     if (missingPercent <= 0 && !warping) {
                         missingPercent = 100;
                         warppressed = true;
@@ -262,7 +257,6 @@ angular.module('asteroids').controller('gameController', function ($scope) {
                         e.keyCode = KeyEvent.DOM_VK_S;
                     }
                     console.log(missingPercent);
->>>>>>> 745b27ff88d42bc5b10b0d58769b332bb7006bf8
                 }
 
                 press(e.keyCode);
