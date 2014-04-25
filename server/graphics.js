@@ -16,6 +16,7 @@ var graphics = function () {
             maxShootSpeed = 200,
             maxspeed = 15,
             lifeTime = 0,
+            shields = 2,
             ufotime = 0;
         var thrusting = false;
 
@@ -203,21 +204,21 @@ var graphics = function () {
             } else {
                 return spec.score;
             }
-        }
+        };
 
         that.isThrusting = function () {
             var toReturn = thrusting;
             thrusting = false;
             return toReturn;
-        }
+        };
 
         that.disable = function () {
             spec.disabled = true;
-        }
+        };
 
         that.enable = function () {
             spec.disabled = false;
-        }
+        };
 
         that.isEnabled = function () {
             if (undefined === spec.disabled) {
@@ -229,7 +230,7 @@ var graphics = function () {
                     return true;
                 }
             }
-        }
+        };
 
         that.getRounds = function () {
             if (undefined === spec.rounds) {
@@ -237,23 +238,23 @@ var graphics = function () {
             } else {
                 return spec.rounds;
             }
-        }
+        };
 
         that.setRounds = function (value) {
             spec.rounds = value;
-        }
+        };
 
         that.getShields = function () {
-            if (spec.shields === undefined || lifeTime >= 10000) {
+            if (shields === undefined || lifeTime >= 10000) {
                 return 0;
             } else {
-                return spec.shields;
+                return shields;
             }
-        }
+        };
 
         that.setShields = function (value) {
-            spec.shields = value;
-        }
+            shields = value;
+        };
 
         that.getWarpSpeed = function () {
             if (warpSpeed === undefined) {
@@ -261,7 +262,12 @@ var graphics = function () {
             } else {
                 return warpSpeed;
             }
-        }
+        };
+
+        that.resetLife = function () {
+            lifeTime = 0;
+            warpSpeed = 0;
+        };
 
         that.checkBounds = function () {
             if (spec.center.x + spec.height / 2 <= 0) {

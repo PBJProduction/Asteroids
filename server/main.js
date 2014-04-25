@@ -41,7 +41,7 @@ var main = function (server) {
 
 
     function genAI () {
-        var newPlayer = graphics.Texture( {
+        var aiPlayer = graphics.Texture( {
                 center : { x : 640, y : 350 },
                 width : 50, height : 50,
                 rotation : 0,
@@ -49,24 +49,29 @@ var main = function (server) {
                 rotateRate : 1.2 * 3.14159    // Radians per second
             });
 
-        newPlayer.id = 'ai';
-        newPlayer.setLives(3);
+        aiPlayer.id = 'ai';
+        aiPlayer.setLives(3);
+        aiPlayer.setShields(2);
+
+        aiPlayer.setRadius(300);
+        fixLocation(aiPlayer, asteroids);
+        aiPlayer.setRadius(25);
         
         //register the handler
-        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_W, newPlayer.forwardThruster);
-        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_A, newPlayer.rotateLeft);
-        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_D, newPlayer.rotateRight);
-        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_SPACE, newPlayer.shoot);
-        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_S, newPlayer.warp);
+        aiPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_W, aiPlayer.forwardThruster);
+        aiPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_A, aiPlayer.rotateLeft);
+        aiPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_D, aiPlayer.rotateRight);
+        aiPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_SPACE, aiPlayer.shoot);
+        aiPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_S, aiPlayer.warp);
         
         io.sockets.emit("new player",
         {
-            id: newPlayer.id,
-            x: newPlayer.getX(),
-            y: newPlayer.getY(),
-            rot: newPlayer.getRot()
+            id: aiPlayer.id,
+            x: aiPlayer.getX(),
+            y: aiPlayer.getY(),
+            rot: aiPlayer.getRot()
         });
-        remotePlayers.push(newPlayer);
+        remotePlayers.push(aiPlayer);
     }
 
     function sendPlayers () {
@@ -84,6 +89,7 @@ var main = function (server) {
             
             newPlayer.id = client.id;
             newPlayer.setLives(3);
+            newPlayer.setShields(2);
             
             newPlayer.setRadius(300);
             fixLocation(newPlayer, asteroids);
@@ -115,7 +121,7 @@ var main = function (server) {
     }
 
     function genUFO () {
-        var newPlayer = graphics.Texture( {
+        var smallUFO = graphics.Texture( {
                 center : { x : 0, y : Random.nextRange(0,700) },
                 width : 100, height : 100,
                 rotation : 0,
@@ -123,20 +129,20 @@ var main = function (server) {
                 rotateRate : 1.2 * 3.14159    // Radians per second
             });
 
-        newPlayer.id = 'ufo';
-        newPlayer.setLives(1);
+        smallUFO.id = 'ufo';s
+        smallUFO.setLives(1);
         //register the handler
-        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_W, newPlayer.forwardThruster);
-        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_A, newPlayer.rotateLeft);
-        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_D, newPlayer.rotateRight);
-        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_SPACE, newPlayer.shoot);
-        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_S, newPlayer.warp);
+        smallUFO.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_W, smallUFO.forwardThruster);
+        smallUFO.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_A, smallUFO.rotateLeft);
+        smallUFO.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_D, smallUFO.rotateRight);
+        smallUFO.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_SPACE, smallUFO.shoot);
+        smallUFO.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_S, smallUFO.warp);
 
-        ufos.push(newPlayer);
+        ufos.push(smallUFO);
     }
 
     function genBigUfo () {
-        var newPlayer = graphics.Texture({
+        var bigUFO = graphics.Texture({
                 center : { x : 0, y : Random.nextRange(0, 700) },
                 width : 100, height : 100,
                 rotation : 0,
@@ -144,16 +150,16 @@ var main = function (server) {
                 rotateRate : 1.2 * 3.14159
         });
 
-        newPlayer.id = 'bigUfo';
-        newPlayer.setLives(1);
+        bigUFO.id = 'bigUfo';
+        bigUFO.setLives(1);
 
-        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_W, newPlayer.forwardThruster);
-        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_A, newPlayer.rotateLeft);
-        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_D, newPlayer.rotateRight);
-        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_SPACE, newPlayer.shoot);
-        newPlayer.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_S, newPlayer.warp);
+        bigUFO.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_W, bigUFO.forwardThruster);
+        bigUFO.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_A, bigUFO.rotateLeft);
+        bigUFO.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_D, bigUFO.rotateRight);
+        bigUFO.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_SPACE, bigUFO.shoot);
+        bigUFO.myKeyboard.registerCommand(input.KeyEvent.DOM_VK_S, bigUFO.warp);
 
-        ufos.push(newPlayer);
+        ufos.push(bigUFO);
     }
 
     function fixLocation(item, asteroids) {
@@ -713,6 +719,8 @@ var main = function (server) {
         ship.setRot(0);
         ship.setDX(0);
         ship.setDY(0);
+        ship.setShields(2);
+        ship.resetLife();
     }
     
     function sendSound () {
