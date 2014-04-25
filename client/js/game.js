@@ -338,8 +338,8 @@ angular.module('asteroids').controller('gameController', function ($scope) {
                 graphics.context.lineWidth = cornerRadius;
 
                 // Change origin and dimensions to match true size (a stroke makes the shape a bit larger)
-                graphics.context.strokeRect(rectX+(cornerRadius/2), rectY+(cornerRadius/2), rectWidth-cornerRadius, rectHeight-cornerRadius);
-                graphics.context.fillRect(rectX+(cornerRadius/2), rectY+(cornerRadius/2), rectWidth-cornerRadius, rectHeight-cornerRadius);
+                graphics.context.strokeRect(rectX + (cornerRadius / 2), rectY + (cornerRadius / 2), rectWidth - cornerRadius, rectHeight - cornerRadius);
+                graphics.context.fillRect(rectX + (cornerRadius / 2), rectY + (cornerRadius / 2), rectWidth - cornerRadius, rectHeight - cornerRadius);
 
                 graphics.context.fillStyle = "blue";
                 
@@ -349,10 +349,11 @@ angular.module('asteroids').controller('gameController', function ($scope) {
 
                 }
 
+                graphics.context.globalAlpha = 0.6;
                 graphics.context.fillRect(rectX+(cornerRadius/2), rectY+(cornerRadius/2), rectWidth-cornerRadius - missingPercent, rectHeight-cornerRadius);                
-
-                if (shieldsLeft > 2) {
-                    graphics.context.drawImage(shieldPic, localPlayer.x, localPlayer.y, 60, 60);
+            
+                if (shieldsLeft > 0) {                    
+                    graphics.context.drawImage(shieldPic, localPlayer.x - 30, localPlayer.y - 32, 60, 60);
                 }
 
                 graphics.context.globalAlpha = 1.0;
