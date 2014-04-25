@@ -64,6 +64,7 @@ angular.module('asteroids').controller('gameController', function ($scope) {
             rounds = null,
             cleared = false,            
             missingPercent = 0,
+            shieldsLeft = 2,
             backgroundSound = new Audio("../audio/background.mp3");
 
             shipPic.src = "../images/ship.png";
@@ -119,6 +120,7 @@ angular.module('asteroids').controller('gameController', function ($scope) {
             gameStarted = false;
             cleared = false;
             missingPercent = 0;
+            shieldsLeft = 2;
             backgroundSound = new Audio("../audio/background.mp3");
 
             shipPic.src = "../images/ship.png";
@@ -349,7 +351,9 @@ angular.module('asteroids').controller('gameController', function ($scope) {
 
                 graphics.context.fillRect(rectX+(cornerRadius/2), rectY+(cornerRadius/2), rectWidth-cornerRadius - missingPercent, rectHeight-cornerRadius);                
 
-                //graphics.context.fillRect(100, 130, 100, 20);
+                if (shieldsLeft > 2) {
+                    graphics.context.drawImage(shieldPic, localPlayer.x, localPlayer.y, 60, 60);
+                }
 
                 graphics.context.globalAlpha = 1.0;
             }
@@ -413,7 +417,11 @@ angular.module('asteroids').controller('gameController', function ($scope) {
                     lives = data.array[i].lives;
                     score = data.array[i].score;
                     rounds = data.array[i].rounds;
-                    if(data.array[i].hyperspace <= 2000) {
+                    shieldsLeft = data.array[i].shields;
+                    localPlayer.x = data.array[i].x;                    
+                    localPlayer.y = data.array[i].y;
+
+                    if (data.array[i].hyperspace <= 2000) {
                         missingPercent = 100 - (data.array[i].hyperspace / 20);
                     } else {
                         missingPercent = 0;
