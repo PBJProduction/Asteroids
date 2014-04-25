@@ -49,6 +49,7 @@ angular.module('asteroids').controller('gameController', function ($scope) {
             ufoExplodePic = new Image(),
             sparklePic = new Image(),
             ufoSparklePic = new Image(),
+            shieldPic = new Image(),
             socket = $scope.socket,
             pewIndex = 0,
             whooshIndex = 0,
@@ -108,6 +109,7 @@ angular.module('asteroids').controller('gameController', function ($scope) {
             ufoExplodePic = new Image();
             sparklePic = new Image();
             ufoSparklePic = new Image();
+            shieldPic = new Image();
             pewIndex = 0;
             whooshIndex = 0;
             pewpewArr = [];
@@ -129,6 +131,7 @@ angular.module('asteroids').controller('gameController', function ($scope) {
             shipExplodePic.src = "../images/explosion.png";
             sparklePic.src = "../images/sparkle.png";
             ufoSparklePic.src = "../images/ufoSparkle.png";
+            shieldPic.src = "../images/shield.png";
 
 
             for (var i = 0; i < 50; ++i) {
@@ -562,7 +565,7 @@ angular.module('asteroids').controller('gameController', function ($scope) {
                                 },
                                 graphics
                             ));
-            } else if("SHP" === data.type) {
+            } else if ("SHP" === data.type) {
                 particlesArr.push( particleSystem( {
                                     asteroid : false,
                                     image : sparklePic,
@@ -575,7 +578,7 @@ angular.module('asteroids').controller('gameController', function ($scope) {
                             ));
 
                 image = shipExplodePic;
-            } else if("WRP" === data.type) {
+            } else if ("WRP" === data.type) {
                 image = shipExplodePic;
                 size = 50;
                 speed = 100;
@@ -622,7 +625,7 @@ angular.module('asteroids').controller('gameController', function ($scope) {
 
         }
 
-        function save() {
+        function save () {
         	if($("#name").val() != "") {
 	        	socket.emit("name", {
 					"name": $("#name").val(),
