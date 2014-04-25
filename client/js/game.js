@@ -340,7 +340,7 @@ angular.module('asteroids').controller('gameController', function ($scope) {
                 graphics.context.fillStyle = "blue";
                 
                 if (missingPercent >= 0) {
-                    missingPercent -= MYGAME.elapsedTime / 10;
+                    missingPercent -= MYGAME.elapsedTime / 5;
                 } else {
                     warping = false;
                 }
