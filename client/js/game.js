@@ -254,7 +254,6 @@ angular.module('asteroids').controller('gameController', function ($scope) {
                     e.keyCode = KeyEvent.DOM_VK_SPACE;
                 } else if (e.keyCode === settings.WARP_KEY.charCodeAt(0) && !warppressed) {
                     if (missingPercent <= 0 && !warping) {
-                        missingPercent = 100;
                         warppressed = true;
                         warping = true;
                         e.keyCode = KeyEvent.DOM_VK_S;
@@ -343,9 +342,9 @@ angular.module('asteroids').controller('gameController', function ($scope) {
                 graphics.context.fillStyle = "blue";
                 
                 if (missingPercent >= 0) {
-                    missingPercent -= MYGAME.elapsedTime / 5;
                 } else {
                     warping = false;
+
                 }
 
                 graphics.context.fillRect(rectX+(cornerRadius/2), rectY+(cornerRadius/2), rectWidth-cornerRadius - missingPercent, rectHeight-cornerRadius);                
@@ -414,6 +413,11 @@ angular.module('asteroids').controller('gameController', function ($scope) {
                     lives = data.array[i].lives;
                     score = data.array[i].score;
                     rounds = data.array[i].rounds;
+                    if(data.array[i].hyperspace <= 2000) {
+                        missingPercent = 100 - (data.array[i].hyperspace / 20);
+                    } else {
+                        missingPercent = 0;
+                    }
                 }
 
                 if (!player) {
