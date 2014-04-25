@@ -226,7 +226,7 @@ angular.module('asteroids').controller('gameController', function ($scope) {
                 var obj = {
                     id : localPlayer.id,
                     key : code
-                };          
+                };    
                 socket.emit("key press", obj);
             }
         }

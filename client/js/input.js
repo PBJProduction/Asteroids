@@ -83,7 +83,8 @@ MYGAME.input = function () {
 			key;
 		
 		function keyPress (e) {
-			e.preventDefault();
+			if(e.keyCode === KeyEvent.DOM_VK_SPACE)
+				e.preventDefault();
 			that.keys[e.keyCode] = e.timeStamp;
 		}
 		
